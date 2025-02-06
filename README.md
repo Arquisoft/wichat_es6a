@@ -1,3 +1,10 @@
+# Lista de Contribuyentes
+- Adrián Dumitru
+- Emilio Izquierdo Fernández
+- Manuel Menéndez Valledor
+- Alejandro Rivada Rodríguez
+- Iyan Solís Rodríguez
+
 # wichat_es6a
 
 [![Actions Status](https://github.com/arquisoft/wichat_es6a/workflows/CI%20for%20wichat_es6a/badge.svg)](https://github.com/arquisoft/wichat_es6a/actions)
