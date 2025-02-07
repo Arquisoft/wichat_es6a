@@ -6,7 +6,7 @@
 | Emilio Izquierdo Fernández  | <a href="https://github.com/miloizfer"><img src="https://img.shields.io/badge/uo257691-Emilio Izquierdo-blue"></a>  |
 | Manuel Menéndez Valledor  | <a href="https://github.com/Wetrel"><img src="https://img.shields.io/badge/uo277429-Manuel Menéndez-green"></a>  |
 | Alejandro Rivada Rodríguez  | <a href="https://github.com/Alejandrorr572"><img src="https://img.shields.io/badge/uo295528-Alejandro Rivada-purple"></a>  |
-| Iyán Solís Rodríguez  | <a href="https://github.com/Iyansr97"><img src="https://img.shields.io/badge/uo295103-Iyán Solís-green"></a>  |
+| Iyán Solís Rodríguez  | <a href="https://github.com/Iyansr97"><img src="https://img.shields.io/badge/uo295103-Iyán Solís-orange"></a>  |
 
 # wichat_es6a
 
