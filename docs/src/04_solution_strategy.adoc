@@ -32,3 +32,22 @@ See https://docs.arc42.org/section-4/[Solution Strategy] in the arc42 documentat
 
 ****
 endif::arc42help[]
+
+=== Tipos de Decisiones
+
+==== 1. Decisiones Organizativas
+Estas decisiones están relacionadas con la **estructura de trabajo** y cómo se organiza el equipo.
+
+* **Uso de un proyecto tipo Kanban**: Se decide usar un enfoque de gestión visual de tareas, Kanban, para organizar el trabajo y asegurarse de que todos los miembros del equipo sepan en qué etapa se encuentran las tareas y qué trabajo queda por hacer.
+* **Uso de GitHub Flow como flujo de trabajo**: Decisión de adoptar un flujo de trabajo basado en **GitHub Flow**, que permite a todos los miembros del equipo colaborar fácilmente mediante **Pull Requests** y asegurarse de que todo el código pase por una revisión antes de fusionarse con la rama principal.
+
+==== 2. Decisiones Técnicas
+Estas decisiones están relacionadas con **cómo se construye el proyecto** y las herramientas que se usan.
+
+* **Uso de una plantilla inicial**: Decisión de comenzar con un proyecto básico pero funcional, lo que permite arrancar rápidamente con una estructura preconfigurada que ya funciona, evitando tener que construir todo desde cero.
+* **Empezar el proyecto desde cero**: Aunque se puede utilizar una plantilla inicial, la decisión es crear un proyecto nuevo desde cero. Esto se hace con el fin de que el equipo se familiarice mejor con el código y la estructura del proyecto. Además, el proyecto anterior puede usarse como referencia para solucionar problemas o mejorar el diseño, sin depender de él directamente.
+
+==== 3. Decisiones de Calidad y Mantenimiento
+Estas decisiones tienen que ver con cómo **aseguramos que el proyecto sea de calidad** y fácil de mantener.
+
+* **Uso de GitHub Flow y Pull Requests**: A través de **Pull Requests**, aseguramos que cada cambio en el código sea revisado por el equipo antes de integrarlo, garantizando que se mantenga la calidad del código y se minimicen errores en la rama principal.
