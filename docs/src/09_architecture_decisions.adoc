@@ -1,8 +1,14 @@
 ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-design-decisions]]
-== Architecture Decisions
+== Decisiones arquitectonicas
 
+[options="header",cols="1,2"]
+|===
+|Decision |Razones
+|Javascript |Hemos decidido desarrollar la aplicacion con Javascript, porque, además de tener algo de conocimiento previo, la decisión de trabajar sobre la plantilla proporcionada nos empuja a ello, evitando asi añadir complejidad extra en la primera fase de desarrollo.
+
+|===
 
 ifdef::arc42help[]
 [role="arc42help"]
