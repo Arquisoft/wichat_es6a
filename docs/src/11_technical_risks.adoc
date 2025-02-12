@@ -25,3 +25,64 @@ See https://docs.arc42.org/section-11/[Risks and Technical Debt] in the arc42 do
 
 ****
 endif::arc42help[]
+
+=== Lista de riesgos técnicos identificados y deuda técnica, ordenados por prioridad.
+
+== Gestión inadecuada del control de versiones
+
+Posibles conflictos en GitHub debido a la colaboración de múltiples integrantes.
+
+Riesgo de pérdida o sobrescritura de código.
+
+Medida: Definir un flujo de trabajo claro en Git como son las Pull Requests obligatorias.
+
+
+== Plazos Ajustados y Falta de Experiencia
+
+Riesgo de no completar lo planificado para una semana debido a trabajo de otras asignaturas o a que una estimación de tiempo no ha sido buena.
+
+Dificultad en la implementación de funciones avanzadas debido a falta de experiencia en JavaScript y aumento del número de errores generados por poco manejo del lenguaje.
+
+Medida: Buena organización de las tareas y su tiempo de desarrollo, así como aprendizaje autónomo del lenguaje para dominarlo mejor.
+
+
+== Falta de pruebas automatizadas
+
+Dependencia de pruebas manuales, propensas a errores.
+
+Aumento del tiempo para detectar y corregir fallos.
+
+Medida: Introducir pruebas unitarias y funcionales con herramientas como Jest o Mocha.
+
+== Falta de estándares de código
+
+Diferentes estilos de programación dentro del equipo.
+
+Complejidad a la hora de unificar código proveniente de varios integrantes del grupo.
+
+Medida: Establecer un enfoque común para programar todos de forma similar y minimizar estas diferencias.
+
+
+== Deficiencias en la documentación
+
+Falta de comentarios en el código y documentación técnica insuficiente.
+
+Dificultad para otros integrantes en comprender el código existente o algún punto del proyecto al consultar la documentación.
+
+Medida: Mantener documentación clara y actualizada en el repositorio de GitHub.
+
+== Código ineficiente y repetitivo
+
+Falta de modularidad y reutilización de código.
+
+Aumenta la dificultad de mantenimiento y escalabilidad, importante al ser un proyecto incremental.
+
+Medida: Implementar principios de programación modular y refactorización periódica.
+
+== Rendimiento poco óptimo
+
+Uso ineficiente de estructuras de datos y algoritmos.
+
+Posibles problemas de rendimiento en la ejecución de la aplicación.
+
+Medida: Revisión del código una vez sea funcional para optimizarlo.
