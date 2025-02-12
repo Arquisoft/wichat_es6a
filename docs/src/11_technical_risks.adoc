@@ -1,99 +1,88 @@
 ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-technical-risks]]
-== Risks and Technical Debts
+= Riesgos Técnicos y Deuda Técnica (Ordenados por Prioridad)
+
 
 
 ifdef::arc42help[]
 [role="arc42help"]
 ****
 .Contents
-A list of identified technical risks or technical debts, ordered by priority
+Una lista de riesgos técnicos y deudas técnicas identificadas, ordenadas por prioridad.
 
-.Motivation
-“Risk management is project management for grown-ups” (Tim Lister, Atlantic Systems Guild.) 
+.Motivación
+"El manejo de riesgos es la gestión de proyectos para adultos" (Tim Lister, Atlantic Systems Guild.)
 
-This should be your motto for systematic detection and evaluation of risks and technical debts in the architecture, which will be needed by management stakeholders (e.g. project managers, product owners) as part of the overall risk analysis and measurement planning.
+Este debe ser tu lema para la detección sistemática y evaluación de riesgos y deudas técnicas en la arquitectura, lo cual será necesario para los stakeholders de gestión (por ejemplo, gerentes de proyectos, propietarios de productos) como parte del análisis global de riesgos y planificación de medición.
 
-.Form
-List of risks and/or technical debts, probably including suggested measures to minimize, mitigate or avoid risks or reduce technical debts.
-
+.Forma
+Lista de riesgos y/o deudas técnicas, probablemente incluyendo medidas sugeridas para minimizar, mitigar o evitar los riesgos, o reducir las deudas técnicas.
 
 .Further Information
-
-See https://docs.arc42.org/section-11/[Risks and Technical Debt] in the arc42 documentation.
-
+Ver https://docs.arc42.org/section-11/[Riesgos y Deuda Técnica] en la documentación de arc42.
 ****
 endif::arc42help[]
 
-# Lista de Riesgos Técnicos y Deuda Técnica (Ordenados por Prioridad)
-
-## Gestión Inadecuada del Control de Versiones
-### Posibles problemas:
-- Conflictos en GitHub debido a la colaboración de múltiples integrantes.
-- Riesgo de pérdida o sobrescritura de código.
-
-### Medida:
-- Definir un flujo de trabajo claro en Git con Pull Requests obligatorias.
+== Gestión Inadecuada del Control de Versiones
+  . *Posibles problemas*:
+    - Conflictos en GitHub debido a la colaboración de múltiples integrantes.
+    - Riesgo de pérdida o sobrescritura de código.
+  . *Medida*:
+    - Definir un flujo de trabajo claro en Git con Pull Requests obligatorias.
 
 ---
 
-## Plazos Ajustados y Falta de Experiencia
-### Posibles problemas:
-- No completar lo planificado debido a otras asignaturas o mala estimación de tiempos.
-- Dificultades en la implementación de funciones avanzadas debido a falta de experiencia en JavaScript.
-- Aumento del número de errores por poco manejo del lenguaje.
-
-### Medida:
-- Mejor organización de tareas y estimación del tiempo de desarrollo.
-- Aprendizaje autónomo del lenguaje para mejorar dominio.
-
----
-
-## Falta de Pruebas Automatizadas
-### Posibles problemas:
-- Dependencia de pruebas manuales, propensas a errores.
-- Aumento del tiempo para detectar y corregir fallos.
-
-### Medida:
-- Introducir pruebas unitarias y funcionales con herramientas como Jest o Mocha.
+== Plazos Ajustados y Falta de Experiencia
+  . *Posibles problemas*:
+    - No completar lo planificado debido a otras asignaturas o mala estimación de tiempos.
+    - Dificultades en la implementación de funciones avanzadas debido a falta de experiencia en JavaScript.
+    - Aumento del número de errores por poco manejo del lenguaje.
+  . *Medida*:
+    - Mejor organización de tareas y estimación del tiempo de desarrollo.
+    - Aprendizaje autónomo del lenguaje para mejorar dominio.
 
 ---
 
-## Falta de Estándares de Código
-### Posibles problemas:
-- Diferentes estilos de programación dentro del equipo.
-- Dificultad para unificar código de distintos integrantes.
-
-### Medida:
-- Definir estándares de código comunes para garantizar coherencia y facilidad de colaboración.
-
----
-
-## Deficiencias en la Documentación
-### Posibles problemas:
-- Código con pocos comentarios y documentación técnica insuficiente.
-- Dificultad para otros integrantes en comprender el código existente.
-
-### Medida:
-- Mantener una documentación clara y actualizada en el repositorio de GitHub.
+== Deficiencias en la Documentación
+  . *Posibles problemas*:
+    - Código con pocos comentarios y documentación técnica insuficiente.
+    - Dificultad para otros integrantes en comprender el código existente.
+  . *Medida*:
+    - Mantener una documentación clara y actualizada en el repositorio de GitHub.
 
 ---
 
-## Código Ineficiente y Repetitivo
-### Posibles problemas:
-- Falta de modularidad y reutilización de código.
-- Dificultad en mantenimiento y escalabilidad del proyecto.
-
-### Medida:
-- Aplicar principios de programación modular y refactorización periódica.
+== Falta de Pruebas Automatizadas
+  . *Posibles problemas*:
+    - Dependencia de pruebas manuales, propensas a errores.
+    - Aumento del tiempo para detectar y corregir fallos.
+  . *Medida*:
+    - Introducir pruebas unitarias y funcionales con herramientas como Jest o Mocha.
 
 ---
 
-## Rendimiento Poco Óptimo
-### Posibles problemas:
-- Uso ineficiente de estructuras de datos y algoritmos.
-- Posibles problemas de rendimiento en la ejecución de la aplicación.
+== Falta de Estándares de Código
+  . *Posibles problemas*:
+    - Diferentes estilos de programación dentro del equipo.
+    - Dificultad para unificar código de distintos integrantes.
+  . *Medida*:
+    - Definir estándares de código comunes para garantizar coherencia y facilidad de colaboración.
 
-### Medida:
-- Revisar y optimizar el código una vez sea funcional.
+---
+
+== Código Ineficiente y Repetitivo
+  . *Posibles problemas*:
+    - Falta de modularidad y reutilización de código.
+    - Dificultad en mantenimiento y escalabilidad del proyecto.
+  . *Medida*:
+    - Aplicar principios de programación modular y refactorización periódica.
+
+---
+
+== Rendimiento Poco Óptimo
+  . *Posibles problemas*:
+    - Uso ineficiente de estructuras de datos y algoritmos.
+    - Posibles problemas de rendimiento en la ejecución de la aplicación.
+  . *Medida*:
+    - Revisar y optimizar el código una vez sea funcional.
