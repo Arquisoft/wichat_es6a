@@ -9,21 +9,23 @@ ifdef::arc42help[]
 [role="arc42help"]
 ****
 .Contents
-Una lista de riesgos técnicos y deudas técnicas identificadas, ordenadas por prioridad.
+A list of identified technical risks or technical debts, ordered by priority
 
-.Motivación
-"El manejo de riesgos es la gestión de proyectos para adultos" (Tim Lister, Atlantic Systems Guild.)
+.Motivation
+“Risk management is project management for grown-ups” (Tim Lister, Atlantic Systems Guild.) 
 
-Este debe ser tu lema para la detección sistemática y evaluación de riesgos y deudas técnicas en la arquitectura, lo cual será necesario para los stakeholders de gestión (por ejemplo, gerentes de proyectos, propietarios de productos) como parte del análisis global de riesgos y planificación de medición.
+This should be your motto for systematic detection and evaluation of risks and technical debts in the architecture, which will be needed by management stakeholders (e.g. project managers, product owners) as part of the overall risk analysis and measurement planning.
 
-.Forma
-Lista de riesgos y/o deudas técnicas, probablemente incluyendo medidas sugeridas para minimizar, mitigar o evitar los riesgos, o reducir las deudas técnicas.
+.Form
+List of risks and/or technical debts, probably including suggested measures to minimize, mitigate or avoid risks or reduce technical debts.
+
 
 .Further Information
-Ver https://docs.arc42.org/section-11/[Riesgos y Deuda Técnica] en la documentación de arc42.
+
+See https://docs.arc42.org/section-11/[Risks and Technical Debt] in the arc42 documentation.
+
 ****
 endif::arc42help[]
-
 == Gestión Inadecuada del Control de Versiones
   . *Posibles problemas*:
     - Conflictos en GitHub debido a la colaboración de múltiples integrantes.
