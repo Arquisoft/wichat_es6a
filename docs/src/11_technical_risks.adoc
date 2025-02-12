@@ -26,63 +26,74 @@ See https://docs.arc42.org/section-11/[Risks and Technical Debt] in the arc42 do
 ****
 endif::arc42help[]
 
-=== Lista de riesgos técnicos identificados y deuda técnica, ordenados por prioridad.
+# Lista de Riesgos Técnicos y Deuda Técnica (Ordenados por Prioridad)
 
-== Gestión inadecuada del control de versiones
+## Gestión Inadecuada del Control de Versiones
+### Posibles problemas:
+- Conflictos en GitHub debido a la colaboración de múltiples integrantes.
+- Riesgo de pérdida o sobrescritura de código.
 
-Posibles conflictos en GitHub debido a la colaboración de múltiples integrantes.
+### Medida:
+- Definir un flujo de trabajo claro en Git con Pull Requests obligatorias.
 
-Riesgo de pérdida o sobrescritura de código.
+---
 
-Medida: Definir un flujo de trabajo claro en Git como son las Pull Requests obligatorias.
+## Plazos Ajustados y Falta de Experiencia
+### Posibles problemas:
+- No completar lo planificado debido a otras asignaturas o mala estimación de tiempos.
+- Dificultades en la implementación de funciones avanzadas debido a falta de experiencia en JavaScript.
+- Aumento del número de errores por poco manejo del lenguaje.
 
+### Medida:
+- Mejor organización de tareas y estimación del tiempo de desarrollo.
+- Aprendizaje autónomo del lenguaje para mejorar dominio.
 
-== Plazos Ajustados y Falta de Experiencia
+---
 
-Riesgo de no completar lo planificado para una semana debido a trabajo de otras asignaturas o a que una estimación de tiempo no ha sido buena.
+## Falta de Pruebas Automatizadas
+### Posibles problemas:
+- Dependencia de pruebas manuales, propensas a errores.
+- Aumento del tiempo para detectar y corregir fallos.
 
-Dificultad en la implementación de funciones avanzadas debido a falta de experiencia en JavaScript y aumento del número de errores generados por poco manejo del lenguaje.
+### Medida:
+- Introducir pruebas unitarias y funcionales con herramientas como Jest o Mocha.
 
-Medida: Buena organización de las tareas y su tiempo de desarrollo, así como aprendizaje autónomo del lenguaje para dominarlo mejor.
+---
 
+## Falta de Estándares de Código
+### Posibles problemas:
+- Diferentes estilos de programación dentro del equipo.
+- Dificultad para unificar código de distintos integrantes.
 
-== Falta de pruebas automatizadas
+### Medida:
+- Definir estándares de código comunes para garantizar coherencia y facilidad de colaboración.
 
-Dependencia de pruebas manuales, propensas a errores.
+---
 
-Aumento del tiempo para detectar y corregir fallos.
+## Deficiencias en la Documentación
+### Posibles problemas:
+- Código con pocos comentarios y documentación técnica insuficiente.
+- Dificultad para otros integrantes en comprender el código existente.
 
-Medida: Introducir pruebas unitarias y funcionales con herramientas como Jest o Mocha.
+### Medida:
+- Mantener una documentación clara y actualizada en el repositorio de GitHub.
 
-== Falta de estándares de código
+---
 
-Diferentes estilos de programación dentro del equipo.
+## Código Ineficiente y Repetitivo
+### Posibles problemas:
+- Falta de modularidad y reutilización de código.
+- Dificultad en mantenimiento y escalabilidad del proyecto.
 
-Complejidad a la hora de unificar código proveniente de varios integrantes del grupo.
+### Medida:
+- Aplicar principios de programación modular y refactorización periódica.
 
-Medida: Establecer un enfoque común para programar todos de forma similar y minimizar estas diferencias.
+---
 
+## Rendimiento Poco Óptimo
+### Posibles problemas:
+- Uso ineficiente de estructuras de datos y algoritmos.
+- Posibles problemas de rendimiento en la ejecución de la aplicación.
 
-== Deficiencias en la documentación
-
-Falta de comentarios en el código y documentación técnica insuficiente.
-
-Dificultad para otros integrantes en comprender el código existente o algún punto del proyecto al consultar la documentación.
-
-Medida: Mantener documentación clara y actualizada en el repositorio de GitHub.
-
-== Código ineficiente y repetitivo
-
-Falta de modularidad y reutilización de código.
-
-Aumenta la dificultad de mantenimiento y escalabilidad, importante al ser un proyecto incremental.
-
-Medida: Implementar principios de programación modular y refactorización periódica.
-
-== Rendimiento poco óptimo
-
-Uso ineficiente de estructuras de datos y algoritmos.
-
-Posibles problemas de rendimiento en la ejecución de la aplicación.
-
-Medida: Revisión del código una vez sea funcional para optimizarlo.
+### Medida:
+- Revisar y optimizar el código una vez sea funcional.
