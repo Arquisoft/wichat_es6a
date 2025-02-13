@@ -3,7 +3,28 @@ ifndef::imagesdir[:imagesdir: ../images]
 [[section-quality-scenarios]]
 == Quality Requirements
 
+El sistema **WIChat** prioriza cinco atributos de calidad críticos para garantizar su éxito:  
 
+1. **Usabilidad**:  
+   - Objetivo: Interfaz intuitiva que permita a los usuarios jugar y acceder a pistas de manera intuitiva.  
+
+2. **Mantenibilidad**:  
+   - Objetivo: Código modular y documentado para facilitar actualizaciones.  
+
+3. **Performance**:  
+   - Objetivo: Baja latencia en operaciones críticas:  
+     - Generación de preguntas.  
+     - Respuesta del LLM.  
+
+4. **Seguridad**:  
+   - Objetivo: Protección de datos y resistencia a ataques.  
+
+5. **Funcionalidad**:  
+   - Objetivo: Cumplir con los requisitos clave del negocio de forma confiable:  
+     - Generación automática de preguntas/respuestas desde Wikidata.  
+     - Pistas conversacionales con mitigación de alucinaciones (RAG).  
+
+Estos requisitos guían las decisiones técnicas y garantizan que el sistema cumpla tanto con las expectativas de RTVE como con la experiencia de los usuarios finales.  
 ifdef::arc42help[]
 [role="arc42help"]
 ****
@@ -52,6 +73,39 @@ endif::arc42help[]
 
 === Quality Scenarios
 
+[cols="1,2,2,2,2", options="header"]
+|===
+| Escenario | Estímulo/Fuente | Entorno | Artefacto | Respuesta Esperada 
+| SC-1: Generación precisa de preguntas 
+| Sistema necesita nueva pregunta 
+| Carga normal 
+| Servicio de Wikidata 
+| Pregunta generada con datos verificados (sin alucinaciones) 
+
+| SC-2: Rendimiento bajo carga 
+| 500 usuarios inician partida simultáneamente 
+| Pico de demanda 
+| API de Preguntas 
+| Latencia de generación baja
+
+| SC-3: Protección de datos de usuarios 
+| Intento de acceso no autorizado a datos sensibles
+| Ataque de fuerza bruta
+| Base de Datos 
+| cifrado de datos sensibles
+
+| SC-4: Acceso intuitivo a pistas 
+| Usuario nuevo intenta obtener pista 
+| Primer uso 
+| Interfaz de usuario 
+| Pista accesible 
+
+| SC-5: Mantenibilidad de temas 
+| Desarrollador añade tema "Historia Europea" 
+| Entorno de desarrollo 
+| Código base 
+| Tema integrado rapidamente
+|===
 ifdef::arc42help[]
 [role="arc42help"]
 ****
