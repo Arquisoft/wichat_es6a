@@ -36,9 +36,21 @@ endif::arc42help[]
 |===
 |Term |Definition
 
-|<Term-1>
-|<definition-1>
+|JavaScript
+|JavaScript es un lenguaje de programación de alto nivel, dinámico y orientado a eventos, utilizado principalmente para desarrollo web. Es un lenguaje interpretado, basado en prototipos y con tipado débil, que se ejecuta en el navegador a través del motor JavaScript. También puede usarse en el backend con entornos como Node.js.
 
-|<Term-2>
-|<definition-2>
+|Frontend
+|JavaScript en el frontend se usa para manipular el DOM, gestionar eventos y mejorar la interactividad de una web. Se ejecuta en el navegador y trabaja junto con HTML y CSS para crear experiencias dinámicas. El uso de frameworks como React facilita el desarrollo de aplicaciones más estructuradas y eficientes.
+
+|React
+|React es una biblioteca de JavaScript para construir interfaces de usuario de forma eficiente y modular. Utiliza un enfoque basado en componentes y un Virtual DOM para mejorar el rendimiento. Fue desarrollada por Facebook y se usa principalmente en el frontend para crear aplicaciones web interactivas y dinámicas.
+
+|Backend
+|En el backend, JavaScript se usa con entornos como Node.js para manejar servidores, bases de datos y lógica de negocio. Permite crear APIs, gestionar peticiones HTTP y conectar con bases de datos como MongoDB.
+
+|Node.js
+|Node.js es un entorno de ejecución de JavaScript basado en el motor V8 de Chrome, diseñado para ejecutar código fuera del navegador. Es asíncrono y orientado a eventos, ideal para aplicaciones en tiempo real y servidores escalables. Usa el sistema de módulos de CommonJS y cuenta con npm para gestionar paquetes y dependencias.
+
+|MongoDB
+|MongoDB es una base de datos NoSQL orientada a documentos que almacena datos en formato BSON (similar a JSON). Es escalable, flexible y permite manejar grandes volúmenes de datos sin una estructura fija. Se integra bien con Node.js y se usa comúnmente en aplicaciones web modernas.
 |===
