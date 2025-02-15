@@ -1,29 +1,28 @@
 ifndef::imagesdir[:imagesdir: ../images]
 
-[[section-architecture-constraints]]
-== Architecture Constraints
+[[section-constraints]]
+== Constraints
 
+=== Restricciones Técnicas
+Las siguientes restricciones técnicas afectan el desarrollo de WIChat:
 
-ifdef::arc42help[]
-[role="arc42help"]
-****
-.Contents
-Any requirement that constraints software architects in their freedom of design and implementation decisions or decision about the development process. These constraints sometimes go beyond individual systems and are valid for whole organizations and companies.
+* **Tecnología Web:** La aplicación debe desarrollarse utilizando tecnologías web modernas (React.js para el frontend y Node.js/Python para el backend).
+* **Base de Datos:** Se usará PostgreSQL o MongoDB para el almacenamiento de datos.
+* **Modelo de Lenguaje:** Se integrará un modelo de lenguaje (LLM) a través de una API externa.
+* **Fuente de Preguntas:** Las preguntas deben generarse automáticamente a partir de datos de Wikidata.
+* **Tiempo de Respuesta:** Las respuestas a las preguntas deben registrarse dentro de un tiempo límite establecido.
 
-.Motivation
-Architects should know exactly where they are free in their design decisions and where they must adhere to constraints.
-Constraints must always be dealt with; they may be negotiable, though.
+=== Restricciones Organizativas
+Las siguientes restricciones organizativas afectan el proyecto:
 
-.Form
-Simple tables of constraints with explanations.
-If needed you can subdivide them into
-technical constraints, organizational and political constraints and
-conventions (e.g. programming or versioning guidelines, documentation or naming conventions)
+* **Plazos de Entrega:** La aplicación debe estar operativa antes del cierre del proyecto según lo acordado.
+* **Documentación:** La arquitectura y el desarrollo deben documentarse siguiendo el estándar arc42.
+* **Código Abierto:** El código fuente deberá alojarse en un repositorio accesible para revisión y seguimiento.
 
+=== Restricciones de Seguridad y Privacidad
+Para garantizar la seguridad y privacidad de los usuarios, se establecen las siguientes restricciones:
 
-.Further Information
+* **Gestión de Datos:** Los datos de los usuarios deben estar protegidos según las normativas de protección de datos.
+* **Validación de Respuestas:** Se deben mitigar posibles errores o "alucinaciones" del modelo de lenguaje para evitar información incorrecta en las pistas.
 
-See https://docs.arc42.org/section-2/[Architecture Constraints] in the arc42 documentation.
-
-****
-endif::arc42help[]
+Estas restricciones definirán los límites dentro de los cuales se diseñará y desarrollará WIChat.
