@@ -11,107 +11,170 @@ ifndef::imagesdir[:imagesdir: ../images]
 image::BuildingBlockViewOverviewDiagram.png["BuildingBlockViewOverviewDiagram"]
 
 ==== Motivation
-WIChat es un sistema de mensajería en tiempo real que permite a los usuarios comunicarse mediante texto, imágenes y otros medios. La arquitectura del sistema es modular, lo que facilita la escalabilidad y la integración con diferentes tecnologías.
+WIChat is a real-time messaging system that allows users to communicate via text, images, and other media. The system's architecture is modular, facilitating scalability and integration with different technologies.
 
 === Contained Building Blocks
 
 [cols="1,2" options="header"]
 |===
 | Name | Responsibility
-| Frontend | Interfaz de usuario web y móvil.
-| Backend API | Manejo de autenticación, mensajes y lógica del negocio.
-| Database | Almacenamiento de usuarios, conversaciones y mensajes.
-| Wikidata | Fuente de datos estructurados para mejorar la experiencia del usuario.
-| Modelo de lenguaje para pistas | Proporciona sugerencias inteligentes y autocompletado en los mensajes.
+| Frontend | Web and mobile user interface.
+| Backend API | Handles authentication, messaging, and business logic.
+| Database | Stores users, conversations, and messages.
+| Wikidata | Structured data source to enhance user experience.
+| Language Model for Hints | Provides intelligent suggestions and autocomplete for messages.
 |===
 
 === Important Interfaces
 
-Database Access: Interfaz entre la API y la base de datos.
+Database Access: Interface between the API and the database.
 
-Wikidata API: Accede a datos estructurados y relevantes.
+Wikidata API: Accesses structured and relevant data.
 
-Modelo de lenguaje: Interfaz con el sistema de IA para sugerencias de texto.
+Language Model: Interface with the AI system for text suggestions.
 
-=== Componentes del Sistema
+=== System Components
 
 ==== Frontend
 
-Propósito / Responsabilidad
+Purpose / Responsibility
 
-Ofrecer una interfaz interactiva para el usuario.
+Provide an interactive interface for the user.
 
-Enviar y recibir mensajes en tiempo real.
+Send and receive real-time messages.
 
-Administrar sesiones y contactos.
+Manage sessions and contacts.
 
 Interfaces
 
-Interfaz gráfica.
+Graphical user interface.
 
-Conexión a la API para autenticación y recuperación de datos.
+Connection to the API for authentication and data retrieval.
 
-Uso del modelo de lenguaje para sugerencias de mensajes.
+Use of the language model for message suggestions.
 
 ==== Backend API
 
-Propósito / Responsabilidad
+Purpose / Responsibility
 
-Gestionar la autenticación y autorización de usuarios.
+Manage user authentication and authorization.
 
-Proporcionar acceso a datos de mensajes y usuarios.
+Provide access to message and user data.
 
-Integrarse con otros servicios (Wikidata, Modelo de lenguaje).
+Integrate with other services (Wikidata, Language Model).
 
 Interfaces
 
-API para la comunicación con el frontend.
+API for communication with the frontend.
 
-Conexión a la base de datos para almacenamiento de datos.
+Connection to the database for data storage.
 
-Acceso a Wikidata para enriquecer la experiencia del usuario.
+Access to Wikidata to enrich the user experience.
 
-Integración con el modelo de lenguaje para asistencia en los mensajes.
+Integration with the language model for message assistance.
 
 ==== Database
 
-Propósito / Responsabilidad
+Purpose / Responsibility
 
-Almacenar información sobre usuarios, mensajes y conversaciones.
+Store information about users, messages, and conversations.
 
 ==== Wikidata
 
-Propósito / Responsabilidad
+Purpose / Responsibility
 
-Proveer datos estructurados para mejorar la experiencia de usuario en el chat.
-
-Interfaces
-
-API de Wikidata para obtener información relevante en tiempo real.
-
-==== Modelo de lenguaje para pistas
-
-Propósito / Responsabilidad
-
-Ofrecer sugerencias inteligentes y autocompletado de mensajes.
+Provide structured data to enhance the user experience in the chat.
 
 Interfaces
 
-API de IA para análisis de texto y generación de respuestas.
+Wikidata API to obtain relevant real-time information.
+
+==== Language Model for Hints
+
+Purpose / Responsibility
+
+Offer intelligent suggestions and message autocomplete.
+
+Interfaces
+
+AI API for text analysis and response generation.
 
 === Level 2
+image::05_LEVEL2.png["level 2"]
 
-==== White Box Backend API
+==== White Box Gateway Service
 
 [cols="1,2" options="header"]
 |===
-| Módulo | Función
-| Authentication Module | Gestiona la autenticación de usuarios.
-| Message Handling | Procesa el envío y recepción de mensajes.
-| User Management | Manejo de perfiles de usuario y contactos.
-| Wikidata Integration | Acceso a datos estructurados.
-| AI Language Model Integration | Conexión con el modelo de lenguaje.
+| Module | Functionality
+| WebApp | Provides the user interface and manages user interaction.
+| Gateway Service | Acts as an intermediary between the WebApp and other system services.
+| Users Manager | Handles user management, including authentication and profiles.
+| Question Manager | Processes and manages user questions.
+| Wikidata | Structured data source used to answer questions.
 |===
+
+=== Component Description
+
+==== WebApp
+
+Purpose / Responsibility:
+
+Provide an interactive interface for users.
+
+Allow access to system functionalities.
+
+Send and receive requests through the Gateway Service.
+
+Interfaces:
+
+Connection with the Gateway Service to manage users and questions.
+
+==== Gateway Service
+
+Purpose / Responsibility:
+
+Centralize communication between the WebApp and other services.
+
+Manage request and response routing.
+
+Interfaces:
+
+Bidirectional communication with WebApp, Users Manager, and Question Manager.
+
+==== Users Manager
+
+Purpose / Responsibility:
+
+Manage users and their profiles.
+
+Administer authentication and access permissions.
+
+Interfaces:
+
+Connection with Gateway Service for user validation and data retrieval.
+
+==== Question Manager
+
+Purpose / Responsibility:
+
+Process user questions.
+
+Retrieve relevant information from Wikidata.
+
+Interfaces:
+
+Communication with Gateway Service and Wikidata for information queries.
+
+==== Wikidata
+
+Purpose / Responsibility:
+
+Provide structured data to enrich responses to user questions.
+
+Interfaces:
+
+Query API used by the Question Manager.
 
 === Level 3
 
@@ -119,17 +182,15 @@ API de IA para análisis de texto y generación de respuestas.
 
 [cols="1,2" options="header"]
 |===
-| Componente | Descripción
-| Message Storage | Gestiona la persistencia de mensajes en la base de datos, garantizando integridad y disponibilidad.
+| Component | Description
+| Message Storage | Manages message persistence in the database, ensuring integrity and availability.
 |===
 
 ==== White Box Wikidata Integration
 
 [cols="1,2" options="header"]
 |===
-| Componente | Descripción
-| Data Retrieval | Consulta datos relevantes en Wikidata en tiempo real para enriquecer la experiencia de usuario.
+| Component | Description
+| Data Retrieval | Queries relevant data from Wikidata in real time to enhance user experience.
 |===
-
-
 
