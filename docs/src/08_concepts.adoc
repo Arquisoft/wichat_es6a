@@ -98,4 +98,5 @@ endif::arc42help[]
 
 
 === Concept Map
-image::Cross-cutting_Concepts.png
+:imagesdir: ../images
+image::Cross-cutting_Concepts.png[]
