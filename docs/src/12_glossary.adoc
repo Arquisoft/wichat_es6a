@@ -36,21 +36,21 @@ endif::arc42help[]
 |===
 |Term |Definition
 
-|JavaScript
-|JavaScript es un lenguaje de programación de alto nivel, dinámico y orientado a eventos, utilizado principalmente para desarrollo web. Es un lenguaje interpretado, basado en prototipos y con tipado débil, que se ejecuta en el navegador a través del motor JavaScript. También puede usarse en el backend con entornos como Node.js.
+|JavaScript  
+|JavaScript is a high-level, dynamic, and event-driven programming language primarily used for web development. It is an interpreted language, prototype-based, and weakly typed, running in the browser through the JavaScript engine. It can also be used on the backend with environments like Node.js.  
 
-|Frontend
-|JavaScript en el frontend se usa para manipular el DOM, gestionar eventos y mejorar la interactividad de una web. Se ejecuta en el navegador y trabaja junto con HTML y CSS para crear experiencias dinámicas. El uso de frameworks como React facilita el desarrollo de aplicaciones más estructuradas y eficientes.
+|Frontend  
+|JavaScript in the frontend is used to manipulate the DOM, handle events, and enhance web interactivity. It runs in the browser and works alongside HTML and CSS to create dynamic experiences. Frameworks like React make it easier to develop more structured and efficient applications.  
 
-|React
-|React es una biblioteca de JavaScript para construir interfaces de usuario de forma eficiente y modular. Utiliza un enfoque basado en componentes y un Virtual DOM para mejorar el rendimiento. Fue desarrollada por Facebook y se usa principalmente en el frontend para crear aplicaciones web interactivas y dinámicas.
+|React  
+|React is a JavaScript library for building user interfaces efficiently and modularly. It follows a component-based approach and uses a Virtual DOM to improve performance. Developed by Facebook, it is primarily used in the frontend to create interactive and dynamic web applications.  
 
-|Backend
-|En el backend, JavaScript se usa con entornos como Node.js para manejar servidores, bases de datos y lógica de negocio. Permite crear APIs, gestionar peticiones HTTP y conectar con bases de datos como MongoDB.
+|Backend  
+|On the backend, JavaScript is used with environments like Node.js to handle servers, databases, and business logic. It enables API creation, HTTP request management, and database connections with systems like MongoDB.  
 
-|Node.js
-|Node.js es un entorno de ejecución de JavaScript basado en el motor V8 de Chrome, diseñado para ejecutar código fuera del navegador. Es asíncrono y orientado a eventos, ideal para aplicaciones en tiempo real y servidores escalables. Usa el sistema de módulos de CommonJS y cuenta con npm para gestionar paquetes y dependencias.
+|Node.js  
+|Node.js is a JavaScript runtime environment based on Chrome's V8 engine, designed to execute code outside the browser. It is asynchronous and event-driven, making it ideal for real-time applications and scalable servers. It uses the CommonJS module system and has npm for package and dependency management.  
 
-|MongoDB
-|MongoDB es una base de datos NoSQL orientada a documentos que almacena datos en formato BSON (similar a JSON). Es escalable, flexible y permite manejar grandes volúmenes de datos sin una estructura fija. Se integra bien con Node.js y se usa comúnmente en aplicaciones web modernas.
+|MongoDB  
+|MongoDB is a NoSQL document-oriented database that stores data in BSON format (similar to JSON). It is scalable, flexible, and allows handling large amounts of data without a fixed structure. It integrates well with Node.js and is commonly used in modern web applications.  
 |===
