@@ -1,9 +1,6 @@
 ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-technical-risks]]
-= Riesgos Técnicos y Deuda Técnica (Ordenados por Prioridad)
-
-
 
 ifdef::arc42help[]
 [role="arc42help"]
@@ -26,65 +23,72 @@ See https://docs.arc42.org/section-11/[Risks and Technical Debt] in the arc42 do
 
 ****
 endif::arc42help[]
-== Gestión Inadecuada del Control de Versiones
-  . *Posibles problemas*:
-    - Conflictos en GitHub debido a la colaboración de múltiples integrantes.
-    - Riesgo de pérdida o sobrescritura de código.
-  . *Medida*:
-    - Definir un flujo de trabajo claro en Git con Pull Requests obligatorias.
+
+= Technical Risks (Ordered by Priority)
+
+== Inadequate Version Control Management
+  . *Possible Issues*:
+    - GitHub conflicts due to multiple team members collaborating.
+    - Risk of code loss or overwriting.
+  . *Preventive Measure*:
+    - Define a clear Git workflow with mandatory Pull Requests.
 
 ---
 
-== Plazos Ajustados y Falta de Experiencia
-  . *Posibles problemas*:
-    - No completar lo planificado debido a otras asignaturas o mala estimación de tiempos.
-    - Dificultades en la implementación de funciones avanzadas debido a falta de experiencia en JavaScript.
-    - Aumento del número de errores por poco manejo del lenguaje.
-  . *Medida*:
-    - Mejor organización de tareas y estimación del tiempo de desarrollo.
-    - Aprendizaje autónomo del lenguaje para mejorar dominio.
+== Tight Deadlines and Lack of Experience
+  . *Possible Issues*:
+    - Inability to complete planned tasks due to other courses or poor time estimation.
+    - Difficulties in implementing advanced features due to lack of experience in JavaScript.
+    - Increased number of errors due to limited proficiency in the language.
+  . *Preventive Measure*:
+    - Better task organization and development time estimation.
+    - Self-learning of the language to improve proficiency.
 
 ---
 
-== Deficiencias en la Documentación
-  . *Posibles problemas*:
-    - Código con pocos comentarios y documentación técnica insuficiente.
-    - Dificultad para otros integrantes en comprender el código existente.
-  . *Medida*:
-    - Mantener una documentación clara y actualizada en el repositorio de GitHub.
+== Documentation Deficiencies
+  . *Possible Issues*:
+    - Code with few comments and insufficient technical documentation.
+    - Difficulty for other team members to understand the existing code.
+  . *Preventive Measure*:
+    - Maintain clear and up-to-date documentation in the GitHub repository.
 
 ---
 
-== Falta de Pruebas Automatizadas
-  . *Posibles problemas*:
-    - Dependencia de pruebas manuales, propensas a errores.
-    - Aumento del tiempo para detectar y corregir fallos.
-  . *Medida*:
-    - Introducir pruebas unitarias y funcionales con herramientas como Jest o Mocha.
+== Lack of Automated Testing
+  . *Possible Issues*:
+    - Dependence on manual testing, which is prone to errors.
+    - Increased time to detect and fix bugs.
+  . *Preventive Measure*:
+    - Introduce unit and functional testing using tools like Jest or Mocha.
 
 ---
 
-== Falta de Estándares de Código
-  . *Posibles problemas*:
-    - Diferentes estilos de programación dentro del equipo.
-    - Dificultad para unificar código de distintos integrantes.
-  . *Medida*:
-    - Definir estándares de código comunes para garantizar coherencia y facilidad de colaboración.
+== Lack of Code Standards
+  . *Possible Issues*:
+    - Different programming styles within the team.
+    - Difficulty in unifying code from different team members.
+  . *Preventive Measure*:
+    - Define common code standards to ensure consistency and ease of collaboration.
 
 ---
 
-== Código Ineficiente y Repetitivo
-  . *Posibles problemas*:
-    - Falta de modularidad y reutilización de código.
-    - Dificultad en mantenimiento y escalabilidad del proyecto.
-  . *Medida*:
-    - Aplicar principios de programación modular y refactorización periódica.
+== Inefficient and Repetitive Code
+  . *Possible Issues*:
+    - Lack of modularity and code reuse.
+    - Difficulty in project maintenance and scalability.
+  . *Preventive Measure*:
+    - Apply modular programming principles and perform periodic refactoring.
 
 ---
 
-== Rendimiento Poco Óptimo
-  . *Posibles problemas*:
-    - Uso ineficiente de estructuras de datos y algoritmos.
-    - Posibles problemas de rendimiento en la ejecución de la aplicación.
-  . *Medida*:
-    - Revisar y optimizar el código una vez sea funcional.
+== Suboptimal Performance
+  . *Possible Issues*:
+    - Inefficient use of data structures and algorithms.
+    - Potential performance issues during application execution.
+  . *Preventive Measure*:
+    - Review and optimize the code once it is functional.
+
+= Technical Debt
+
+== There is no technical debt
