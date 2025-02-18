@@ -32,22 +32,21 @@ See https://docs.arc42.org/section-4/[Solution Strategy] in the arc42 documentat
 
 ****
 endif::arc42help[]
+=== Types of Decisions
 
-=== Tipos de Decisiones
+==== 1. Organizational Decisions
+These decisions are related to the **work structure** and how the team is organized.
 
-==== 1. Decisiones Organizativas
-Estas decisiones están relacionadas con la **estructura de trabajo** y cómo se organiza el equipo.
+* **Using a Kanban-style project**: The decision to use a visual task management approach, Kanban, to organize work and ensure that all team members know the status of tasks and what remains to be done.
+* **Using GitHub Flow as a workflow**: The decision to adopt a **GitHub Flow**-based workflow, allowing all team members to collaborate easily through **Pull Requests** and ensuring that all code is reviewed before being merged into the main branch.
 
-* **Uso de un proyecto tipo Kanban**: Se decide usar un enfoque de gestión visual de tareas, Kanban, para organizar el trabajo y asegurarse de que todos los miembros del equipo sepan en qué etapa se encuentran las tareas y qué trabajo queda por hacer.
-* **Uso de GitHub Flow como flujo de trabajo**: Decisión de adoptar un flujo de trabajo basado en **GitHub Flow**, que permite a todos los miembros del equipo colaborar fácilmente mediante **Pull Requests** y asegurarse de que todo el código pase por una revisión antes de fusionarse con la rama principal.
+==== 2. Technical Decisions
+These decisions are related to **how the project is built** and the tools used.
 
-==== 2. Decisiones Técnicas
-Estas decisiones están relacionadas con **cómo se construye el proyecto** y las herramientas que se usan.
+* **Using a starter template**: The decision to begin with a basic but functional project, allowing for a quick start with a pre-configured structure that works, avoiding the need to build everything from scratch.
+* **Starting the project from scratch**: Although a starter template can be used, the decision is to create a new project from scratch. This helps the team become more familiar with the code and project structure. Additionally, the previous project can be used as a reference to solve problems or improve the design without relying on it directly.
 
-* **Uso de una plantilla inicial**: Decisión de comenzar con un proyecto básico pero funcional, lo que permite arrancar rápidamente con una estructura preconfigurada que ya funciona, evitando tener que construir todo desde cero.
-* **Empezar el proyecto desde cero**: Aunque se puede utilizar una plantilla inicial, la decisión es crear un proyecto nuevo desde cero. Esto se hace con el fin de que el equipo se familiarice mejor con el código y la estructura del proyecto. Además, el proyecto anterior puede usarse como referencia para solucionar problemas o mejorar el diseño, sin depender de él directamente.
+==== 3. Quality and Maintenance Decisions
+These decisions are about **ensuring that the project is high quality** and easy to maintain.
 
-==== 3. Decisiones de Calidad y Mantenimiento
-Estas decisiones tienen que ver con cómo **aseguramos que el proyecto sea de calidad** y fácil de mantener.
-
-* **Uso de GitHub Flow y Pull Requests**: A través de **Pull Requests**, aseguramos que cada cambio en el código sea revisado por el equipo antes de integrarlo, garantizando que se mantenga la calidad del código y se minimicen errores en la rama principal.
+* **Using GitHub Flow and Pull Requests**: Through **Pull Requests**, we ensure that every code change is reviewed by the team before integration, maintaining code quality and minimizing errors in the main branch.
