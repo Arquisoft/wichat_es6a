@@ -57,18 +57,45 @@ See https://docs.arc42.org/section-8/[Concepts] in the arc42 documentation.
 ****
 endif::arc42help[]
 
-=== _<Concept 1>_
+==== User Experience (UX)
 
-_<explanation>_
+* *Usable Interface:*
+|===
+| Ease of Use | A simple, predictable, and familiar interface design will be presented, ensuring that all essential elements and options of the application are easily accessible.
+| Intuitive | The system will provide an intuitive interface, making it easy for users to understand.
+| Stability | The application's loading times will be minimized to ensure a smooth experience.
+|===
+
+* *Immediate Feedback:* The user will instantly see whether their answer was correct or not. Additionally, the game history, rankings, and generated questions will always be up to date.
 
 
+==== Security & Protection
 
-=== _<Concept 2>_
+* *Secure Access Control:* User authentication security will be enforced by verifying the correctness of the entered credentials and denying access otherwise.
 
-_<explanation>_
 
-...
+==== Under-the-Hood
 
-=== _<Concept n>_
+* *Persistence:* Both user data and game records will be stored to ensure their integrity and availability.
+* *Maintainability:* The code is written clearly and legibly, following a modular approach to facilitate maintenance when fixing bugs or adding improvements.
+* *Extensibility:* The application is built in a way that allows new functionalities to be added easily in the future without significantly affecting existing components.
 
-_<explanation>_
+
+==== Development
+
+* *Implementation:* The application will be developed using JavaScript. The front-end will be built with React, while Node.js and microservices architecture will be used for the back-end. MongoDB will be used for managing the NoSQL database.
+* *Testing:* Various tests will be conducted to ensure a high-quality product.
+
+
+==== Architectural Style
+
+* *Layers:* A three-layer architecture will be implemented to ensure better organization and modularity:
+|===
+| Presentation | Responsible for operating and generating the graphical interface displayed to the user.
+| Business Logic | Where all the necessary logic for the correct operation of the application will be executed.
+| Persistence | Used to store and retrieve various data needed for both the player and the question-and-answer game system.
+|===
+
+
+=== Concept Map
+image::Cross-cutting_Concepts.png
