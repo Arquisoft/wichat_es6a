@@ -30,7 +30,7 @@ endif::arc42help[]
   . *Possible Issues*:
     - GitHub conflicts due to multiple team members collaborating.
     - Risk of code loss or overwriting.
-  . *Measure*:
+  . *Preventive Measure*:
     - Define a clear Git workflow with mandatory Pull Requests.
 
 ---
@@ -40,7 +40,7 @@ endif::arc42help[]
     - Inability to complete planned tasks due to other courses or poor time estimation.
     - Difficulties in implementing advanced features due to lack of experience in JavaScript.
     - Increased number of errors due to limited proficiency in the language.
-  . *Measure*:
+  . *Preventive Measure*:
     - Better task organization and development time estimation.
     - Self-learning of the language to improve proficiency.
 
@@ -50,7 +50,7 @@ endif::arc42help[]
   . *Possible Issues*:
     - Code with few comments and insufficient technical documentation.
     - Difficulty for other team members to understand the existing code.
-  . *Measure*:
+  . *Preventive Measure*:
     - Maintain clear and up-to-date documentation in the GitHub repository.
 
 ---
@@ -59,7 +59,7 @@ endif::arc42help[]
   . *Possible Issues*:
     - Dependence on manual testing, which is prone to errors.
     - Increased time to detect and fix bugs.
-  . *Measure*:
+  . *Preventive Measure*:
     - Introduce unit and functional testing using tools like Jest or Mocha.
 
 ---
@@ -68,7 +68,7 @@ endif::arc42help[]
   . *Possible Issues*:
     - Different programming styles within the team.
     - Difficulty in unifying code from different team members.
-  . *Measure*:
+  . *Preventive Measure*:
     - Define common code standards to ensure consistency and ease of collaboration.
 
 ---
@@ -77,7 +77,7 @@ endif::arc42help[]
   . *Possible Issues*:
     - Lack of modularity and code reuse.
     - Difficulty in project maintenance and scalability.
-  . *Measure*:
+  . *Preventive Measure*:
     - Apply modular programming principles and perform periodic refactoring.
 
 ---
@@ -86,7 +86,7 @@ endif::arc42help[]
   . *Possible Issues*:
     - Inefficient use of data structures and algorithms.
     - Potential performance issues during application execution.
-  . *Measure*:
+  . *Preventive Measure*:
     - Review and optimize the code once it is functional.
 
 = Technical Debt
