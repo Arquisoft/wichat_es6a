@@ -1,7 +1,7 @@
 ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-design-decisions]]
-== Decisiones arquitectonicas
+== Architecture decisions
 
 - These decisions are not final and may change as the project evolves. They represent our current approach based on the available information and team expertise, but adjustments might be necessary as we gain more experience and face new challenges.
 
