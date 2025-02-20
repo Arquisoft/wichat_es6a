@@ -3,7 +3,6 @@ ifndef::imagesdir[:imagesdir: ../images]
 [[section-concepts]]
 == Cross-cutting Concepts
 
-
 ifdef::arc42help[]
 [role="arc42help"]
 ****
@@ -18,13 +17,11 @@ They can include many different topics, such as
 * principal, often technical decisions of an overarching (= cross-cutting) nature
 * implementation rules
 
-
 .Motivation
 Concepts form the basis for _conceptual integrity_ (consistency, homogeneity) of the architecture. 
 Thus, they are an important contribution to achieve inner qualities of your system.
 
 Some of these concepts cannot be assigned to individual building blocks, e.g. security or safety. 
-
 
 .Form
 The form can be varied:
@@ -50,14 +47,12 @@ on this list.
 
 image::08-concepts-EN.drawio.png["Possible topics for crosscutting concepts"]
 
-
 .Further Information
-
 See https://docs.arc42.org/section-8/[Concepts] in the arc42 documentation.
 ****
 endif::arc42help[]
 
-==== User Experience (UX)
+=== User Experience (UX)
 
 * *Usable Interface:*
 |===
@@ -68,26 +63,22 @@ endif::arc42help[]
 
 * *Immediate Feedback:* The user will instantly see whether their answer was correct or not. Additionally, the game history, rankings, and generated questions will always be up to date.
 
-
-==== Security & Protection
+=== Security & Protection
 
 * *Secure Access Control:* User authentication security will be enforced by verifying the correctness of the entered credentials and denying access otherwise.
 
-
-==== Under-the-Hood
+=== Under-the-Hood
 
 * *Persistence:* Both user data and game records will be stored to ensure their integrity and availability.
 * *Maintainability:* The code is written clearly and legibly, following a modular approach to facilitate maintenance when fixing bugs or adding improvements.
 * *Extensibility:* The application is built in a way that allows new functionalities to be added easily in the future without significantly affecting existing components.
 
-
-==== Development
+=== Development
 
 * *Implementation:* The application will be developed using JavaScript. The front-end will be built with React, while Node.js and microservices architecture will be used for the back-end. MongoDB will be used for managing the NoSQL database.
 * *Testing:* Various tests will be conducted to ensure a high-quality product.
 
-
-==== Architectural Style
+=== Architectural Style
 
 * *Layers:* A three-layer architecture will be implemented to ensure better organization and modularity:
 |===
@@ -95,7 +86,6 @@ endif::arc42help[]
 | Business Logic | Where all the necessary logic for the correct operation of the application will be executed.
 | Persistence | Used to store and retrieve various data needed for both the player and the question-and-answer game system.
 |===
-
 
 === Concept Map
 :imagesdir: ../images
