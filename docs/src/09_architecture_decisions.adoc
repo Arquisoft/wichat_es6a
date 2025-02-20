@@ -5,9 +5,12 @@ ifndef::imagesdir[:imagesdir: ../images]
 
 [options="header",cols="1,2"]
 |===
-|Decision |Razones
-|Javascript |Hemos decidido desarrollar la aplicacion con Javascript, porque, además de tener algo de conocimiento previo, la decisión de trabajar sobre la plantilla proporcionada nos empuja a ello, evitando asi añadir complejidad extra en la primera fase de desarrollo.
+|Decision |Reasons
+| JavaScript | We have decided to develop the application using JavaScript because, in addition to having some prior knowledge, working with the provided template encourages us to do so, avoiding unnecessary complexity in the initial development phase
 
+| React.js | It is the most popular JavaScript framework, with extensive documentation available. However, none of us in the team have worked with it before, so we will all need to learn how to use it.
+
+| MongoDB | As a non-relational database, it offers ease of use. Additionally, it is widely adopted by major telecommunications companies.
 |===
 
 ifdef::arc42help[]
