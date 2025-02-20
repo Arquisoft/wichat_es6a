@@ -3,26 +3,26 @@ ifndef::imagesdir[:imagesdir: ../images]
 [[section-constraints]]
 == Constraints
 
-=== Restricciones Técnicas
-Las siguientes restricciones técnicas afectan el desarrollo de WIChat:
+=== Technical Constraints
+The following technical constraints affect the development of WIChat:
 
-* **Tecnología Web:** La aplicación debe desarrollarse utilizando tecnologías web modernas (React.js para el frontend y Node.js/Python para el backend).
-* **Base de Datos:** Se usará PostgreSQL o MongoDB para el almacenamiento de datos.
-* **Modelo de Lenguaje:** Se integrará un modelo de lenguaje (LLM) a través de una API externa.
-* **Fuente de Preguntas:** Las preguntas deben generarse automáticamente a partir de datos de Wikidata.
-* **Tiempo de Respuesta:** Las respuestas a las preguntas deben registrarse dentro de un tiempo límite establecido.
+* **Web Technology:** The application must be developed using modern web technologies (React.js for the frontend and Node.js/Python for the backend).
+* **Database:** PostgreSQL or MongoDB will be used for data storage.
+* **Language Model:** A language model (LLM) will be integrated through an external API.
+* **Question Source:** Questions must be automatically generated based on Wikidata data.
+* **Response Time:** Answers to questions must be recorded within a set time limit.
 
-=== Restricciones Organizativas
-Las siguientes restricciones organizativas afectan el proyecto:
+=== Organizational Constraints
+The following organizational constraints affect the project:
 
-* **Plazos de Entrega:** La aplicación debe estar operativa antes del cierre del proyecto según lo acordado.
-* **Documentación:** La arquitectura y el desarrollo deben documentarse siguiendo el estándar arc42.
-* **Código Abierto:** El código fuente deberá alojarse en un repositorio accesible para revisión y seguimiento.
+* **Delivery Deadlines:** The application must be operational before the project closure as agreed.
+* **Documentation:** The architecture and development must be documented following the arc42 standard.
+* **Open Source:** The source code must be hosted in an accessible repository for review and tracking.
 
-=== Restricciones de Seguridad y Privacidad
-Para garantizar la seguridad y privacidad de los usuarios, se establecen las siguientes restricciones:
+=== Security and Privacy Constraints
+To ensure user security and privacy, the following constraints are established:
 
-* **Gestión de Datos:** Los datos de los usuarios deben estar protegidos según las normativas de protección de datos.
-* **Validación de Respuestas:** Se deben mitigar posibles errores o "alucinaciones" del modelo de lenguaje para evitar información incorrecta en las pistas.
+* **Data Management:** User data must be protected in compliance with data protection regulations.
+* **Response Validation:** Potential errors or "hallucinations" from the language model must be mitigated to prevent incorrect information in hints.
 
-Estas restricciones definirán los límites dentro de los cuales se diseñará y desarrollará WIChat.
+These constraints will define the boundaries within which WIChat will be designed and developed.
