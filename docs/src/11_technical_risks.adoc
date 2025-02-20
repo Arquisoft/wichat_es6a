@@ -24,9 +24,9 @@ See https://docs.arc42.org/section-11/[Risks and Technical Debt] in the arc42 do
 ****
 endif::arc42help[]
 
-= Technical Risks (Ordered by Priority)
+== Technical Risks (Ordered by Priority)
 
-== Inadequate Version Control Management
+=== Inadequate Version Control Management
   . *Possible Issues*:
     - GitHub conflicts due to multiple team members collaborating.
     - Risk of code loss or overwriting.
@@ -35,7 +35,7 @@ endif::arc42help[]
 
 ---
 
-== Tight Deadlines and Lack of Experience
+=== Tight Deadlines and Lack of Experience
   . *Possible Issues*:
     - Inability to complete planned tasks due to other courses or poor time estimation.
     - Difficulties in implementing advanced features due to lack of experience in JavaScript.
@@ -46,7 +46,7 @@ endif::arc42help[]
 
 ---
 
-== Documentation Deficiencies
+=== Documentation Deficiencies
   . *Possible Issues*:
     - Code with few comments and insufficient technical documentation.
     - Difficulty for other team members to understand the existing code.
@@ -55,7 +55,7 @@ endif::arc42help[]
 
 ---
 
-== Lack of Automated Testing
+=== Lack of Automated Testing
   . *Possible Issues*:
     - Dependence on manual testing, which is prone to errors.
     - Increased time to detect and fix bugs.
@@ -64,7 +64,7 @@ endif::arc42help[]
 
 ---
 
-== Lack of Code Standards
+=== Lack of Code Standards
   . *Possible Issues*:
     - Different programming styles within the team.
     - Difficulty in unifying code from different team members.
@@ -73,7 +73,7 @@ endif::arc42help[]
 
 ---
 
-== Inefficient and Repetitive Code
+=== Inefficient and Repetitive Code
   . *Possible Issues*:
     - Lack of modularity and code reuse.
     - Difficulty in project maintenance and scalability.
@@ -82,13 +82,14 @@ endif::arc42help[]
 
 ---
 
-== Suboptimal Performance
+=== Suboptimal Performance
   . *Possible Issues*:
     - Inefficient use of data structures and algorithms.
     - Potential performance issues during application execution.
   . *Preventive Measure*:
     - Review and optimize the code once it is functional.
 
-= Technical Debt
+== Technical Debt
 
-== There is no technical debt
+=== There is no technical debt
+Currently, there is no significant technical debt in the project. However, we will monitor the codebase to ensure that technical debt does not accumulate over time.
