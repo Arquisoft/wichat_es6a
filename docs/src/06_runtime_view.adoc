@@ -3,6 +3,9 @@ ifndef::imagesdir[:imagesdir: ../images]
 [[section-runtime-view]]
 == Runtime View
 
+- At this stage, we have not yet started development, so the runtime scenarios are still undefined. Once the implementation progresses, we will document key runtime interactions, including authentication flows, data storage, and relevant communication between system components.
+
+- For now, the following section will be updated as we gain a clearer understanding of how different components interact in real-time.
 
 ifdef::arc42help[]
 [role="arc42help"]
@@ -36,8 +39,11 @@ There are many notations for describing scenarios, e.g.
 
 See https://docs.arc42.org/section-6/[Runtime View] in the arc42 documentation.
 
-****
-endif::arc42help[]
+
+
+
+
+Esto es lo que estaba escrito antes:
 
 === <Runtime Scenario 1>
 
@@ -65,3 +71,10 @@ Alice <-- Bob: another authentication Response
 === ...
 
 === <Runtime Scenario n>
+
+****
+endif::arc42help[]
+
+
+
+
