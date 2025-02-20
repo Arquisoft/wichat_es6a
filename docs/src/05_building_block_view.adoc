@@ -2,224 +2,195 @@ ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-building-block-view]]
 
-
 == Building Block View
-
-ifdef::arc42help[]
-[role="arc42help"]
-****
-.Content
-The building block view shows the static decomposition of the system into building blocks (modules, components, subsystems, classes, interfaces, packages, libraries, frameworks, layers, partitions, tiers, functions, macros, operations, data structures, ...) as well as their dependencies (relationships, associations, ...)
-
-This view is mandatory for every architecture documentation.
-In analogy to a house this is the _floor plan_.
-
-.Motivation
-Maintain an overview of your source code by making its structure understandable through
-abstraction.
-
-This allows you to communicate with your stakeholder on an abstract level without disclosing implementation details.
-
-.Form
-The building block view is a hierarchical collection of black boxes and white boxes
-(see figure below) and their descriptions.
-
-image::05_building_blocks-EN.png["Hierarchy of building blocks"]
-
-*Level 1* is the white box description of the overall system together with black
-box descriptions of all contained building blocks.
-
-*Level 2* zooms into some building blocks of level 1.
-Thus it contains the white box description of selected building blocks of level 1, together with black box descriptions of their internal building blocks.
-
-*Level 3* zooms into selected building blocks of level 2, and so on.
-
-
-.Further Information
-
-See https://docs.arc42.org/section-5/[Building Block View] in the arc42 documentation.
-
-****
-endif::arc42help[]
 
 === Whitebox Overall System
 
-ifdef::arc42help[]
-[role="arc42help"]
-****
-Here you describe the decomposition of the overall system using the following white box template. It contains
+==== Overview Diagram
 
- * an overview diagram
- * a motivation for the decomposition
- * black box descriptions of the contained building blocks. For these we offer you alternatives:
+image::BuildingBlockViewOverviewDiagram.png["BuildingBlockViewOverviewDiagram"]
 
-   ** use _one_ table for a short and pragmatic overview of all contained building blocks and their interfaces
-   ** use a list of black box descriptions of the building blocks according to the black box template (see below).
-   Depending on your choice of tool this list could be sub-chapters (in text files), sub-pages (in a Wiki) or nested elements (in a modeling tool).
+==== Motivation
+WIChat is a real-time messaging system that allows users to communicate via text, images, and other media. The system's architecture is modular, facilitating scalability and integration with different technologies.
 
-
- * (optional:) important interfaces, that are not explained in the black box templates of a building block, but are very important for understanding the white box.
-Since there are so many ways to specify interfaces why do not provide a specific template for them.
- In the worst case you have to specify and describe syntax, semantics, protocols, error handling,
- restrictions, versions, qualities, necessary compatibilities and many things more.
-In the best case you will get away with examples or simple signatures.
-
-****
-endif::arc42help[]
-
-_**<Overview Diagram>**_
-
-Motivation::
-
-_<text explanation>_
-
-
-Contained Building Blocks::
-_<Description of contained building block (black boxes)>_
-
-Important Interfaces::
-_<Description of important interfaces>_
-
-ifdef::arc42help[]
-[role="arc42help"]
-****
-Insert your explanations of black boxes from level 1:
-
-If you use tabular form you will only describe your black boxes with name and
-responsibility according to the following schema:
+=== Contained Building Blocks
 
 [cols="1,2" options="header"]
 |===
-| **Name** | **Responsibility**
-| _<black box 1>_ | _<Text>_
-| _<black box 2>_ | _<Text>_
+| Name | Responsibility
+| Frontend | Web and mobile user interface.
+| Backend API | Handles authentication, messaging, and business logic.
+| Database | Stores users, conversations, and messages.
+| Wikidata | Structured data source to enhance user experience.
+| Language Model for Hints | Provides intelligent suggestions and autocomplete for messages.
 |===
 
+=== Important Interfaces
 
+Database Access: Interface between the API and the database.
 
-If you use a list of black box descriptions then you fill in a separate black box template for every important building block .
-Its headline is the name of the black box.
-****
-endif::arc42help[]
+Wikidata API: Accesses structured and relevant data.
 
-==== <Name black box 1>
+Language Model: Interface with the AI system for text suggestions.
 
-ifdef::arc42help[]
-[role="arc42help"]
-****
-Here you describe <black box 1>
-according the the following black box template:
+=== System Components
 
-* Purpose/Responsibility
-* Interface(s), when they are not extracted as separate paragraphs. This interfaces may include qualities and performance characteristics.
-* (Optional) Quality-/Performance characteristics of the black box, e.g.availability, run time behavior, ....
-* (Optional) directory/file location
-* (Optional) Fulfilled requirements (if you need traceability to requirements).
-* (Optional) Open issues/problems/risks
+==== Frontend
 
-****
-endif::arc42help[]
+Purpose / Responsibility
 
-_<Purpose/Responsibility>_
+Provide an interactive interface for the user.
 
-_<Interface(s)>_
+Send and receive real-time messages.
 
-_<(Optional) Quality/Performance Characteristics>_
+Manage sessions and contacts.
 
-_<(Optional) Directory/File Location>_
+Interfaces
 
-_<(Optional) Fulfilled Requirements>_
+Graphical user interface.
 
-_<(optional) Open Issues/Problems/Risks>_
+Connection to the API for authentication and data retrieval.
 
+Use of the language model for message suggestions.
 
+==== Backend API
 
+Purpose / Responsibility
 
-==== <Name black box 2>
+Manage user authentication and authorization.
 
-_<black box template>_
+Provide access to message and user data.
 
-==== <Name black box n>
+Integrate with other services (Wikidata, Language Model).
 
-_<black box template>_
+Interfaces
 
+API for communication with the frontend.
 
-==== <Name interface 1>
+Connection to the database for data storage.
 
-...
+Access to Wikidata to enrich the user experience.
 
-==== <Name interface m>
+Integration with the language model for message assistance.
 
+==== Database
 
+Purpose / Responsibility
+
+Store information about users, messages, and conversations.
+
+==== Wikidata
+
+Purpose / Responsibility
+
+Provide structured data to enhance the user experience in the chat.
+
+Interfaces
+
+Wikidata API to obtain relevant real-time information.
+
+==== Language Model for Hints
+
+Purpose / Responsibility
+
+Offer intelligent suggestions and message autocomplete.
+
+Interfaces
+
+AI API for text analysis and response generation.
 
 === Level 2
+image::05_LEVEL2.png["level 2"]
 
-ifdef::arc42help[]
-[role="arc42help"]
-****
-Here you can specify the inner structure of (some) building blocks from level 1 as white boxes.
+==== White Box Gateway Service
 
-You have to decide which building blocks of your system are important enough to justify such a detailed description.
-Please prefer relevance over completeness. Specify important, surprising, risky, complex or volatile building blocks.
-Leave out normal, simple, boring or standardized parts of your system
-****
-endif::arc42help[]
+[cols="1,2" options="header"]
+|===
+| Module | Functionality
+| WebApp | Provides the user interface and manages user interaction.
+| Gateway Service | Acts as an intermediary between the WebApp and other system services.
+| Users Manager | Handles user management, including authentication and profiles.
+| Question Manager | Processes and manages user questions.
+| Wikidata | Structured data source used to answer questions.
+|===
 
-==== White Box _<building block 1>_
+=== Component Description
 
-ifdef::arc42help[]
-[role="arc42help"]
-****
-...describes the internal structure of _building block 1_.
-****
-endif::arc42help[]
+==== WebApp
 
-_<white box template>_
+Purpose / Responsibility:
 
-==== White Box _<building block 2>_
+Provide an interactive interface for users.
 
+Allow access to system functionalities.
 
-_<white box template>_
+Send and receive requests through the Gateway Service.
 
-...
+Interfaces:
 
-==== White Box _<building block m>_
+Connection with the Gateway Service to manage users and questions.
 
+==== Gateway Service
 
-_<white box template>_
+Purpose / Responsibility:
 
+Centralize communication between the WebApp and other services.
 
+Manage request and response routing.
+
+Interfaces:
+
+Bidirectional communication with WebApp, Users Manager, and Question Manager.
+
+==== Users Manager
+
+Purpose / Responsibility:
+
+Manage users and their profiles.
+
+Administer authentication and access permissions.
+
+Interfaces:
+
+Connection with Gateway Service for user validation and data retrieval.
+
+==== Question Manager
+
+Purpose / Responsibility:
+
+Process user questions.
+
+Retrieve relevant information from Wikidata.
+
+Interfaces:
+
+Communication with Gateway Service and Wikidata for information queries.
+
+==== Wikidata
+
+Purpose / Responsibility:
+
+Provide structured data to enrich responses to user questions.
+
+Interfaces:
+
+Query API used by the Question Manager.
 
 === Level 3
 
-ifdef::arc42help[]
-[role="arc42help"]
-****
-Here you can specify the inner structure of (some) building blocks from level 2 as white boxes.
+==== White Box Message Handling (Backend API)
 
-When you need more detailed levels of your architecture please copy this
-part of arc42 for additional levels.
-****
-endif::arc42help[]
+[cols="1,2" options="header"]
+|===
+| Component | Description
+| Message Storage | Manages message persistence in the database, ensuring integrity and availability.
+|===
 
-==== White Box <_building block x.1_>
+==== White Box Wikidata Integration
 
-ifdef::arc42help[]
-[role="arc42help"]
-****
-Specifies the internal structure of _building block x.1_.
-****
-endif::arc42help[]
+[cols="1,2" options="header"]
+|===
+| Component | Description
+| Data Retrieval | Queries relevant data from Wikidata in real time to enhance user experience.
+|===
 
-_<white box template>_
-
-
-==== White Box <_building block x.2_>
-
-_<white box template>_
-
-
-
-==== White Box <_building block y.1_>
-
-_<white box template>_

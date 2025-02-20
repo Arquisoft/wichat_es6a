@@ -1,29 +1,28 @@
 ifndef::imagesdir[:imagesdir: ../images]
 
-[[section-architecture-constraints]]
-== Architecture Constraints
+[[section-constraints]]
+== Constraints
 
+=== Technical Constraints
+The following technical constraints affect the development of WIChat:
 
-ifdef::arc42help[]
-[role="arc42help"]
-****
-.Contents
-Any requirement that constraints software architects in their freedom of design and implementation decisions or decision about the development process. These constraints sometimes go beyond individual systems and are valid for whole organizations and companies.
+* **Web Technology:** The application must be developed using modern web technologies (React.js for the frontend and Node.js/Python for the backend).
+* **Database:** PostgreSQL or MongoDB will be used for data storage.
+* **Language Model:** A language model (LLM) will be integrated through an external API.
+* **Question Source:** Questions must be automatically generated based on Wikidata data.
+* **Response Time:** Answers to questions must be recorded within a set time limit.
 
-.Motivation
-Architects should know exactly where they are free in their design decisions and where they must adhere to constraints.
-Constraints must always be dealt with; they may be negotiable, though.
+=== Organizational Constraints
+The following organizational constraints affect the project:
 
-.Form
-Simple tables of constraints with explanations.
-If needed you can subdivide them into
-technical constraints, organizational and political constraints and
-conventions (e.g. programming or versioning guidelines, documentation or naming conventions)
+* **Delivery Deadlines:** The application must be operational before the project closure as agreed.
+* **Documentation:** The architecture and development must be documented following the arc42 standard.
+* **Open Source:** The source code must be hosted in an accessible repository for review and tracking.
 
+=== Security and Privacy Constraints
+To ensure user security and privacy, the following constraints are established:
 
-.Further Information
+* **Data Management:** User data must be protected in compliance with data protection regulations.
+* **Response Validation:** Potential errors or "hallucinations" from the language model must be mitigated to prevent incorrect information in hints.
 
-See https://docs.arc42.org/section-2/[Architecture Constraints] in the arc42 documentation.
-
-****
-endif::arc42help[]
+These constraints will define the boundaries within which WIChat will be designed and developed.
