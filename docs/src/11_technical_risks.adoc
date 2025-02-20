@@ -1,95 +1,71 @@
 ifndef::imagesdir[:imagesdir: ../images]
 
-[[section-technical-risks]]
+[[section-risks-and-technical-debt]]
 
-ifdef::arc42help[]
-[role="arc42help"]
-****
-.Contents
-A list of identified technical risks or technical debts, ordered by priority
+== Risks and Technical Debt
 
-.Motivation
-“Risk management is project management for grown-ups” (Tim Lister, Atlantic Systems Guild.) 
+=== Technical Risks
 
-This should be your motto for systematic detection and evaluation of risks and technical debts in the architecture, which will be needed by management stakeholders (e.g. project managers, product owners) as part of the overall risk analysis and measurement planning.
+1. **Inadequate Version Control Management**  
+**** Possible Issues  
+- GitHub conflicts due to multiple team members collaborating.  
+- Risk of code loss or overwriting.  
 
-.Form
-List of risks and/or technical debts, probably including suggested measures to minimize, mitigate or avoid risks or reduce technical debts.
+**** Preventive Measure  
+- Define a clear Git workflow with mandatory Pull Requests.  
 
+2. **Tight Deadlines and Lack of Experience**  
+**** Possible Issues  
+- Inability to complete planned tasks due to other courses or poor time estimation.  
+- Difficulties in implementing advanced features due to lack of experience in JavaScript.  
+- Increased number of errors due to limited proficiency in the language.  
 
-.Further Information
+**** Preventive Measure  
+- Better task organization and development time estimation.  
+- Self-learning of the language to improve proficiency.  
 
-See https://docs.arc42.org/section-11/[Risks and Technical Debt] in the arc42 documentation.
+3. **Documentation Deficiencies**  
+**** Possible Issues  
+- Code with few comments and insufficient technical documentation.  
+- Difficulty for other team members to understand the existing code.  
 
-****
-endif::arc42help[]
+**** Preventive Measure  
+- Maintain clear and up-to-date documentation in the GitHub repository.  
 
-== Technical Risks (Ordered by Priority)
+4. **Lack of Automated Testing**  
+**** Possible Issues  
+- Dependence on manual testing, which is prone to errors.  
+- Increased time to detect and fix bugs.  
 
-=== Inadequate Version Control Management
-  . *Possible Issues*:
-    - GitHub conflicts due to multiple team members collaborating.
-    - Risk of code loss or overwriting.
-  . *Preventive Measure*:
-    - Define a clear Git workflow with mandatory Pull Requests.
+**** Preventive Measure  
+- Introduce unit and functional testing using tools like Jest or Mocha.  
 
----
+5. **Lack of Code Standards**  
+**** Possible Issues  
+- Different programming styles within the team.  
+- Difficulty in unifying code from different team members.  
 
-=== Tight Deadlines and Lack of Experience
-  . *Possible Issues*:
-    - Inability to complete planned tasks due to other courses or poor time estimation.
-    - Difficulties in implementing advanced features due to lack of experience in JavaScript.
-    - Increased number of errors due to limited proficiency in the language.
-  . *Preventive Measure*:
-    - Better task organization and development time estimation.
-    - Self-learning of the language to improve proficiency.
+**** Preventive Measure  
+- Define common code standards to ensure consistency and ease of collaboration.  
 
----
+6. **Inefficient and Repetitive Code**  
+**** Possible Issues  
+- Lack of modularity and code reuse.  
+- Difficulty in project maintenance and scalability.  
 
-=== Documentation Deficiencies
-  . *Possible Issues*:
-    - Code with few comments and insufficient technical documentation.
-    - Difficulty for other team members to understand the existing code.
-  . *Preventive Measure*:
-    - Maintain clear and up-to-date documentation in the GitHub repository.
+**** Preventive Measure  
+- Apply modular programming principles and perform periodic refactoring.  
 
----
+7. **Suboptimal Performance**  
+**** Possible Issues  
+- Inefficient use of data structures and algorithms.  
+- Potential performance issues during application execution.  
 
-=== Lack of Automated Testing
-  . *Possible Issues*:
-    - Dependence on manual testing, which is prone to errors.
-    - Increased time to detect and fix bugs.
-  . *Preventive Measure*:
-    - Introduce unit and functional testing using tools like Jest or Mocha.
+**** Preventive Measure  
+- Review and optimize the code once it is functional.  
 
----
+=== Technical Debt  
 
-=== Lack of Code Standards
-  . *Possible Issues*:
-    - Different programming styles within the team.
-    - Difficulty in unifying code from different team members.
-  . *Preventive Measure*:
-    - Define common code standards to ensure consistency and ease of collaboration.
+==== There is no technical debt  
 
----
-
-=== Inefficient and Repetitive Code
-  . *Possible Issues*:
-    - Lack of modularity and code reuse.
-    - Difficulty in project maintenance and scalability.
-  . *Preventive Measure*:
-    - Apply modular programming principles and perform periodic refactoring.
-
----
-
-=== Suboptimal Performance
-  . *Possible Issues*:
-    - Inefficient use of data structures and algorithms.
-    - Potential performance issues during application execution.
-  . *Preventive Measure*:
-    - Review and optimize the code once it is functional.
-
-== Technical Debt
-
-=== There is no technical debt
 Currently, there is no significant technical debt in the project. However, we will monitor the codebase to ensure that technical debt does not accumulate over time.
