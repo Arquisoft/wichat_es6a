@@ -3,4 +3,4 @@ coverage
 docs/build
 .env
 webapp/.env
-secretData
+secretData.env
