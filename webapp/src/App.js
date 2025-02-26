@@ -28,14 +28,24 @@ function App() {
           <Route path="/Home" element={<Home />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
-
+        
         {!showLogin && (
-          <Typography component="div" align="center" sx={{ marginTop: 2 }}>
-            <Link component="button" variant="body2" onClick={handleToggleView}>
-              Already have an account? Login here.
-            </Link>
-          </Typography>
-        )}
+  <Typography component="div" align="center" sx={{ marginTop: 2 }}>
+    <Link component="button" variant="body2" onClick={handleToggleView}>
+      Already have an account? Login here.
+    </Link>
+  </Typography>
+)}
+
+{showLogin && (
+  <Typography component="div" align="center" sx={{ marginTop: 2 }}>
+    <Link name="gotoregister" component="button" variant="body2" onClick={handleToggleView}>
+      Don't have an account? Register here.
+    </Link>
+  </Typography>
+)}
+
+        
       </Container>
     </Router>
   );
