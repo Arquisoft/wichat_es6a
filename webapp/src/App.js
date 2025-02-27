@@ -1,3 +1,5 @@
+import Button from '@mui/material/Button';
+
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import AddUser from './components/AddUser';
@@ -10,9 +12,14 @@ import Link from '@mui/material/Link';
 
 function App() {
   const [showLogin, setShowLogin] = useState(true);
+  const [showStatistics, setShowStatistics] = useState(false);
 
   const handleToggleView = () => {
     setShowLogin(!showLogin);
+  };
+
+  const handleToggleStatistics = () => {
+    setShowStatistics(!showStatistics);
   };
 
   return (

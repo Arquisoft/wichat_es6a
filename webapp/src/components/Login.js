@@ -1,11 +1,11 @@
 // src/components/Login.js
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';  // ✅ Importamos useNavigate
+import { useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
 import { Container, Typography, TextField, Button, Snackbar } from '@mui/material';
 
 const Login = () => {
-  const navigate = useNavigate(); // ✅ Hook para la navegación
+  const navigate = useNavigate(); 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
