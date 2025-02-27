@@ -1,6 +1,5 @@
 import React from "react";
-import { Container, Typography, Box, Button, Paper, Grid, LinearProgress } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Container, Typography, Box, Paper, Grid, LinearProgress } from "@mui/material";
 
 const StatisticsWindow = () => {
   return (
@@ -35,12 +34,6 @@ const StatisticsWindow = () => {
           </Grid>
         </Box>
 
-        {/* Botón de salir */}
-        <Box sx={{ display: "flex", justifyContent: "center", marginTop: 3 }}>
-          <Button variant="contained" color="error" component={Link} to="/">
-            Exit
-          </Button>
-        </Box>
       </Paper>
     </Container>
   );
