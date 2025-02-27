@@ -3,6 +3,11 @@ import Grid from '@mui/material/Grid';
 import { Typography, Button } from '@mui/material';
 
 export function GameWindow() {
+
+  const handleClick = () => {
+    console.log("Button pressed.");
+  };
+
   return (
     <Grid container direction="column" alignItems="center" spacing={2} sx={{ p: 2, border: '2px solid black', maxWidth: 600, margin: 'auto' }}>
       {/* Título */}
@@ -42,7 +47,5 @@ export function GameWindow() {
       <Grid item sx={{ border: 1, width: '100%', height: 100, p: 1 }}>IA help chat</Grid>
     </Grid>
   );
-  const handleClick = () => {
-    console.log("Button pressed.");
-  };
+  
 }
