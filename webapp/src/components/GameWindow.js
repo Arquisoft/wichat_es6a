@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Grid from "@mui/material/Grid";
 import { Typography, Button } from "@mui/material";
+import TextField from "@mui/material/TextField";
+
 
 export function GameWindow() {
   const handleClick = () => {
@@ -88,24 +90,46 @@ export function GameWindow() {
 
       
 
-      {/* Contenedor de Chat y Respuestas en la Misma Fila */}
+      {/* Contenedor de Chat y Respuestas */}
       <Grid container sx={{ mt: 2, width: "100%" }} spacing={2}>
-        {/* Cuadro de Chat a la Izquierda */}
         <Grid item xs={3}>
           <Grid
-            item
+            container
+            direction="column"
+            justifyContent="space-between"
             sx={{
               border: "1px solid black",
               width: "100%",
-              height: "100%",
+              height: 150,
               p: 1,
             }}
           >
-            IA help chat
+            {/* Mensajes del Chat (Simulación) */}
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              IA: How can I help you?
+            </Typography>
+
+            {/* Campo de Entrada y Botón Enviar */}
+            <Grid container spacing={1} alignItems="center">
+              <Grid item xs={8}>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  fullWidth
+                  placeholder="Type a message..."
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <Button variant="contained" size="small" fullWidth onClick={handleClick}>
+                  Send
+                </Button>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
 
-        {/* Respuestas a la Derecha */}
+
+        {/* Respuestas */}
         <Grid item xs={7}>
           <Grid container spacing={1}>
             <Grid item xs={6}>
