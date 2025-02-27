@@ -9,6 +9,8 @@ services:
       - "27017:27017"
     networks:
       - mynetwork
+    environment:
+      MONGODB_URI: ${MONGODB_URI}
 
   authservice:
     container_name: authservice-wichat_es6a
