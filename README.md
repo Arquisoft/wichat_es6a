@@ -21,7 +21,7 @@
 
 This is a base project for the Software Architecture course in 2024/2025. It is a basic application composed of several components. 
 
-Simple change...
+Simple change ...
 
 - **User service**. Express service that handles the insertion of new users in the system.
 - **Auth service**. Express service that handles the authentication of users.
