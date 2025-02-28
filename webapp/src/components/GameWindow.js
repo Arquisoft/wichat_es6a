@@ -3,7 +3,6 @@ import Grid from "@mui/material/Grid";
 import { Typography, Button } from "@mui/material";
 import TextField from "@mui/material/TextField";
 
-
 export function GameWindow() {
   const handleClick = () => {
     console.log("Button pressed.");
@@ -16,25 +15,13 @@ export function GameWindow() {
       alignItems="center"
       spacing={2}
       sx={{
-        p: 2,
-        border: "2px solid black",
-        maxWidth: 1000,
-        minHeight: 600,
+        p: 5,
+        maxWidth: "100%",
+        maxHeight: "100%",
+        minWidth: 650,
         margin: "auto",
       }}
     >
-      {/* Título */}
-      <Typography
-        variant="h5"
-        sx={{
-          borderBottom: "2px solid black",
-          width: "100%",
-          textAlign: "center",
-        }}
-      >
-        GAME WINDOW
-      </Typography>
-
       {/* Botones de Info y Exit */}
       <Grid
         item
@@ -45,7 +32,7 @@ export function GameWindow() {
       >
         <Grid item>
           <Button variant="contained" color="primary" onClick={handleClick}>
-            Info
+            Hint
           </Button>
         </Grid>
         <Grid item>
@@ -55,13 +42,22 @@ export function GameWindow() {
         </Grid>
       </Grid>
 
+      <Grid
+        item
+        container
+        justifyContent="space-around"
+        sx={({ width: "100%" }, { mt: 3 })}
+      >
+        <Typography>Question 1/5</Typography>
+      </Grid>
+
       {/* Imagen */}
       <Grid
         item
         sx={{
-          bgcolor: "yellow",
+          bgcolor: "whitesmoke",
           width: "50%",
-          height: 300,
+          height: 450,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -76,22 +72,19 @@ export function GameWindow() {
         item
         container
         justifyContent="space-between"
-        sx={{ width: "100%" }}
+        sx={({ width: "100%" }, { mt: 3 })}
       >
-        <Typography>Question 1/5:</Typography>
-
         {/* Pregunta */}
-      <Typography sx={{ mt: 0 }}>
-        ¿Question number X----------------------------?
-      </Typography>
+        <Typography sx={{ mt: 0 }}>
+          ¿Question number X----------------------------?
+        </Typography>
 
         <Typography>Points: 600</Typography>
       </Grid>
 
-      
-
-      {/* Contenedor de Chat y Respuestas */}
+      {/* Contenedor de Chat y Respuestas en la Misma Fila */}
       <Grid container sx={{ mt: 2, width: "100%" }} spacing={2}>
+        {/* Cuadro de Chat a la Izquierda */}
         <Grid item xs={3}>
           <Grid
             container
@@ -120,7 +113,12 @@ export function GameWindow() {
                 />
               </Grid>
               <Grid item xs={4}>
-                <Button variant="contained" size="small" fullWidth onClick={handleClick}>
+                <Button
+                  variant="contained"
+                  size="small"
+                  fullWidth
+                  onClick={handleClick}
+                >
                   Send
                 </Button>
               </Grid>
@@ -128,8 +126,7 @@ export function GameWindow() {
           </Grid>
         </Grid>
 
-
-        {/* Respuestas */}
+        {/* Respuestas a la Derecha */}
         <Grid item xs={7}>
           <Grid container spacing={1}>
             <Grid item xs={6}>
