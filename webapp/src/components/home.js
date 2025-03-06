@@ -13,18 +13,21 @@ import { Home as HomeIcon } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import StatisticsWindow from "./StatisticsWindow";
+import GameWindow from "./GameWindow";
 
 const Home = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const username = location.state?.username || "Student";
   const [showStatistics, setShowStatistics] = useState(false);
+  const [showGame, setShowGame] = useState(false);
   const [welcomeMessage, setWelcomeMessage] = useState("");
   const [error, setError] = useState("");
 
   const apiEndpoint =
     process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
   const apiKey = process.env.REACT_APP_LLM_API_KEY;
+
   useEffect(() => {
     const fetchWelcomeMessage = async () => {
       try {
@@ -51,6 +54,16 @@ const Home = () => {
 
     fetchWelcomeMessage();
   }, [username, apiEndpoint, apiKey]);
+
+  const handlePlayClick = () => {
+    setShowGame(true);
+    setShowStatistics(false);
+  };
+
+  const handleHomeClick = () => {
+    setShowGame(false);
+    setShowStatistics(false);
+  };
 
   return (
     <Box
@@ -80,8 +93,11 @@ const Home = () => {
           >
             {showStatistics ? "Home" : "Stats"}
           </Button>
-          <Button color="inherit" onClick={() => navigate("/")}>
+          <Button color="inherit" onClick={handlePlayClick}>
             Play
+          </Button>
+          <Button color="inherit" onClick={handleHomeClick}>
+            Home
           </Button>
           <Button color="inherit" onClick={() => navigate("/")}>
             Logout
@@ -91,9 +107,11 @@ const Home = () => {
 
       <Container maxWidth="md" sx={{ textAlign: "center", paddingTop: 4 }}>
         <Typography variant="h5">{welcomeMessage}</Typography>
-        {showStatistics && <StatisticsWindow />}
 
-        {!showStatistics && (
+        {showStatistics && <StatisticsWindow />}
+        {showGame && <GameWindow />}
+
+        {!showStatistics && !showGame && (
           <Box
             sx={{
               display: "flex",
