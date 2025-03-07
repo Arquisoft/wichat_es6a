@@ -48,6 +48,7 @@ app.get("/stats", async (req, res) => {
 
     res.json({
       username: user.username,
+      password: user.password;
       gamesPlayed: history.length,
       totalPoints,
       pointsPerGame,
