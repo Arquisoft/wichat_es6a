@@ -3,29 +3,22 @@ const express = require('express');
 
 const app = express();
 const port = 8003;
+let moderation = "You are a helpful assistant.";
 
-// Middleware to parse JSON in request body
-app.use(express.json());
+app.use(express.json()); // Middleware para parsear JSON
 
-// Define configurations for different LLM APIs
 const llmConfigs = {
-  gemini: {
-    url: (apiKey) => `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-    transformRequest: (question) => ({
-      contents: [{ parts: [{ text: question }] }]
-    }),
-    transformResponse: (response) => response.data.candidates[0]?.content?.parts[0]?.text
-  },
   empathy: {
-    url: () => 'https://empathyai.staging.empathy.co/v1/chat/completions',
-    transformRequest: (question) => ({
+    url: () => 'https://ai-challenge.empathy.ai/v1/chat/completions',
+    transformRequest: (question, moderation) => ({
       model: "qwen/Qwen2.5-Coder-7B-Instruct",
+      stream: false, // No soporta stream=true con axios directamente
       messages: [
-        { role: "system", content: "You are a helpful assistant." },
+        { role: "system", content: moderation },
         { role: "user", content: question }
       ]
     }),
-    transformResponse: (response) => response.data.choices[0]?.message?.content,
+    transformResponse: (response) => response.data.choices?.[0]?.message?.content || "No response",
     headers: (apiKey) => ({
       Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json'
@@ -33,7 +26,7 @@ const llmConfigs = {
   }
 };
 
-// Function to validate required fields in the request body
+// Validar campos requeridos
 function validateRequiredFields(req, requiredFields) {
   for (const field of requiredFields) {
     if (!(field in req.body)) {
@@ -42,39 +35,46 @@ function validateRequiredFields(req, requiredFields) {
   }
 }
 
-// Generic function to send questions to LLM
-async function sendQuestionToLLM(question, apiKey, model = 'gemini') {
+// Función genérica para enviar preguntas al LLM
+async function sendQuestionToLLM(question, apiKey, moderation) {
   try {
-    const config = llmConfigs[model];
+    const config = llmConfigs["empathy"];
     if (!config) {
-      throw new Error(`Model "${model}" is not supported.`);
+      throw new Error(`Model is not supported.`);
     }
 
-    const url = config.url(apiKey);
-    const requestData = config.transformRequest(question);
+    const url = config.url();
+    const requestData = config.transformRequest(question, moderation);
 
-    const headers = {
-      'Content-Type': 'application/json',
-      ...(config.headers ? config.headers(apiKey) : {})
-    };
+    const headers = config.headers(apiKey);
 
     const response = await axios.post(url, requestData, { headers });
 
     return config.transformResponse(response);
 
   } catch (error) {
-    console.error(`Error sending question to ${model}:`, error.message || error);
-    return null;
+    console.error(`Error sending question:`, error.message || error);
+    return "Error processing request.";
   }
 }
 
+// Ruta para configurar el prompt del asistente
+app.post('/configureAssistant', async (req, res) => {
+  if (!req.body.moderation) {
+    return res.status(400).json({ error: "Missing moderation prompt" });
+  }
+  moderation = req.body.moderation;
+  res.json({ message: "Moderation prompt updated" });
+});
+
+// Ruta para enviar una pregunta
 app.post('/ask', async (req, res) => {
   try {
-    // Check if required fields are present in the request body
-    validateRequiredFields(req, ['question', 'model', 'apiKey']);
+    validateRequiredFields(req, ['question', 'apiKey']);
 
-    const { question, model, apiKey } = req.body;
-    const answer = await sendQuestionToLLM(question, apiKey, model);
+    const { question, apiKey } = req.body;
+    const answer = await sendQuestionToLLM(question, apiKey, moderation);
+
     res.json({ answer });
 
   } catch (error) {
@@ -86,6 +86,4 @@ const server = app.listen(port, () => {
   console.log(`LLM Service listening at http://localhost:${port}`);
 });
 
-module.exports = server
-
-
+module.exports = server;
