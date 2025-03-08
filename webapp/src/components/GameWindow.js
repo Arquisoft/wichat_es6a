@@ -8,7 +8,10 @@ export function GameWindow() {
   };
 
   return (
-    <Grid container sx={{ height: "100vh", width: "100vw", bgcolor: "#f4f4f4", p: 2 }}>
+    <Grid
+      container
+      sx={{ height: "100vh", width: "100vw", bgcolor: "#f4f4f4", p: 2 }}
+    >
       {/* Chatbox */}
       <Grid
         item
@@ -24,7 +27,10 @@ export function GameWindow() {
           bgcolor: "#ffffff",
         }}
       >
-        <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold", color: "#333" }}>
+        <Typography
+          variant="h6"
+          sx={{ mb: 2, fontWeight: "bold", color: "#333" }}
+        >
           Chat
         </Typography>
 
@@ -39,7 +45,9 @@ export function GameWindow() {
           }}
         >
           {/* Mensajes del Chat */}
-          <Typography variant="body2" color="textSecondary">IA: How can I help you?</Typography>
+          <Typography variant="body2" color="textSecondary">
+            IA: How can I help you?
+          </Typography>
         </Grid>
 
         {/* Campo de Entrada y Boton Enviar */}
@@ -53,11 +61,7 @@ export function GameWindow() {
             />
           </Grid>
           <Grid item xs={4}>
-            <Button
-            variant="contained"
-            size="small"
-            fullWidth
-            >
+            <Button variant="contained" size="small" fullWidth>
               Send
             </Button>
           </Grid>
@@ -68,11 +72,12 @@ export function GameWindow() {
       <Grid item xs={9} container direction="column" sx={{ p: 3 }}>
         {/* Botones de Info y Exit */}
         <Grid
-        item
-        container
-        justifyContent="flex-end"
-        spacing={1}
-        sx={{ mb: 2 }}>
+          item
+          container
+          justifyContent="flex-end"
+          spacing={1}
+          sx={{ mb: 2 }}
+        >
           <Grid item>
             <Button variant="contained" color="primary" onClick={handleClick}>
               Hint
@@ -87,7 +92,9 @@ export function GameWindow() {
 
         {/* Pregunta */}
         <Grid item sx={{ textAlign: "center", mb: 2 }}>
-          <Typography variant="h5" fontWeight="bold">Question 1/5</Typography>
+          <Typography variant="h5" fontWeight="bold">
+            Question 1/5
+          </Typography>
         </Grid>
 
         {/* Imagen */}
@@ -113,28 +120,50 @@ export function GameWindow() {
         {/* Pregunta y Puntuacion */}
         <Grid item container justifyContent="space-between" sx={{ mb: 2 }}>
           <Typography variant="h6">¿Question number X?</Typography>
-          <Typography variant="h6" color="primary">Points: 600</Typography>
+          <Typography variant="h6" color="primary">
+            Points: 600
+          </Typography>
         </Grid>
 
         {/* Respuestas */}
         <Grid container spacing={2} sx={{ mt: 2 }}>
           <Grid item xs={6}>
-            <Button variant="contained" fullWidth sx={{ borderRadius: 2 }} onClick={handleClick}>
+            <Button
+              variant="contained"
+              fullWidth
+              sx={{ borderRadius: 2 }}
+              onClick={handleClick}
+            >
               Answer 1
             </Button>
           </Grid>
           <Grid item xs={6}>
-            <Button variant="contained" fullWidth sx={{ borderRadius: 2 }} onClick={handleClick}>
+            <Button
+              variant="contained"
+              fullWidth
+              sx={{ borderRadius: 2 }}
+              onClick={handleClick}
+            >
               Answer 2
             </Button>
           </Grid>
           <Grid item xs={6}>
-            <Button variant="contained" fullWidth sx={{ borderRadius: 2 }} onClick={handleClick}>
+            <Button
+              variant="contained"
+              fullWidth
+              sx={{ borderRadius: 2 }}
+              onClick={handleClick}
+            >
               Answer 3
             </Button>
           </Grid>
           <Grid item xs={6}>
-            <Button variant="contained" fullWidth sx={{ borderRadius: 2 }} onClick={handleClick}>
+            <Button
+              variant="contained"
+              fullWidth
+              sx={{ borderRadius: 2 }}
+              onClick={handleClick}
+            >
               Answer 4
             </Button>
           </Grid>
@@ -143,3 +172,4 @@ export function GameWindow() {
     </Grid>
   );
 }
+export default GameWindow;
