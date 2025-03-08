@@ -1,5 +1,26 @@
 const mongoose = require('mongoose');
 
+// Esquema de una partida
+const gameSchema = new mongoose.Schema({
+    score: { 
+      type: Number, 
+      required: true 
+    },
+    correctQuestions: { 
+      type: Number, 
+      required: true 
+    },
+    recordedAt: { 
+      type: Date, 
+      default: Date.now 
+    },
+    gameId: { 
+      type: Number, 
+      required: true 
+    }
+});
+
+// Esquema del usuario con las partidas embebidas en el campo 'games'
 const userSchema = new mongoose.Schema({
     username: {
       type: String,
@@ -13,8 +34,9 @@ const userSchema = new mongoose.Schema({
       type: Date,
       default: Date.now, 
     },
+    games: [gameSchema] // Lista de partidas embebidas dentro del usuario
 });
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 
-module.exports = User
+module.exports = User;

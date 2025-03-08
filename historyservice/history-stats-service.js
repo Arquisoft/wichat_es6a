@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(cors());
 
 // Connect to MongoDB
-const mongoUri = process.env.MONGODB_URI || 'mongodb://mongodb-wichat_es6a:27017/gameStats';
+const mongoUri = 'mongodb://mongodb-wichat_es6a:27017/gameStats';
 mongoose.connect(mongoUri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -31,7 +31,7 @@ app.get("/stats", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const history = await History.find({ username: user.username});
+    const history = user.games;
     const wins = history.filter((game) => game.score > 50).length;
     const losses = history.length - wins;
     const totalPoints = history.reduce((acc, game) => acc + game.score, 0);
@@ -48,7 +48,7 @@ app.get("/stats", async (req, res) => {
 
     res.json({
       username: user.username,
-      password: user.password;
+      password: user.password,
       gamesPlayed: history.length,
       totalPoints,
       pointsPerGame,
