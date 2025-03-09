@@ -92,7 +92,43 @@ app.post('/ask', async (req, res) => {
   }
 });
 
+// Servicio 1: Generación de preguntas y respuestas a partir del contexto
+app.post('/generateQuestions', async (req, res) => {
+  try {
+    if (!req.body.context) {
+      return res.status(400).json({ error: "Missing context" });
+    }
 
+    const context = req.body.context;
+
+    const prompt = `A partir del siguiente texto, genera 4 preguntas de opción múltiple. 
+    Cada pregunta debe tener 4 respuestas, una correcta y tres incorrectas:
+
+    Texto: "${context}"
+
+    Responde en formato JSON, la respuesta debe incluir UNICAMENTE el formato JSON con las preguntas y respuestas:
+    {
+      "questions": [
+        {
+          "question": "Pregunta 1",
+          "answers": [
+            { "text": "Respuesta correcta", "correct": true },
+            { "text": "Respuesta incorrecta 1", "correct": false },
+            { "text": "Respuesta incorrecta 2", "correct": false },
+            { "text": "Respuesta incorrecta 3", "correct": false }
+          ]
+        },
+        ...
+      ]
+    }`;
+
+    const response = await sendQuestionToLLM(prompt, req.body.apiKey, moderation);
+    console.log("Response:", response);
+    res.json(response);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to generate questions" });
+  }
+});
 
 const server = app.listen(port, () => {
   console.log(`LLM Service listening at http://localhost:${port}`);
