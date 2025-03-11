@@ -55,4 +55,6 @@ These decisions are related to **how the project is built** and the tools used.
 ==== 3. Quality and Maintenance Decisions
 These decisions are about **ensuring that the project is high quality** and easy to maintain.
 
-* **Using GitHub Flow and Pull Requests**: Through **Pull Requests**, we ensure that every code change is reviewed by the team before integration, maintaining code quality and minimizing errors in the main branch.
+* **Using GitHub Flow and Pull Requests**: Through **Pull Requests**, we ensure that every code change is reviewed by the team before integration, maintaining code quality and minimizing errors in the main branch.  
+* **Using Jest for testing**: Chosen because it is a widely used tool for testing this type of application and was also used in the base project, ensuring consistency in the testing code and avoiding tool mixing.  
+* **Using Ruby for documentation deployment**: Selected because it is the provided tool along with a guide for this task.  
