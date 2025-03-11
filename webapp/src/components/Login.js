@@ -21,11 +21,19 @@ const Login = () => {
 
   const loginUser = async () => {
     try {
-      const response = await axios.post(`${apiEndpoint}/login`, {
-        username,
-        password,
-      });
+      const response = await axios.post(`${apiEndpoint}/login`, { username, password });
+      
+      const question = `Please, generate a greeting message for a student called ${username} that is a student of the Software Architecture course in the University of Oviedo. Be nice and polite. Two to three sentences max.`;
+      const model = "empathy";
 
+      if (apiKey === 'None') {
+        setMessage("LLM API key is not set. Cannot contact the LLM.");
+      } else {
+        const messageResponse = await axios.post(`${apiEndpoint}/askllm`, { question, model, apiKey });
+        setMessage(messageResponse.data.answer);
+      }
+
+      setCreatedAt(response.data.createdAt);
       setOpenSnackbar(true);
 
       setTimeout(() => {
