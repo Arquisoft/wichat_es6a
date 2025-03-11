@@ -43,8 +43,14 @@ These decisions are related to the **work structure** and how the team is organi
 ==== 2. Technical Decisions
 These decisions are related to **how the project is built** and the tools used.
 
-* **Using a starter template**: The decision to begin with a basic but functional project, allowing for a quick start with a pre-configured structure that works, avoiding the need to build everything from scratch.
-* **Starting the project from scratch**: Although a starter template can be used, the decision is to create a new project from scratch. This helps the team become more familiar with the code and project structure. Additionally, the previous project can be used as a reference to solve problems or improve the design without relying on it directly.
+* **Using a starter template**: The decision to begin with a basic but functional project, allowing for a quick start with a pre-configured structure that works, avoiding the need to build everything from scratch.  
+* **Starting the project from scratch**: Although a starter template can be used, the decision is to create a new project from scratch. This helps the team become more familiar with the code and project structure. Additionally, the previous project can be used as a reference to solve problems or improve the design without relying on it directly.  
+* **Using MongoDB as the database**: Chosen because it fits well with the data used in the application, is easy to use, and was also used in the base project.  
+* **Using Gemini LLM**: After testing, Gemini was determined to be the best fit for generating the desired responses and reacting effectively to the prompts.  
+* **Using JavaScript as the programming language**: Selected because most available resources are in JavaScript, the base project uses it, and it is a common language for web development.  
+* **Using Node.js as the framework**: Chosen for its seamless integration with JavaScript and because it was used in the base project.  
+* **Using Material UI as the UI framework**: Helps in developing the application’s user interface by providing pre-built components that simplify good design and development.  
+* **Using Docker for service deployment**: Docker is used to deploy different application services independently, making them more manageable. It provides tools that simplify deployment and maintenance.  
 
 ==== 3. Quality and Maintenance Decisions
 These decisions are about **ensuring that the project is high quality** and easy to maintain.
