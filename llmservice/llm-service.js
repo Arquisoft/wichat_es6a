@@ -130,6 +130,41 @@ app.post('/generateQuestions', async (req, res) => {
   }
 });
 
+// Servicio 2: Generación de pista
+app.post('/getHint', async (req, res) => {
+  try {
+    const { question, answers } = req.body;
+    if (!question || !answers || !Array.isArray(answers)) {
+      return res.status(400).json({ error: "Missing question or answers array" });
+    }
+
+    const answerTexts = answers.map(a => a.text).join(", ");
+
+    const prompt = `Dada la siguiente pregunta y respuestas, proporciona una pista breve, útil y relevante, 
+    que no revele directamente la respuesta correcta, pero que sea lo suficientemente informativa como para 
+    ayudar al jugador a tomar una decisión informada. La pista debe centrarse en el contexto de la pregunta, 
+    sin hacer que la respuesta correcta sea demasiado obvia. Considera las respuestas disponibles y asegúrate 
+    de que la pista no sea tan específica que se pueda deducir la respuesta correcta de inmediato. 
+
+    Pregunta: "${question}"
+    Respuestas: ${answerTexts}
+
+    Ejemplo de respuesta: "Piensa en eventos relacionados con el contexto histórico o en los elementos clave de la pregunta."
+
+    Responde en formato JSON:
+
+    {
+      "hint": "Este evento marcó una transición importante, pero no ocurrió en el siglo XX."
+    }`;
+
+    const response = await sendQuestionToLLM(prompt, req.body.apiKey, moderation);
+    console.log("Response:", response);
+    res.json({ hint: response });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to generate hint" });
+  }
+});
+
 const server = app.listen(port, () => {
   console.log(`LLM Service listening at http://localhost:${port}`);
 });
