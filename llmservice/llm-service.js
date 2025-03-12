@@ -3,9 +3,20 @@ const express = require('express');
 
 const app = express();
 const port = 8003;
-let moderation = "You are a helpful assistant.";
+let moderation = "You are a quiz game assistant.";
+require('dotenv').config();  // Cargar las variables de entorno desde .env
 
-app.use(express.json()); // Middleware para parsear JSON
+// Middleware para parsear JSON
+app.use(express.json()); 
+
+// Agregar apiKey automáticamente en la solicitud si no está presente
+app.use((req, res, next) => {
+  // Verificar si no se incluye apiKey en el cuerpo de la solicitud
+  if (!req.body.apiKey) {
+    req.body.apiKey = process.env.LLM_API_KEY;  // Usar la API Key desde las variables de entorno
+  }
+  next();
+});
 
 const llmConfigs = {
   empathy: {
@@ -45,7 +56,6 @@ async function sendQuestionToLLM(question, apiKey, moderation) {
 
     const url = config.url();
     const requestData = config.transformRequest(question, moderation);
-
     const headers = config.headers(apiKey);
 
     const response = await axios.post(url, requestData, { headers });
@@ -70,15 +80,53 @@ app.post('/configureAssistant', async (req, res) => {
 // Ruta para enviar una pregunta
 app.post('/ask', async (req, res) => {
   try {
-    validateRequiredFields(req, ['question', 'apiKey']);
+    validateRequiredFields(req, ['question']);
 
-    const { question, apiKey } = req.body;
+    const { question, apiKey } = req.body;  // La apiKey ya ha sido añadida automáticamente
     const answer = await sendQuestionToLLM(question, apiKey, moderation);
 
     res.json({ answer });
 
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+});
+
+// Servicio 1: Generación de preguntas y respuestas a partir del contexto
+app.post('/generateQuestions', async (req, res) => {
+  try {
+    if (!req.body.context) {
+      return res.status(400).json({ error: "Missing context" });
+    }
+
+    const context = req.body.context;
+
+    const prompt = `A partir del siguiente texto, genera 4 preguntas de opción múltiple. 
+    Cada pregunta debe tener 4 respuestas, una correcta y tres incorrectas:
+
+    Texto: "${context}"
+
+    Responde en formato JSON, la respuesta debe incluir UNICAMENTE el formato JSON con las preguntas y respuestas:
+    {
+      "questions": [
+        {
+          "question": "Pregunta 1",
+          "answers": [
+            { "text": "Respuesta correcta", "correct": true },
+            { "text": "Respuesta incorrecta 1", "correct": false },
+            { "text": "Respuesta incorrecta 2", "correct": false },
+            { "text": "Respuesta incorrecta 3", "correct": false }
+          ]
+        },
+        ...
+      ]
+    }`;
+
+    const response = await sendQuestionToLLM(prompt, req.body.apiKey, moderation);
+    console.log("Response:", response);
+    res.json(response);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to generate questions" });
   }
 });
 
