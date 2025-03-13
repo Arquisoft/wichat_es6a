@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Container, Typography, Box, Paper, Grid, Button, CircularProgress } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const QuestionHistoryWindow = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
 
   const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
@@ -22,7 +25,7 @@ const QuestionHistoryWindow = () => {
     }
   };
 
-    fetchUserQuestions();
+    fetchQuestions();
   }, []);
 
   if (loading) return <Container><CircularProgress /></Container>;
@@ -42,7 +45,7 @@ const QuestionHistoryWindow = () => {
         <Box sx={{ border: "1px solid gray", padding: 2, marginTop: 2 }}>
           <Typography>Username: {username}</Typography>
           <Typography>DNI: {dni}</Typography>
-          <Typography>Questions answered: {questions.length}</Typography>
+          <Typography>Questions answered: {questions?.length || 0}</Typography>
           <Typography>Correct answers: {correctAnswers}</Typography>
           <Typography>Incorrect answers: {incorrectAnswers}</Typography>
         </Box>
@@ -52,7 +55,7 @@ const QuestionHistoryWindow = () => {
           <Typography variant="h6">Answered Questions:</Typography>
           <Grid container spacing={1}>
             {questions.map((q, index) => (
-              <Grid item xs={12} key={index}>
+              <Grid item xs={12} key={index}> {/* should be key={q._id} */}
                 <Paper
                   sx={{
                     padding: 1,
@@ -77,13 +80,9 @@ const QuestionHistoryWindow = () => {
 
         {/* Back Button */}
         <Box sx={{ marginTop: 3, textAlign: "center" }}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => window.history.back()}
-          >
-            Back
-          </Button>
+        <Button variant="contained" color="primary" onClick={() => navigate(-1)}>
+          Back
+        </Button>
         </Box>
       </Paper>
     </Container>
