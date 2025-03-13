@@ -45,6 +45,15 @@ app.get("/user/questions", async (req, res) => {
     }
 });
 
+app.get("/questions", async (req, res) => {
+    try {
+        const questions = await Question.find();
+        res.json(questions);
+    } catch (error) {
+        res.status(500).json({ error: "Error fetching questions" });
+    }
+});
+
 const server = app.listen(port, () => {
   console.log(`User Service listening at http://localhost:${port}`);
 });
