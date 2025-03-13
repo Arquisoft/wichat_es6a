@@ -6,19 +6,21 @@ const QuestionHistoryWindow = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
+
   useEffect(() => {
-    const fetchUserQuestions = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/user/questions");
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const data = await response.json();
-        setUserData(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchQuestions = async () => {
+    try {
+      const response = await fetch(`${apiEndpoint}/user/questions`);
+      if (!response.ok) throw new Error("Failed to fetch questions");
+      const data = await response.json();
+      setQuestions(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
     fetchUserQuestions();
   }, []);
