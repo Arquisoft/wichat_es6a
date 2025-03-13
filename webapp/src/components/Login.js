@@ -1,13 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import {
-  Container,
-  Typography,
-  TextField,
-  Button,
-  Snackbar,
-} from "@mui/material";
+import { Container, Typography, TextField, Button, Snackbar } from "@mui/material";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -15,9 +9,9 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [message, setMessage] = useState("");
 
-  const apiEndpoint =
-    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
+  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || "http://localhost:8003";
 
   const loginUser = async () => {
     try {
@@ -27,7 +21,6 @@ const Login = () => {
       });
 
       const question = `Please, generate a greeting message for a student called ${username} that is a student of the Software Architecture course in the University of Oviedo. Be nice and polite. Two to three sentences max.`;
-      const model = "empathy";
 
       setOpenSnackbar(true);
 
@@ -41,9 +34,7 @@ const Login = () => {
 
   return (
     <Container component="main" maxWidth="xs" sx={{ marginTop: 4 }}>
-      <Typography component="h1" variant="h5">
-        Login
-      </Typography>
+      <Typography component="h1" variant="h5">Login</Typography>
       <TextField
         margin="normal"
         fullWidth
@@ -62,18 +53,9 @@ const Login = () => {
       <Button variant="contained" color="primary" onClick={loginUser}>
         Login
       </Button>
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        message="Login successful!"
-      />
-      {error && (
-        <Snackbar
-          open={!!error}
-          autoHideDuration={6000}
-          message={`Error: ${error}`}
-        />
-      )}
+      <Snackbar open={openSnackbar} autoHideDuration={6000} message="Login successful!" />
+      {message && <Snackbar open={!!message} autoHideDuration={6000} message={message} />}
+      {error && <Snackbar open={!!error} autoHideDuration={6000} message={`Error: ${error}`} />}
     </Container>
   );
 };

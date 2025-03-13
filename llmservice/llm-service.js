@@ -27,7 +27,7 @@ app.use((req, res, next) => {
 
 const llmConfigs = {
   empathy: {
-    url: () => "https://empathyai.prod.empathy.co/v1/chat/completions",
+    url: () => "https://ai-challenge.empathy.ai/v1/chat/completions",
     transformRequest: (question, moderation) => ({
       model: "qwen/Qwen2.5-Coder-7B-Instruct",
       stream: false, // No soporta stream=true con axios directamente
