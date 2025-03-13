@@ -27,7 +27,7 @@ app.use((req, res, next) => {
 
 const llmConfigs = {
   empathy: {
-    url: () => "https://ai-challenge.empathy.ai/v1/chat/completions",
+    url: () => "https://empathyai.prod.empathy.co/v1/chat/completions",
     transformRequest: (question, moderation) => ({
       model: "qwen/Qwen2.5-Coder-7B-Instruct",
       stream: false, // No soporta stream=true con axios directamente
@@ -160,6 +160,48 @@ app.post("/getHint", async (req, res) => {
 
     Pregunta: "${question}"
     Respuestas: ${answerTexts}
+
+    Ejemplo de respuesta: "Piensa en eventos relacionados con el contexto histórico o en los elementos clave de la pregunta."
+
+    Responde en formato JSON:
+
+    {
+      "hint": "Este evento marcó una transición importante, pero no ocurrió en el siglo XX."
+    }`;
+
+    const response = await sendQuestionToLLM(
+      prompt,
+      req.body.apiKey,
+      moderation
+    );
+    console.log("Response:", response);
+    res.json({ hint: response });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to generate hint" });
+  }
+});
+// Servicio 2: Generación de pista con query
+
+app.post("/getHintWithQuery", async (req, res) => {
+  try {
+    const { question, answers, userQuery } = req.body;
+    if (!question || !answers || !Array.isArray(answers)) {
+      return res
+        .status(400)
+        .json({ error: "Missing question or answers array" });
+    }
+
+    const answerTexts = answers.map((a) => a.text).join(", ");
+    const userQueryText = userQuery
+      ? `\nConsulta adicional del usuario: "${userQuery}"`
+      : "";
+
+    const prompt = `Dada la siguiente pregunta y respuestas, proporciona una pista breve, útil y relevante, 
+    que no revele directamente la respuesta correcta, pero que ayude al jugador a tomar una decisión informada. 
+    La pista debe considerar el contexto de la pregunta y las respuestas disponibles, evitando ser demasiado obvia.
+
+    Pregunta: "${question}"
+    Respuestas: ${answerTexts}${userQueryText}
 
     Ejemplo de respuesta: "Piensa en eventos relacionados con el contexto histórico o en los elementos clave de la pregunta."
 

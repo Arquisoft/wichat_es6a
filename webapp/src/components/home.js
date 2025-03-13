@@ -91,7 +91,10 @@ const Home = () => {
           </Typography>
           <Button
             color="inherit"
-            onClick={() => setShowStatistics(!showStatistics)}
+            onClick={() => {
+              setShowStatistics(!showStatistics);
+              setShowGame(false); // Asegura que el juego se oculta
+            }}
           >
             {showStatistics ? "Home" : "Stats"}
           </Button>
