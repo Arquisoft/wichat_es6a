@@ -54,6 +54,7 @@ app.get("/questions", async (req, res) => {
     }
 });
 
+const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {
   console.log(`User Service listening at http://localhost:${port}`);
 });
