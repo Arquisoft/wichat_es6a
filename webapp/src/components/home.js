@@ -25,7 +25,7 @@ const Home = () => {
 
   const apiEndpoint =
     process.env.REACT_APP_API_ENDPOINT || "http://localhost:8003";
-  const apiKey = "sk-e3KdtE0TwhZqrDbupyhTug";
+  const apiKey = process.env.LLM_API_KEY;
 
   useEffect(() => {
     const fetchWelcomeMessage = async () => {
