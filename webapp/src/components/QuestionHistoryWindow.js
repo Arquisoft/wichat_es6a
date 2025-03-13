@@ -1,38 +1,33 @@
-import React from "react";
-import { Container, Typography, Box, Paper, Grid, Button } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Container, Typography, Box, Paper, Grid, Button, CircularProgress } from "@mui/material";
 
 const QuestionHistoryWindow = () => {
-  const user = {
-    username: "Player123",
-    dni: "12345678X",
-  };
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const questions = [
-    {
-      question: "What is the capital of France?",
-      correctAnswer: "Paris",
-      isCorrect: true,
-    },
-    { question: "What is 2 + 2?", correctAnswer: "4", isCorrect: true },
-    {
-      question: "Who wrote '1984'?",
-      correctAnswer: "George Orwell",
-      isCorrect: false,
-    },
-    {
-      question: "What is the chemical symbol for water?",
-      correctAnswer: "H2O",
-      isCorrect: true,
-    },
-    {
-      question: "What is the largest planet in the solar system?",
-      correctAnswer: "Jupiter",
-      isCorrect: false,
-    },
-  ];
+  useEffect(() => {
+    const fetchUserQuestions = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/user/questions");
+        if (!response.ok) throw new Error("Failed to fetch data");
+        const data = await response.json();
+        setUserData(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const correctAnswers = questions.filter((q) => q.isCorrect).length;
-  const incorrectAnswers = questions.length - correctAnswers;
+    fetchUserQuestions();
+  }, []);
+
+  if (loading) return <Container><CircularProgress /></Container>;
+  if (error) return <Container><Typography color="error">{error}</Typography></Container>;
+  if (!userData) return null;
+
+  const { username, dni, questions, correctAnswers, incorrectAnswers } = userData;
 
   return (
     <Container component="main" maxWidth="md">
@@ -43,8 +38,8 @@ const QuestionHistoryWindow = () => {
 
         {/* User Section */}
         <Box sx={{ border: "1px solid gray", padding: 2, marginTop: 2 }}>
-          <Typography>Username: {user.username}</Typography>
-          <Typography>DNI: {user.dni}</Typography>
+          <Typography>Username: {username}</Typography>
+          <Typography>DNI: {dni}</Typography>
           <Typography>Questions answered: {questions.length}</Typography>
           <Typography>Correct answers: {correctAnswers}</Typography>
           <Typography>Incorrect answers: {incorrectAnswers}</Typography>
