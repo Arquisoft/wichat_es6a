@@ -6,6 +6,10 @@ const port = 8003;
 let moderation = "You are a quiz game assistant.";
 require('dotenv').config();  // Cargar las variables de entorno desde .env
 
+// URL del servicio de Wikidata (server.js)
+const WIKIDATA_SERVICE_URL = "http://wikidataservice:8020/api";
+
+
 // Middleware para parsear JSON
 app.use(express.json()); 
 
@@ -18,9 +22,11 @@ app.use((req, res, next) => {
   next();
 });
 
+
+
 const llmConfigs = {
   empathy: {
-    url: () => 'https://ai-challenge.empathy.ai/v1/chat/completions',
+    url: () => 'https://empathyai.prod.empathy.co/v1/chat/completions',
     transformRequest: (question, moderation) => ({
       model: "qwen/Qwen2.5-Coder-7B-Instruct",
       stream: false, // No soporta stream=true con axios directamente
@@ -92,16 +98,74 @@ app.post('/ask', async (req, res) => {
   }
 });
 
+
+
+
+
 // Servicio 1: Generación de preguntas y respuestas a partir del contexto
 app.post('/generateQuestions', async (req, res) => {
   try {
     if (!req.body.context) {
       return res.status(400).json({ error: "Missing context" });
     }
+    // Lista de categorías y sus endpoints en server.js
+    const categories = [
+      { name: "paises", endpoint: "/paises" },
+      { name: "monumentos", endpoint: "/monumentos" },
+      { name: "elementos", endpoint: "/elementos" },
+      { name: "peliculas", endpoint: "/peliculas" },
+      { name: "canciones", endpoint: "/canciones" },
+      { name: "formula1", endpoint: "/formula1" },
+      { name: "pinturas" , endpoint: "/pinturas" }
+    ];
 
+    // Función para seleccionar una categoría aleatoria
+    function getRandomCategory() {
+      return categories[Math.floor(Math.random() * categories.length)];
+    }
+
+    const randomCategory = getRandomCategory(); // Selecciona una categoría aleatoria
+    const apiUrl = `${WIKIDATA_SERVICE_URL}${randomCategory.endpoint}`;
+
+
+    // Solicitar datos al servicio de Wikidata
+    const { data } = await axios.get(apiUrl);
+    // Seleccionar una entrada aleatoria de los datos obtenidos
+    console.log("Data:", data);
+    const entry = data[Math.floor(Math.random() * data.length)];
+    let informacion = "";
+
+    if (!data || data.length === 0) {
+      
+      return res.status(500).json({ error: "No data found from Wikidata" });
+  }
+
+  switch (randomCategory.name) {
+    case "paises":
+        informacion = `País: ${entry.countryLabel},  Su Capital: ${entry.capitalLabel}`;
+        break;
+    case "monumentos":
+        informacion = `Monumento: ${entry.monumento}, Su País: ${entry.pais}`;
+        break;
+    case "elementos":
+        informacion = `Elemento: ${entry.elemento}, Su Símbolo: ${entry.simbolo}`;
+        break;
+    case "peliculas":
+        informacion = `Película: ${entry.pelicula}, Su Director: ${entry.director}`;
+        break;
+    case "canciones":
+        informacion = `Canción: ${entry.cancion}, Su Artista: ${entry.artista}`;
+        break;
+    case "formula1":
+        informacion = `Campeonato de formula 1 año: ${entry.anio}, Ganador: ${entry.ganador}`;
+        break;
+    case "pinturas":
+        informacion = `Pintura: ${entry.pintura}, Su Autor: ${entry.autor}`;
+        break;
+}
     const context = req.body.context;
 
-    const prompt = `A partir del siguiente texto, genera 4 preguntas de opción múltiple. 
+    const prompt = `A partir del siguiente texto: "${informacion}", genera 4 preguntas de opción múltiple. 
     Cada pregunta debe tener 4 respuestas, una correcta y tres incorrectas:
 
     Texto: "${context}"
