@@ -10,6 +10,7 @@ class WikiQueries {
                 ?country wdt:P36 ?capital.
                 SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
             }
+            LIMIT 10
         `;
         return consulta(query);
     }
@@ -20,6 +21,7 @@ class WikiQueries {
                 ?monument wdt:P31 wd:Q570116; wdt:P17 ?country.
                 SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
             } 
+            LIMIT 10
         `;
         return consulta(query);
     }
@@ -31,6 +33,7 @@ class WikiQueries {
                 ?element wdt:P246 ?symbol. 
                 SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
             }
+            LIMIT 10
         `;
         return consulta(query);
     }
@@ -42,6 +45,7 @@ class WikiQueries {
                 ?pelicula wdt:P57 ?director.
                 SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
             }
+            LIMIT 10
         `;
         return consulta(query);
     }
@@ -53,6 +57,7 @@ class WikiQueries {
                       wdt:P175 ?artist.
                 SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
             }
+            LIMIT 10
         `;
         return consulta(query);
     }
@@ -66,6 +71,7 @@ class WikiQueries {
                 BIND(YEAR(?date) AS ?year)
                 SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
             }
+            LIMIT 10
         `;
         return consulta(query);
     }
@@ -77,6 +83,7 @@ class WikiQueries {
                           wdt:P170 ?artist.
                 SERVICE wikibase:label { bd:serviceParam wikibase:language "es". }
             }
+            LIMIT 10
         `;
         return consulta(query);
     }

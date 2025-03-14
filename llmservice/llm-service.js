@@ -145,28 +145,30 @@ app.post('/generateQuestions', async (req, res) => {
         informacion = `País: ${entry.countryLabel},  Su Capital: ${entry.capitalLabel}`;
         break;
     case "monumentos":
-        informacion = `Monumento: ${entry.monumento}, Su País: ${entry.pais}`;
+        informacion = `Monumento: ${entry.monumentLabel}, Su País: ${entry.countryLabel}`;
         break;
     case "elementos":
-        informacion = `Elemento: ${entry.elemento}, Su Símbolo: ${entry.simbolo}`;
+        informacion = `Elemento: ${entry.elementLabel}, Su Símbolo: ${entry.symbol}`;
         break;
     case "peliculas":
-        informacion = `Película: ${entry.pelicula}, Su Director: ${entry.director}`;
+        informacion = `Película: ${entry.peliculaLabel}, Su Director: ${entry.directorLabel}`;
         break;
     case "canciones":
-        informacion = `Canción: ${entry.cancion}, Su Artista: ${entry.artista}`;
+        informacion = `Canción: ${entry.songLabel}, Su Artista: ${entry.artistLabel}`;
         break;
     case "formula1":
-        informacion = `Campeonato de formula 1 año: ${entry.anio}, Ganador: ${entry.ganador}`;
+        informacion = `Campeonato de formula 1 año: ${entry.year}, Ganador: ${entry.winnerLabel}`;
         break;
     case "pinturas":
-        informacion = `Pintura: ${entry.pintura}, Su Autor: ${entry.autor}`;
+        informacion = `Pintura: ${entry.paintingLabel}, Su Autor: ${entry.artistLabel}`;
         break;
 }
     const context = req.body.context;
-
+    console.log("Informacion: ", informacion);
     const prompt = `A partir del siguiente texto: "${informacion}", genera 4 preguntas de opción múltiple. 
-    Cada pregunta debe tener 4 respuestas, una correcta y tres incorrectas:
+    Cada pregunta debe tener 4 respuestas, una correcta y tres incorrectas. Si tiene un codigo buscalo en wikidata.
+    Ten en cuenta que el jugador no tiene acceso al nombre del monumento, pelicula, cancion, etc. Por lo que deberas
+    mencionarlo en las preguntas:
 
     Texto: "${context}"
 
