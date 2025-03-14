@@ -1,6 +1,7 @@
 import React from "react";
 import Grid from "@mui/material/Grid";
-import { Typography, Button, TextField, Paper } from "@mui/material";
+import { Typography, Button, Paper } from "@mui/material";
+import ChatClues from "./ChatClues";
 
 export function GameWindow() {
   const handleClick = () => {
@@ -8,68 +9,11 @@ export function GameWindow() {
   };
 
   return (
-    <Grid
-      container
-      sx={{ height: "100vh", width: "100vw", bgcolor: "#f4f4f4", p: 2 }}
-    >
-      {/* Chatbox */}
-      <Grid
-        item
-        xs={3}
-        component={Paper}
-        elevation={3}
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          borderRadius: 2,
-          p: 2,
-          height: "100vh",
-          bgcolor: "#ffffff",
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{ mb: 2, fontWeight: "bold", color: "#333" }}
-        >
-          Chat
-        </Typography>
-
-        <Grid
-          sx={{
-            flexGrow: 1,
-            border: "1px solid #ddd",
-            borderRadius: 2,
-            p: 2,
-            overflowY: "auto",
-            bgcolor: "#fafafa",
-          }}
-        >
-          {/* Mensajes del Chat */}
-          <Typography variant="body2" color="textSecondary">
-            IA: How can I help you?
-          </Typography>
-        </Grid>
-
-        {/* Campo de Entrada y Boton Enviar */}
-        <Grid container spacing={1} alignItems="center" sx={{ mt: 2 }}>
-          <Grid item xs={8}>
-            <TextField
-              variant="outlined"
-              size="small"
-              fullWidth
-              placeholder="Type a message..."
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <Button variant="contained" size="small" fullWidth>
-              Send
-            </Button>
-          </Grid>
-        </Grid>
-      </Grid>
+    <Grid container sx={{ bgcolor: "#f4f4f4", p: 2 }}>
+      <ChatClues />
 
       {/* Contenedor Principal */}
-      <Grid item xs={9} container direction="column" sx={{ p: 3 }}>
+      <Grid item xs={9} container direction="column" sx={{ p: 3, mx: "auto" }}>
         {/* Botones de Info y Exit */}
         <Grid
           item
@@ -172,4 +116,5 @@ export function GameWindow() {
     </Grid>
   );
 }
+
 export default GameWindow;
