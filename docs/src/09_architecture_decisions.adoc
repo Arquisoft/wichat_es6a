@@ -19,6 +19,14 @@ ifndef::imagesdir[:imagesdir: ../images]
 | MongoDB
 | As a non-relational database, it offers ease of use. Additionally, it is widely adopted by major telecommunications companies.
 | Non-relational databases are the ones with which we have the least experience.
+
+| Node.js
+| We chose Node.js to interact with the database, as it is a well-known runtime environment for backend development in web applications. It provides an efficient and scalable platform for building web and network applications in real-time using JavaScript.
+| Handling CPU-intensive tasks may be less efficient due to its single-threaded event-driven architecture.
+
+| Docker
+| Containerization that facilitates deployment and scalability. It ensures a consistent environment across development and production while streamlining dependency management. Deployment is fast, making it easier to move and maintain applications. Additionally, there are many available examples of Dockerfiles that simplify implementation.
+| Initial configuration of Docker may introduce some complexity. It also requires additional learning resources.
 |===
 
 
