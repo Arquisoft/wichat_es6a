@@ -10,9 +10,13 @@ export function GameWindow() {
   const gameRef = useRef(new Game(navigate)); 
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [points, setPoints] = useState(0);
+  const isInitializedRef = useRef(false); // Ref para controlar la inicialización
 
   useEffect(() => {
     const initializeGame = async () => {
+      if (isInitializedRef.current) return; // Si ya se inicializó, no hacer nada
+      isInitializedRef.current = true; // Marcar como inicializado
+
       await gameRef.current.init();
       console.log("Game iniciado:", gameRef.current);
       setCurrentQuestion(gameRef.current.getCurrentQuestion());
@@ -20,7 +24,7 @@ export function GameWindow() {
     };
 
     initializeGame();
-  }, []); 
+  }, []);
 
   const handleAnswerClick = (index) => {
     gameRef.current.answerQuestion(index);
