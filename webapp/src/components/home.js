@@ -46,6 +46,8 @@ const Home = () => {
           apiKey,
         });
 
+        
+
         console.log("API Response:", response.data);
         setWelcomeMessage(response.data.answer);
       } catch (error) {

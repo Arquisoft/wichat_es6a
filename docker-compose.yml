@@ -127,6 +127,16 @@ services:
       - mynetwork
     environment:
       MONGODB_URI: mongodb://mongodb-wichat_es6a:27017/gameStats
+  
+  wikidataservice:
+    container_name: wikidataservice-wichat_es6a
+    profiles: ["dev", "prod"]
+    build: ./wikidataservice
+    ports:
+      - "8020:8020"
+    networks:
+      - mynetwork
+
 
 volumes:
   mongodb_data:

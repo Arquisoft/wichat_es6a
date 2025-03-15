@@ -116,5 +116,4 @@ export function GameWindow() {
     </Grid>
   );
 }
-
 export default GameWindow;

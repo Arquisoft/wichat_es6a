@@ -13,6 +13,10 @@ const port = 8003;
 let moderation = "You are a quiz game assistant.";
 require("dotenv").config(); // Cargar las variables de entorno desde .env
 
+// URL del servicio de Wikidata (server.js)
+const WIKIDATA_SERVICE_URL = "http://wikidataservice:8020/api";
+
+
 // Middleware para parsear JSON
 app.use(express.json());
 
@@ -25,9 +29,12 @@ app.use((req, res, next) => {
   next();
 });
 
+
+
 const llmConfigs = {
   empathy: {
-    url: () => "https://empathyai.prod.empathy.co/v1/chat/completions",
+
+    url: () => 'https://empathyai.prod.empathy.co/v1/chat/completions',
     transformRequest: (question, moderation) => ({
       model: "qwen/Qwen2.5-Coder-7B-Instruct",
       stream: false, // No soporta stream=true con axios directamente
@@ -98,17 +105,77 @@ app.post("/ask", async (req, res) => {
   }
 });
 
+
+
+
+
 // Servicio 1: Generación de preguntas y respuestas a partir del contexto
 app.post("/generateQuestions", async (req, res) => {
   try {
     if (!req.body.context) {
       return res.status(400).json({ error: "Missing context" });
     }
+    // Lista de categorías y sus endpoints en server.js
+    const categories = [
+      { name: "paises", endpoint: "/paises" },
+      { name: "monumentos", endpoint: "/monumentos" },
+      { name: "elementos", endpoint: "/elementos" },
+      { name: "peliculas", endpoint: "/peliculas" },
+      { name: "canciones", endpoint: "/canciones" },
+      { name: "formula1", endpoint: "/formula1" },
+      { name: "pinturas" , endpoint: "/pinturas" }
+    ];
 
+    // Función para seleccionar una categoría aleatoria
+    function getRandomCategory() {
+      return categories[Math.floor(Math.random() * categories.length)];
+    }
+
+    const randomCategory = getRandomCategory(); // Selecciona una categoría aleatoria
+    const apiUrl = `${WIKIDATA_SERVICE_URL}${randomCategory.endpoint}`;
+
+
+    // Solicitar datos al servicio de Wikidata
+    const { data } = await axios.get(apiUrl);
+    // Seleccionar una entrada aleatoria de los datos obtenidos
+    console.log("Data:", data);
+    const entry = data[Math.floor(Math.random() * data.length)];
+    let informacion = "";
+
+    if (!data || data.length === 0) {
+      
+      return res.status(500).json({ error: "No data found from Wikidata" });
+  }
+
+  switch (randomCategory.name) {
+    case "paises":
+        informacion = `País: ${entry.countryLabel},  Su Capital: ${entry.capitalLabel}`;
+        break;
+    case "monumentos":
+        informacion = `Monumento: ${entry.monumentLabel}, Su País: ${entry.countryLabel}`;
+        break;
+    case "elementos":
+        informacion = `Elemento: ${entry.elementLabel}, Su Símbolo: ${entry.symbol}`;
+        break;
+    case "peliculas":
+        informacion = `Película: ${entry.peliculaLabel}, Su Director: ${entry.directorLabel}`;
+        break;
+    case "canciones":
+        informacion = `Canción: ${entry.songLabel}, Su Artista: ${entry.artistLabel}`;
+        break;
+    case "formula1":
+        informacion = `Campeonato de formula 1 año: ${entry.year}, Ganador: ${entry.winnerLabel}`;
+        break;
+    case "pinturas":
+        informacion = `Pintura: ${entry.paintingLabel}, Su Autor: ${entry.artistLabel}`;
+        break;
+}
     const context = req.body.context;
-
-    const prompt = `A partir del siguiente texto, genera 4 preguntas de opción múltiple. 
-    Cada pregunta debe tener 4 respuestas, una correcta y tres incorrectas:
+    console.log("Informacion: ", informacion);
+    const prompt = `A partir del siguiente texto: "${informacion}", genera 4 preguntas de opción múltiple. 
+    Cada pregunta debe tener 4 respuestas, una correcta y tres incorrectas. Si tiene un codigo buscalo en wikidata.
+    Ten en cuenta que el jugador no tiene acceso al nombre del monumento, pelicula, cancion, etc. Por lo que deberas
+    mencionarlo en las preguntas:
 
     Texto: "${context}"
 
