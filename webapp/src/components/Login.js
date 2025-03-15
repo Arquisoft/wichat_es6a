@@ -11,7 +11,7 @@ const Login = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [message, setMessage] = useState("");
 
-  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || "http://localhost:8003";
+  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
 
   const loginUser = async () => {
     try {
