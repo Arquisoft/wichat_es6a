@@ -61,7 +61,7 @@ class Answer {
   
     endGame() {
         if (this.navigate) {
-            this.navigate("/game-over");
+            this.navigate("/");
         }
     }
   

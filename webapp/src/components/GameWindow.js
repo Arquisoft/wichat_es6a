@@ -12,6 +12,7 @@ export function GameWindow() {
   const [points, setPoints] = useState(0);
   const isInitializedRef = useRef(false); // Ref para controlar la inicialización
 
+
   useEffect(() => {
     const initializeGame = async () => {
       if (isInitializedRef.current) return; // Si ya se inicializó, no hacer nada
