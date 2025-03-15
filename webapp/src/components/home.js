@@ -6,7 +6,6 @@ import {
   IconButton,
   Typography,
   Box,
-  Container,
   Snackbar,
 } from "@mui/material";
 import { Home as HomeIcon } from "@mui/icons-material";
@@ -25,22 +24,25 @@ const Home = () => {
   const [error, setError] = useState("");
 
   const apiEndpoint =
-    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
-  const apiKey = process.env.REACT_APP_LLM_API_KEY;
+    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8003";
+  const apiKey = process.env.LLM_API_KEY;
 
   useEffect(() => {
     const fetchWelcomeMessage = async () => {
       try {
+        console.log("Process ENV:", process.env);
         console.log("Fetching message...");
         console.log("API Key:", apiKey);
         console.log("API Endpoint:", apiEndpoint);
 
         const question = `Please, generate a greeting message for a student called ${username} that is a student of the Software Architecture course in the University of Oviedo. Be nice and polite. Two to three sentences max.`;
         const model = "empathy";
-
-        const response = await axios.post(`${apiEndpoint}/askllm`, {
+        console.log("Sending welcome message request with payload:", {
           question,
-          model,
+          apiKey,
+        });
+        const response = await axios.post(`${apiEndpoint}/ask`, {
+          question,
           apiKey,
         });
 
@@ -91,7 +93,10 @@ const Home = () => {
           </Typography>
           <Button
             color="inherit"
-            onClick={() => setShowStatistics(!showStatistics)}
+            onClick={() => {
+              setShowStatistics(!showStatistics);
+              setShowGame(false); // Asegura que el juego se oculta
+            }}
           >
             {showStatistics ? "Home" : "Stats"}
           </Button>
@@ -107,7 +112,8 @@ const Home = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="md" sx={{ textAlign: "center", paddingTop: 4 }}>
+      {/* Container eliminado, reemplazado por Box */}
+      <Box sx={{ textAlign: "center", paddingTop: 4 }}>
         <Typography variant="h5">{welcomeMessage}</Typography>
 
         {showStatistics && <StatisticsWindow />}
@@ -151,7 +157,7 @@ const Home = () => {
             </Typography>
           </Box>
         )}
-      </Container>
+      </Box>
 
       {error && (
         <Snackbar open={!!error} autoHideDuration={6000} message={error} />

@@ -1,23 +1,30 @@
-const axios = require('axios');
-const express = require('express');
-
+const axios = require("axios");
+const express = require("express");
+const cors = require("cors"); // Import the cors package
 const app = express();
+app.use(
+  cors({
+    origin: "http://localhost:3000", // Or the correct port of your React app
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+  })
+);
 const port = 8003;
 let moderation = "You are a quiz game assistant.";
-require('dotenv').config();  // Cargar las variables de entorno desde .env
+require("dotenv").config(); // Cargar las variables de entorno desde .env
 
 // URL del servicio de Wikidata (server.js)
 const WIKIDATA_SERVICE_URL = "http://wikidataservice:8020/api";
 
 
 // Middleware para parsear JSON
-app.use(express.json()); 
+app.use(express.json());
 
 // Agregar apiKey automáticamente en la solicitud si no está presente
 app.use((req, res, next) => {
   // Verificar si no se incluye apiKey en el cuerpo de la solicitud
   if (!req.body.apiKey) {
-    req.body.apiKey = process.env.LLM_API_KEY;  // Usar la API Key desde las variables de entorno
+    req.body.apiKey = process.env.LLM_API_KEY; // Usar la API Key desde las variables de entorno
   }
   next();
 });
@@ -26,21 +33,23 @@ app.use((req, res, next) => {
 
 const llmConfigs = {
   empathy: {
+
     url: () => 'https://empathyai.prod.empathy.co/v1/chat/completions',
     transformRequest: (question, moderation) => ({
       model: "qwen/Qwen2.5-Coder-7B-Instruct",
       stream: false, // No soporta stream=true con axios directamente
       messages: [
         { role: "system", content: moderation },
-        { role: "user", content: question }
-      ]
+        { role: "user", content: question },
+      ],
     }),
-    transformResponse: (response) => response.data.choices?.[0]?.message?.content || "No response",
+    transformResponse: (response) =>
+      response.data.choices?.[0]?.message?.content || "No response",
     headers: (apiKey) => ({
       Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    })
-  }
+      "Content-Type": "application/json",
+    }),
+  },
 };
 
 // Validar campos requeridos
@@ -67,7 +76,6 @@ async function sendQuestionToLLM(question, apiKey, moderation) {
     const response = await axios.post(url, requestData, { headers });
 
     return config.transformResponse(response);
-
   } catch (error) {
     console.error(`Error sending question:`, error.message || error);
     return "Error processing request.";
@@ -75,7 +83,7 @@ async function sendQuestionToLLM(question, apiKey, moderation) {
 }
 
 // Ruta para configurar el prompt del asistente
-app.post('/configureAssistant', async (req, res) => {
+app.post("/configureAssistant", async (req, res) => {
   if (!req.body.moderation) {
     return res.status(400).json({ error: "Missing moderation prompt" });
   }
@@ -84,15 +92,14 @@ app.post('/configureAssistant', async (req, res) => {
 });
 
 // Ruta para enviar una pregunta
-app.post('/ask', async (req, res) => {
+app.post("/ask", async (req, res) => {
   try {
-    validateRequiredFields(req, ['question']);
+    validateRequiredFields(req, ["question"]);
 
-    const { question, apiKey } = req.body;  // La apiKey ya ha sido añadida automáticamente
+    const { question, apiKey } = req.body; // La apiKey ya ha sido añadida automáticamente
     const answer = await sendQuestionToLLM(question, apiKey, moderation);
 
     res.json({ answer });
-
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -103,7 +110,7 @@ app.post('/ask', async (req, res) => {
 
 
 // Servicio 1: Generación de preguntas y respuestas a partir del contexto
-app.post('/generateQuestions', async (req, res) => {
+app.post("/generateQuestions", async (req, res) => {
   try {
     if (!req.body.context) {
       return res.status(400).json({ error: "Missing context" });
@@ -188,7 +195,11 @@ app.post('/generateQuestions', async (req, res) => {
       ]
     }`;
 
-    const response = await sendQuestionToLLM(prompt, req.body.apiKey, moderation);
+    const response = await sendQuestionToLLM(
+      prompt,
+      req.body.apiKey,
+      moderation
+    );
     console.log("Response:", response);
     res.json(response);
   } catch (error) {
@@ -197,14 +208,16 @@ app.post('/generateQuestions', async (req, res) => {
 });
 
 // Servicio 2: Generación de pista
-app.post('/getHint', async (req, res) => {
+app.post("/getHint", async (req, res) => {
   try {
     const { question, answers } = req.body;
     if (!question || !answers || !Array.isArray(answers)) {
-      return res.status(400).json({ error: "Missing question or answers array" });
+      return res
+        .status(400)
+        .json({ error: "Missing question or answers array" });
     }
 
-    const answerTexts = answers.map(a => a.text).join(", ");
+    const answerTexts = answers.map((a) => a.text).join(", ");
 
     const prompt = `Dada la siguiente pregunta y respuestas, proporciona una pista breve, útil y relevante, 
     que no revele directamente la respuesta correcta, pero que sea lo suficientemente informativa como para 
@@ -223,7 +236,53 @@ app.post('/getHint', async (req, res) => {
       "hint": "Este evento marcó una transición importante, pero no ocurrió en el siglo XX."
     }`;
 
-    const response = await sendQuestionToLLM(prompt, req.body.apiKey, moderation);
+    const response = await sendQuestionToLLM(
+      prompt,
+      req.body.apiKey,
+      moderation
+    );
+    console.log("Response:", response);
+    res.json({ hint: response });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to generate hint" });
+  }
+});
+// Servicio 2: Generación de pista con query
+
+app.post("/getHintWithQuery", async (req, res) => {
+  try {
+    const { question, answers, userQuery } = req.body;
+    if (!question || !answers || !Array.isArray(answers)) {
+      return res
+        .status(400)
+        .json({ error: "Missing question or answers array" });
+    }
+
+    const answerTexts = answers.map((a) => a.text).join(", ");
+    const userQueryText = userQuery
+      ? `\nConsulta adicional del usuario: "${userQuery}"`
+      : "";
+
+    const prompt = `Dada la siguiente pregunta y respuestas, proporciona una pista breve, útil y relevante, 
+    que no revele directamente la respuesta correcta, pero que ayude al jugador a tomar una decisión informada. 
+    La pista debe considerar el contexto de la pregunta y las respuestas disponibles, evitando ser demasiado obvia.
+
+    Pregunta: "${question}"
+    Respuestas: ${answerTexts}${userQueryText}
+
+    Ejemplo de respuesta: "Piensa en eventos relacionados con el contexto histórico o en los elementos clave de la pregunta."
+
+    Responde en formato JSON:
+
+    {
+      "hint": "Este evento marcó una transición importante, pero no ocurrió en el siglo XX."
+    }`;
+
+    const response = await sendQuestionToLLM(
+      prompt,
+      req.body.apiKey,
+      moderation
+    );
     console.log("Response:", response);
     res.json({ hint: response });
   } catch (error) {

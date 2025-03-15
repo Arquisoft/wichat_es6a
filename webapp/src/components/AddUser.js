@@ -1,14 +1,21 @@
 // src/components/AddUser.js
-import React, { useState } from 'react';
-import axios from 'axios';
-import { Container, Typography, TextField, Button, Snackbar } from '@mui/material';
+import React, { useState } from "react";
+import axios from "axios";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Snackbar,
+} from "@mui/material";
 
-const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
+const apiEndpoint =
+  process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
 
 const AddUser = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const addUser = async () => {
@@ -49,9 +56,19 @@ const AddUser = () => {
       <Button variant="contained" color="primary" onClick={addUser}>
         Add User
       </Button>
-      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar} message="User added successfully" />
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        message="User added successfully"
+      />
       {error && (
-        <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError('')} message={`Error: ${error}`} />
+        <Snackbar
+          open={!!error}
+          autoHideDuration={6000}
+          onClose={() => setError("")}
+          message={`Error: ${error}`}
+        />
       )}
     </Container>
   );
