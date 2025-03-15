@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Container, Typography, TextField, Button, Snackbar } from "@mui/material";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Snackbar,
+} from "@mui/material";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -11,7 +17,8 @@ const Login = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [message, setMessage] = useState("");
 
-  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
+  const apiEndpoint =
+    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
 
   const loginUser = async () => {
     try {
@@ -34,7 +41,9 @@ const Login = () => {
 
   return (
     <Container component="main" maxWidth="xs" sx={{ marginTop: 4 }}>
-      <Typography component="h1" variant="h5">Login</Typography>
+      <Typography component="h1" variant="h5">
+        Login
+      </Typography>
       <TextField
         margin="normal"
         fullWidth
@@ -53,9 +62,21 @@ const Login = () => {
       <Button variant="contained" color="primary" onClick={loginUser}>
         Login
       </Button>
-      <Snackbar open={openSnackbar} autoHideDuration={6000} message="Login successful!" />
-      {message && <Snackbar open={!!message} autoHideDuration={6000} message={message} />}
-      {error && <Snackbar open={!!error} autoHideDuration={6000} message={`Error: ${error}`} />}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        message="Login successful!"
+      />
+      {message && (
+        <Snackbar open={!!message} autoHideDuration={6000} message={message} />
+      )}
+      {error && (
+        <Snackbar
+          open={!!error}
+          autoHideDuration={6000}
+          message={`Error: ${error}`}
+        />
+      )}
     </Container>
   );
 };
