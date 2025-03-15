@@ -21,8 +21,9 @@ class Answer {
     }
   
     async init() {
-        console.log("Iniciando fetch de preguntas...");
+        console.log("Cambio realizado");
         try {
+            // Paso 1: Realizar la solicitud fetch
             const response = await fetch("http://localhost:8003/generateQuestions", {
                 method: "POST",
                 headers: {
@@ -30,23 +31,30 @@ class Answer {
                 },
                 body: JSON.stringify({ context: "Historia universal" })  
             });
+
+            // Paso 2: Verificar si la respuesta es exitosa
+            console.log("Response:", response);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch questions: ${response.status} ${response.statusText}`);
+            }
     
-            if (!response.ok) throw new Error("Failed to fetch questions");
+            // Paso 3: Leer y parsear el cuerpo de la respuesta como JSON
+            const textData = await response.text();
+            const data = JSON.parse(textData);
+            var stringData = JSON.stringify(data);
+            stringData = stringData
+            .replace(/^```jso/, '') // Elimina "```jso" del inicio
+            .replace(/```$/, '') // Elimina "```" del final
+            .replace(/\\n|\\/g, '') // Elimina todos los \n, \ y letras n innecesarias
+            .replace(/\\"/g, '"') // Convierte las comillas escapadas `\"` en comillas normales `"`.
+          
+            console.log(stringData);
     
-            const data = await response.json();
-            console.log("Preguntas recibidas:", data); 
-    
-            // Asignar preguntas correctamente
-            this.questions = data.questions.map(q =>
-                new Question(
-                    q.question,
-                    q.answers.map(a => new Answer(a.text, a.correct))
-                )
-            );
+            this.questions = this.parseQuestions(stringData);
     
             console.log("Preguntas guardadas en el objeto Game:", this.questions);
         } catch (error) {
-            console.error("Error fetching questions:", error);
+            console.error("Error fetching questions:", error.message);
         }
     }    
     
@@ -87,7 +95,40 @@ class Answer {
   
     getCurrentQuestion() {
       return this.questions[this.questionIndex];
-  }
+    }
+
+    parseQuestions(inputString) {
+        // Limpiar el string eliminando los caracteres no deseados
+        const cleanedString = inputString
+          .replace(/^```json/, '') // Elimina "```json" del inicio
+          .replace(/```$/, '') // Elimina "```" del final
+          .trim(); // Elimina espacios innecesarios
+      
+        // Extraer preguntas y respuestas con expresiones regulares
+        const questionBlocks = cleanedString.match(/"question":\s*"([^"]+)",\s*"answers":\s*\[(.*?)\]/gs);
+      
+        if (!questionBlocks) {
+          throw new Error("No se encontraron preguntas en el texto.");
+        }
+      
+        const questions = questionBlocks.map(block => {
+          // Extraer el texto de la pregunta
+          const questionMatch = block.match(/"question":\s*"([^"]+)"/);
+          const questionText = questionMatch ? questionMatch[1] : "";
+      
+          // Extraer respuestas
+          const answersMatch = block.match(/"answers":\s*\[(.*?)\]/);
+          const answersText = answersMatch ? answersMatch[1] : "";
+      
+          // Extraer cada respuesta y su valor "correct"
+          const answerObjects = [...answersText.matchAll(/\{[^}]*"text":\s*"([^"]+)",\s*"correct":\s*(true|false)[^}]*\}/g)]
+            .map(match => new Answer(match[1], match[2] === "true"));
+      
+          return new Question(questionText, answerObjects);
+        });
+      
+        return questions;
+      }
   }
   
   export default Game;
