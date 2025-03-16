@@ -193,7 +193,9 @@ app.post("/generateQuestions", async (req, res) => {
         },
         ...
       ]
-    }`;
+    }
+      
+    Responde unicamente con el JSON`;
 
     const response = await sendQuestionToLLM(
       prompt,
