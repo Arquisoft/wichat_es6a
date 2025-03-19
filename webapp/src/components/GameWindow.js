@@ -1,29 +1,28 @@
 import React, { useEffect, useState, useRef } from "react";
 import Grid from "@mui/material/Grid";
-import { Typography, Button, Paper } from "@mui/material";
+import { Typography, Button, Paper, AppBar, Toolbar, IconButton } from "@mui/material";
+import { Home as HomeIcon, Whatshot as WhatshotIcon } from "@mui/icons-material";
 import ChatClues from "./ChatClues";
 import Game from "./Game";
 import { useNavigate } from "react-router-dom";
-import WhatshotIcon from "@mui/icons-material/Whatshot"; // Ícono de fuego
 
 export function GameWindow() {
   const navigate = useNavigate();
   const gameRef = useRef(new Game(navigate)); 
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [points, setPoints] = useState(0);
-  const [streak, setStreak] = useState(0); // Estado para la racha actual
-  const isInitializedRef = useRef(false); // Ref para controlar la inicialización
+  const [streak, setStreak] = useState(0);
+  const isInitializedRef = useRef(false);
 
   useEffect(() => {
     const initializeGame = async () => {
-      if (isInitializedRef.current) return; // Si ya se inicializó, no hacer nada
-      isInitializedRef.current = true; // Marcar como inicializado
+      if (isInitializedRef.current) return;
+      isInitializedRef.current = true;
 
       await gameRef.current.init();
-      console.log("Game iniciado:", gameRef.current);
       setCurrentQuestion(gameRef.current.getCurrentQuestion());
       setPoints(gameRef.current.getCurrentPoints());
-      setStreak(gameRef.current.getCurrentStreak()); // Obtener la racha inicial
+      setStreak(gameRef.current.getCurrentStreak());
     };
 
     initializeGame();
@@ -33,11 +32,43 @@ export function GameWindow() {
     gameRef.current.answerQuestion(index);
     setCurrentQuestion(gameRef.current.getCurrentQuestion());
     setPoints(gameRef.current.getCurrentPoints());
-    setStreak(gameRef.current.getCurrentStreak()); // Actualizar la racha al responder
+    setStreak(gameRef.current.getCurrentStreak());
   };
 
   return (
     <Grid container sx={{ bgcolor: "#f4f4f4", p: 2 }}>
+      <AppBar position="static">
+        <Toolbar>
+          <IconButton edge="start" color="inherit" onClick={() => navigate("/")}>
+            <HomeIcon />
+          </IconButton>
+
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            Home Page
+          </Typography>
+
+          <Button color="inherit" onClick={() => navigate("/game")}>
+            Jugar
+          </Button>
+
+          <Button color="inherit" onClick={() => navigate("/ranking")}>
+            Ranking
+          </Button>
+
+          <Button color="inherit" onClick={() => navigate("/statistics")}>
+            Stats
+          </Button>
+
+          <Button color="inherit" onClick={() => navigate("/home")}>
+            Home
+          </Button>
+
+          <Button color="inherit" onClick={() => navigate("/")}>
+            Logout
+          </Button>
+        </Toolbar>
+      </AppBar>
+
       <ChatClues />
 
       {/* Contenedor Principal */}
@@ -90,7 +121,7 @@ export function GameWindow() {
             <Typography variant="h6" color="primary" sx={{ mr: 1 }}>
               Points: {points}
             </Typography>
-            <WhatshotIcon color="error" /> {/* Ícono de fuego 🔥 */}
+            <WhatshotIcon color="error" />
             <Typography variant="h6" color="error" sx={{ ml: 1 }}>
               {streak}
             </Typography>

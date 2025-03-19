@@ -11,7 +11,6 @@ import CssBaseline from "@mui/material/CssBaseline";
 import GameWindow  from "./components/GameWindow";
 import Statistics from "./components/StatisticsWindow";
 import EndGame from "./components/EndGameWindow";
-import Container from "@mui/material/Container";
 
 function App() {
   return (
