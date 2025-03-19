@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, forwardRef, useImperativeHandle } from "react";
 import { Grid, Typography, Button, TextField, Paper, Box } from "@mui/material";
 import axios from "axios";
 
-const ChatClues = () => {
+const ChatClues = forwardRef(({ question, answers }, ref) => {
   const [messages, setMessages] = useState(["IA: How can I help you?"]);
   const [input, setInput] = useState("");
   const apiEndpoint =
-    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8003";
+    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
   const apiKey = process.env.LLM_API_KEY;
 
   const handleSendMessage = async () => {
@@ -16,39 +16,45 @@ const ChatClues = () => {
       setInput("");
 
       try {
-        const response = await axios.post(`${apiEndpoint}/ask`, {
-          question: input,
+        const response = await axios.post(`${apiEndpoint}/getHintWithQuery`, {
+          question: question,
+          answers: answers,
+          userQuery: input,
           apiKey: apiKey,
         });
+        console.log("Peticion lanzada: pregunta " + question);
+        console.log("Peticion lanzada: opciones " + answers);
+        console.log("Peticion lanzada: query " + input);
 
-        const iaMessage = `IA: ${response.data.answer}`;
-        setMessages([...messages, userMessage, iaMessage]);
+        const hintMessage = `IA: ${response.data.hint}`;
+        setMessages([...messages, userMessage, hintMessage]);
       } catch (error) {
-        console.error("Error sending message:", error);
-        let errorMessage =
-          "IA: Error processing your request. Please try again later.";
+        console.error("Error getting hint:", error);
+        let errorMessage = "IA: Error retrieving hint. Please try again later.";
         if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
           console.error(
             "Server responded with:",
             error.response.status,
             error.response.data
           );
-          errorMessage = `IA: Server error: ${error.response.status}`; // You can customize this further
+          errorMessage = `IA: Server error: ${error.response.status}`;
         } else if (error.request) {
-          // The request was made but no response was received
           console.error("No response received:", error.request);
           errorMessage =
             "IA: No response from server. Please check your connection.";
         } else {
-          // Something happened in setting up the request that triggered an Error
           console.error("Error setting up request:", error.message);
         }
         setMessages([...messages, userMessage, errorMessage]);
       }
     }
   };
+
+  useImperativeHandle(ref, () => ({
+    addMessage: (message) => {
+      setMessages((prevMessages) => [...prevMessages, message]);
+    },
+  }));
 
   return (
     <Grid
@@ -126,6 +132,6 @@ const ChatClues = () => {
       </Grid>
     </Grid>
   );
-};
+});
 
 export default ChatClues;

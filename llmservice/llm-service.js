@@ -16,7 +16,6 @@ require("dotenv").config(); // Cargar las variables de entorno desde .env
 // URL del servicio de Wikidata (server.js)
 const WIKIDATA_SERVICE_URL = "http://wikidataservice:8020/api";
 
-
 // Middleware para parsear JSON
 app.use(express.json());
 
@@ -29,12 +28,9 @@ app.use((req, res, next) => {
   next();
 });
 
-
-
 const llmConfigs = {
   empathy: {
-
-    url: () => 'https://empathyai.prod.empathy.co/v1/chat/completions',
+    url: () => "https://empathyai.prod.empathy.co/v1/chat/completions",
     transformRequest: (question, moderation) => ({
       model: "qwen/Qwen2.5-Coder-7B-Instruct",
       stream: false, // No soporta stream=true con axios directamente
@@ -105,10 +101,6 @@ app.post("/ask", async (req, res) => {
   }
 });
 
-
-
-
-
 // Servicio 1: Generación de preguntas y respuestas a partir del contexto
 app.post("/generateQuestions", async (req, res) => {
   try {
@@ -123,7 +115,7 @@ app.post("/generateQuestions", async (req, res) => {
       { name: "peliculas", endpoint: "/peliculas" },
       { name: "canciones", endpoint: "/canciones" },
       { name: "formula1", endpoint: "/formula1" },
-      { name: "pinturas" , endpoint: "/pinturas" }
+      { name: "pinturas", endpoint: "/pinturas" },
     ];
 
     // Función para seleccionar una categoría aleatoria
@@ -134,7 +126,6 @@ app.post("/generateQuestions", async (req, res) => {
     const randomCategory = getRandomCategory(); // Selecciona una categoría aleatoria
     const apiUrl = `${WIKIDATA_SERVICE_URL}${randomCategory.endpoint}`;
 
-
     // Solicitar datos al servicio de Wikidata
     const { data } = await axios.get(apiUrl);
     // Seleccionar una entrada aleatoria de los datos obtenidos
@@ -143,33 +134,32 @@ app.post("/generateQuestions", async (req, res) => {
     let informacion = "";
 
     if (!data || data.length === 0) {
-      
       return res.status(500).json({ error: "No data found from Wikidata" });
-  }
+    }
 
-  switch (randomCategory.name) {
-    case "paises":
+    switch (randomCategory.name) {
+      case "paises":
         informacion = `País: ${entry.countryLabel},  Su Capital: ${entry.capitalLabel}`;
         break;
-    case "monumentos":
+      case "monumentos":
         informacion = `Monumento: ${entry.monumentLabel}, Su País: ${entry.countryLabel}`;
         break;
-    case "elementos":
+      case "elementos":
         informacion = `Elemento: ${entry.elementLabel}, Su Símbolo: ${entry.symbol}`;
         break;
-    case "peliculas":
+      case "peliculas":
         informacion = `Película: ${entry.peliculaLabel}, Su Director: ${entry.directorLabel}`;
         break;
-    case "canciones":
+      case "canciones":
         informacion = `Canción: ${entry.songLabel}, Su Artista: ${entry.artistLabel}`;
         break;
-    case "formula1":
+      case "formula1":
         informacion = `Campeonato de formula 1 año: ${entry.year}, Ganador: ${entry.winnerLabel}`;
         break;
-    case "pinturas":
+      case "pinturas":
         informacion = `Pintura: ${entry.paintingLabel}, Su Autor: ${entry.artistLabel}`;
         break;
-}
+    }
     const context = req.body.context;
     console.log("Informacion: ", informacion);
     const prompt = `A partir del siguiente texto: "${informacion}", genera 4 preguntas de opción múltiple. 
@@ -232,11 +222,11 @@ app.post("/getHint", async (req, res) => {
 
     Ejemplo de respuesta: "Piensa en eventos relacionados con el contexto histórico o en los elementos clave de la pregunta."
 
-    Responde en formato JSON:
+    Responde en este formato :
 
-    {
-      "hint": "Este evento marcó una transición importante, pero no ocurrió en el siglo XX."
-    }`;
+    
+      Este evento marcó una transición importante, pero no ocurrió en el siglo XX.
+    `;
 
     const response = await sendQuestionToLLM(
       prompt,
@@ -265,20 +255,18 @@ app.post("/getHintWithQuery", async (req, res) => {
       ? `\nConsulta adicional del usuario: "${userQuery}"`
       : "";
 
-    const prompt = `Dada la siguiente pregunta y respuestas, proporciona una pista breve, útil y relevante, 
-    que no revele directamente la respuesta correcta, pero que ayude al jugador a tomar una decisión informada. 
-    La pista debe considerar el contexto de la pregunta y las respuestas disponibles, evitando ser demasiado obvia.
-
-    Pregunta: "${question}"
-    Respuestas: ${answerTexts}${userQueryText}
-
-    Ejemplo de respuesta: "Piensa en eventos relacionados con el contexto histórico o en los elementos clave de la pregunta."
-
-    Responde en formato JSON:
-
-    {
-      "hint": "Este evento marcó una transición importante, pero no ocurrió en el siglo XX."
-    }`;
+    const prompt = `
+      Dada la siguiente pregunta y opciones de respuesta, y considerando la consulta adicional del usuario, genera una pista que:
+1. Sea breve, útil y relevante.
+2. Ayude al jugador a tomar una decisión informada.
+3. Si la consulta del usuario contiene las siguientes palabras responde: "No puedo responder a esto" palabras: Respuesta , Answer , right , correct
+4. En caso contrario, tu salida final debe ser una sola línea de texto (sin agregar nada más) que dé una pista, por ejemplo:
+   Este evento marcó una transición importante, pero no ocurrió en el siglo XX.
+      
+      Pregunta: "${question}"
+      Respuestas: ${answerTexts}${userQueryText}
+      Query: ${userQuery}
+          `.trim();
 
     const response = await sendQuestionToLLM(
       prompt,

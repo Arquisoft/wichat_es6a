@@ -9,8 +9,7 @@ import {
   Snackbar,
 } from "@mui/material";
 
-const apiEndpoint =
-  process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
+const apiEndpoint = "http://localhost:8000";
 
 const AddUser = () => {
   const [username, setUsername] = useState("");
