@@ -1,29 +1,31 @@
-import React from "react";
-import {
-  Container,
-  Typography,
-  Box,
-  Button,
-} from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Container, Typography, Grid, Button } from "@mui/material";
+import { useNavigate, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
+import WhatshotIcon from "@mui/icons-material/Whatshot"; // 🔥 Icono de fuego
 
-export default function ScoreWindow({ correctAnswers, totalQuestions, onRestart }) {
+export default function ScoreWindow() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Extraer valores del estado de navegación
+  const { score = 0, correctAnswers = 0, totalQuestions = 0, streak = 0 } = location.state || {};
+
+  useEffect(() => {
+    console.log("Juego finalizado - Mostrando resultados", { score, correctAnswers, totalQuestions, streak });
+  }, [score, correctAnswers, totalQuestions, streak]);
 
   return (
     <Container component="main" maxWidth={false} sx={{ width: "100%", minHeight: "100vh", paddingTop: 8 }}>
-      {/* Barra de navegación */}
       <Navbar />
 
-      {/* Contenido */}
-      <Box
+      <Grid
+        container
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "calc(100vh - 64px)", // Ajusta para no solaparse con la barra
+          height: "calc(100vh - 64px)",
           textAlign: "center",
           background: "#f8f9fa",
           padding: "20px",
@@ -34,35 +36,47 @@ export default function ScoreWindow({ correctAnswers, totalQuestions, onRestart 
         <Typography variant="h4" fontWeight="bold" gutterBottom>
           ¡Partida Finalizada!
         </Typography>
-        <Typography variant="h6">Has respondido correctamente:</Typography>
+
+        {/* Puntuación Total */}
+        <Typography variant="h6">Puntuación total:</Typography>
+        <Typography variant="h3" fontWeight="bold" sx={{ my: 2 }}>
+          {score} puntos
+        </Typography>
+
+        {/* Respuestas Correctas */}
+        <Typography variant="h6">Respuestas correctas:</Typography>
         <Typography variant="h3" fontWeight="bold" sx={{ my: 2 }}>
           {correctAnswers} / {totalQuestions}
         </Typography>
-        
-        <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => navigate("/game")}
-          >
-            Volver a jugar
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => navigate("/statistics")}
-          >
-            Estadísticas
-          </Button>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => navigate("/home")}
-          >
-            Menú Principal
-          </Button>
-        </Box>
-      </Box>
+
+        {/* Mejor Racha de Respuestas Correctas */}
+        <Typography variant="h6">Mejor racha de respuestas correctas:</Typography>
+        <Grid item container justifyContent="center" alignItems="center">
+          <WhatshotIcon color="error" sx={{ fontSize: 40 }} />
+          <Typography variant="h3" fontWeight="bold" color="error" sx={{ ml: 1 }}>
+            {streak}
+          </Typography>
+        </Grid>
+
+        {/* Botones */}
+        <Grid item container justifyContent="center" spacing={2} sx={{ mt: 3 }}>
+          <Grid item>
+            <Button variant="contained" color="primary" onClick={() => navigate("/game")}>
+              Volver a jugar
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button variant="contained" color="secondary" onClick={() => navigate("/statistics")}>
+              Estadísticas
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button variant="contained" color="error" onClick={() => navigate("/home")}>
+              Menú Principal
+            </Button>
+          </Grid>
+        </Grid>
+      </Grid>
     </Container>
   );
 }
