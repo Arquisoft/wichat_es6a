@@ -18,6 +18,7 @@ class Answer {
         this.questionIndex = 0;
         this.score = 0;
         this.navigate = navigate;
+        this.consecutiveCorrectAnswers = 0;
     }
   
     async init() {
@@ -82,12 +83,21 @@ class Answer {
             this.questionIndex < this.questions.length &&
             this.questions[this.questionIndex].answers[index]
         ) {
+            //Comprobamos si la respuesta es correcta
             if (this.questions[this.questionIndex].answers[index].isCorrect) {
+                //Sumamos los puntos base
                 this.score += 100;
+                //Sumamos los puntos extra por respuestas consecutivas correctas
+                this.score += this.consecutiveCorrectAnswers * 20;
+            }else{
+              //Si la respuesta es incorrecta reiniciamos la racaha de respuestas correctas a 0
+              this.consecutiveCorrectAnswers = 0;
             }
+            //Pasamos a la siguiente pregunta
             this.questionIndex++;
         }
-  
+        
+        //Si ya respondio todas las preguntas terminamos el juego
         if (this.questionIndex >= this.questions.length) {
             this.endGame();
         }
