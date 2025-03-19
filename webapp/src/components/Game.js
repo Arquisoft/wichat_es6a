@@ -57,7 +57,40 @@ class Answer {
             console.error("Error fetching questions:", error.message);
         }
     }    
-    
+
+    async TestingInit() {
+      console.log("Modo de prueba activado: Cargando preguntas predefinidas");
+  
+      // Preguntas predefinidas
+      this.questions = [
+          new Question("¿Cuál es la capital de Francia?", [
+              new Answer("Madrid", false),
+              new Answer("París", true),
+              new Answer("Berlín", false),
+              new Answer("Lisboa", false),
+          ]),
+          new Question("¿Quién escribió 'Don Quijote de la Mancha'?", [
+              new Answer("Miguel de Cervantes", true),
+              new Answer("Gabriel García Márquez", false),
+              new Answer("William Shakespeare", false),
+              new Answer("Federico García Lorca", false),
+          ]),
+          new Question("¿En qué año llegó el ser humano a la Luna?", [
+              new Answer("1969", true),
+              new Answer("1975", false),
+              new Answer("1965", false),
+              new Answer("1980", false),
+          ]),
+          new Question("¿Cuál es el océano más grande del mundo?", [
+              new Answer("Atlántico", false),
+              new Answer("Índico", false),
+              new Answer("Pacífico", true),
+              new Answer("Ártico", false),
+          ]),
+      ];
+  
+      console.log("Preguntas de prueba cargadas:", this.questions);
+  }   
   
     endGame() {
         if (this.navigate) {
