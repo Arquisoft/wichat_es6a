@@ -18,6 +18,9 @@ class Answer {
         this.questionIndex = 0;
         this.score = 0;
         this.navigate = navigate;
+        this.consecutiveCorrectAnswers = 0;
+        this.correctAnswers = 0;
+        this.maxConsecutiveCorrectAnswers = 0;
     }
   
     async init() {
@@ -91,15 +94,31 @@ class Answer {
   
       console.log("Preguntas de prueba cargadas:", this.questions);
   }   
-  
-    endGame() {
-        if (this.navigate) {
-            this.navigate("/");
-        }
+    
+  endGame() {
+    if(this.consecutiveCorrectAnswers > this.maxConsecutiveCorrectAnswers){
+      this.maxConsecutiveCorrectAnswers = this.consecutiveCorrectAnswers;
     }
+    if (this.navigate) {
+        this.navigate("/endGame", {
+            state: {
+                score: this.score || 0,
+                correctAnswers: this.correctAnswers || 0,
+                totalQuestions: this.questions.length || 0,
+                streak: this.maxConsecutiveCorrectAnswers || 0
+            }
+        });
+    }
+  }
+
+
   
     getCurrentQuestionText() {
         return this.questions[this.questionIndex].questionText;
+    }
+
+    getCurrentStreak() {
+      return this.consecutiveCorrectAnswers;
     }
   
     getCurrentQuestionAnswer(index) {
@@ -115,12 +134,28 @@ class Answer {
             this.questionIndex < this.questions.length &&
             this.questions[this.questionIndex].answers[index]
         ) {
+            //Comprobamos si la respuesta es correcta
             if (this.questions[this.questionIndex].answers[index].isCorrect) {
+                //Marcamos la pregunta como respondida correctamente
+                this.correctAnswers++;
+                //Aumentamos la racha de respuestas correctas
+                this.consecutiveCorrectAnswers++;
+                //Sumamos los puntos base
                 this.score += 100;
+                //Sumamos los puntos extra por respuestas consecutivas correctas
+                this.score += this.consecutiveCorrectAnswers * 20;
+            }else{
+              if(this.consecutiveCorrectAnswers > this.maxConsecutiveCorrectAnswers){
+                this.maxConsecutiveCorrectAnswers = this.consecutiveCorrectAnswers;
+              }
+              //Si la respuesta es incorrecta reiniciamos la racaha de respuestas correctas a 0
+              this.consecutiveCorrectAnswers = 0;
             }
+            //Pasamos a la siguiente pregunta
             this.questionIndex++;
         }
-  
+        
+        //Si ya respondio todas las preguntas terminamos el juego
         if (this.questionIndex >= this.questions.length) {
             this.endGame();
         }

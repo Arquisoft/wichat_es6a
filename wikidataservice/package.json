@@ -2,11 +2,11 @@
     "name": "wikidata-quiz-service",
     "version": "1.0.0",
     "description": "Servicio para generar preguntas de quiz basadas en datos de Wikidata",
-    "main": "server.js",
+    "main": "wikidata-service.js",
     "type" : "module",
     "scripts": {
-      "start": "node server.js",
-      "dev": "nodemon server.js"
+      "start": "node wikidata-service.js",
+      "dev": "nodemon wikidata-service.js"
     },
     "dependencies": {
       "axios": "^1.4.0",

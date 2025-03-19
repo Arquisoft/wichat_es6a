@@ -1,13 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import Grid from "@mui/material/Grid";
 import { Typography, Button, Paper } from "@mui/material";
+import { Whatshot as WhatshotIcon } from "@mui/icons-material";
 import ChatClues from "./ChatClues";
 import Game from "./Game";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar"; // Importa la barra de navegación
 
 export function GameWindow() {
   const navigate = useNavigate();
-  const gameRef = useRef(new Game(navigate)); 
+  const gameRef = useRef(new Game(navigate));
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [points, setPoints] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -19,9 +21,11 @@ export function GameWindow() {
       if (isInitializedRef.current) return; // Si ya se inicializó, salir
       isInitializedRef.current = true;
 
-      await gameRef.current.TestingInit();
+      await gameRef.current.init();
+
       setCurrentQuestion(gameRef.current.getCurrentQuestion());
       setPoints(gameRef.current.getCurrentPoints());
+      setStreak(gameRef.current.getCurrentStreak());
     };
 
     initializeGame();
@@ -53,6 +57,9 @@ export function GameWindow() {
 
   return (
     <Grid container sx={{ bgcolor: "#f4f4f4", p: 2 }}>
+      {/* Barra de navegación */}
+      <Navbar />
+
       <ChatClues />
 
       <Grid item xs={9} container direction="column" sx={{ p: 3, mx: "auto" }}>
@@ -93,14 +100,20 @@ export function GameWindow() {
           IMAGE
         </Grid>
 
-        {/* Pregunta y Puntuacion */}
-        <Grid item container justifyContent="space-between" sx={{ mb: 2 }}>
+        {/* Pregunta, Puntuación y Racha */}
+        <Grid item container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
           <Typography variant="h6">
             {currentQuestion ? currentQuestion.questionText : "Cargando..."}
           </Typography>
-          <Typography variant="h6" color="primary">
-            Points: {points}
-          </Typography>
+          <Grid item display="flex" alignItems="center">
+            <Typography variant="h6" color="primary" sx={{ mr: 1 }}>
+              Points: {points}
+            </Typography>
+            <WhatshotIcon color="error" />
+            <Typography variant="h6" color="error" sx={{ ml: 1 }}>
+              {streak}
+            </Typography>
+          </Grid>
         </Grid>
 
         {/* Respuestas */}
