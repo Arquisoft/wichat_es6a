@@ -19,6 +19,8 @@ class Answer {
         this.score = 0;
         this.navigate = navigate;
         this.consecutiveCorrectAnswers = 0;
+        this.correctAnswers = 0;
+        this.maxConsecutiveCorrectAnswers = 0;
     }
   
     async init() {
@@ -59,12 +61,23 @@ class Answer {
         }
     }    
     
-  
-    endGame() {
-        if (this.navigate) {
-            this.navigate("/");
-        }
+  endGame() {
+    if(this.consecutiveCorrectAnswers > this.maxConsecutiveCorrectAnswers){
+      this.maxConsecutiveCorrectAnswers = this.consecutiveCorrectAnswers;
     }
+    if (this.navigate) {
+        this.navigate("/endGame", {
+            state: {
+                score: this.score || 0,
+                correctAnswers: this.correctAnswers || 0,
+                totalQuestions: this.questions.length || 0,
+                streak: this.maxConsecutiveCorrectAnswers || 0
+            }
+        });
+    }
+  }
+
+
   
     getCurrentQuestionText() {
         return this.questions[this.questionIndex].questionText;
@@ -89,6 +102,8 @@ class Answer {
         ) {
             //Comprobamos si la respuesta es correcta
             if (this.questions[this.questionIndex].answers[index].isCorrect) {
+                //Marcamos la pregunta como respondida correctamente
+                this.correctAnswers++;
                 //Aumentamos la racha de respuestas correctas
                 this.consecutiveCorrectAnswers++;
                 //Sumamos los puntos base
@@ -96,6 +111,9 @@ class Answer {
                 //Sumamos los puntos extra por respuestas consecutivas correctas
                 this.score += this.consecutiveCorrectAnswers * 20;
             }else{
+              if(this.consecutiveCorrectAnswers > this.maxConsecutiveCorrectAnswers){
+                this.maxConsecutiveCorrectAnswers = this.consecutiveCorrectAnswers;
+              }
               //Si la respuesta es incorrecta reiniciamos la racaha de respuestas correctas a 0
               this.consecutiveCorrectAnswers = 0;
             }
