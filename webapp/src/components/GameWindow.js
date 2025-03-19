@@ -4,14 +4,15 @@ import { Typography, Button, Paper } from "@mui/material";
 import ChatClues from "./ChatClues";
 import Game from "./Game";
 import { useNavigate } from "react-router-dom";
+import WhatshotIcon from "@mui/icons-material/Whatshot"; // Ícono de fuego
 
 export function GameWindow() {
   const navigate = useNavigate();
   const gameRef = useRef(new Game(navigate)); 
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [points, setPoints] = useState(0);
+  const [streak, setStreak] = useState(0); // Estado para la racha actual
   const isInitializedRef = useRef(false); // Ref para controlar la inicialización
-
 
   useEffect(() => {
     const initializeGame = async () => {
@@ -22,6 +23,7 @@ export function GameWindow() {
       console.log("Game iniciado:", gameRef.current);
       setCurrentQuestion(gameRef.current.getCurrentQuestion());
       setPoints(gameRef.current.getCurrentPoints());
+      setStreak(gameRef.current.getCurrentStreak()); // Obtener la racha inicial
     };
 
     initializeGame();
@@ -31,6 +33,7 @@ export function GameWindow() {
     gameRef.current.answerQuestion(index);
     setCurrentQuestion(gameRef.current.getCurrentQuestion());
     setPoints(gameRef.current.getCurrentPoints());
+    setStreak(gameRef.current.getCurrentStreak()); // Actualizar la racha al responder
   };
 
   return (
@@ -42,9 +45,7 @@ export function GameWindow() {
         {/* Botones de Info y Exit */}
         <Grid item container justifyContent="flex-end" spacing={1} sx={{ mb: 2 }}>
           <Grid item>
-            <Button variant="contained" color="primary">
-              Hint
-            </Button>
+            <Button variant="contained" color="primary">Hint</Button>
           </Grid>
           <Grid item>
             <Button variant="contained" color="error" onClick={() => gameRef.current.endGame()}>
@@ -80,14 +81,20 @@ export function GameWindow() {
           IMAGE
         </Grid>
 
-        {/* Pregunta y Puntuacion */}
-        <Grid item container justifyContent="space-between" sx={{ mb: 2 }}>
+        {/* Pregunta, Puntuación y Racha */}
+        <Grid item container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
           <Typography variant="h6">
             {currentQuestion ? currentQuestion.questionText : "Cargando..."}
           </Typography>
-          <Typography variant="h6" color="primary">
-            Points: {points}
-          </Typography>
+          <Grid item display="flex" alignItems="center">
+            <Typography variant="h6" color="primary" sx={{ mr: 1 }}>
+              Points: {points}
+            </Typography>
+            <WhatshotIcon color="error" /> {/* Ícono de fuego 🔥 */}
+            <Typography variant="h6" color="error" sx={{ ml: 1 }}>
+              {streak}
+            </Typography>
+          </Grid>
         </Grid>
 
         {/* Respuestas */}

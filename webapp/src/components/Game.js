@@ -69,6 +69,10 @@ class Answer {
     getCurrentQuestionText() {
         return this.questions[this.questionIndex].questionText;
     }
+
+    getCurrentStreak() {
+      return this.consecutiveCorrectAnswers;
+    }
   
     getCurrentQuestionAnswer(index) {
         return this.questions[this.questionIndex].answers[index]?.text;
@@ -85,6 +89,8 @@ class Answer {
         ) {
             //Comprobamos si la respuesta es correcta
             if (this.questions[this.questionIndex].answers[index].isCorrect) {
+                //Aumentamos la racha de respuestas correctas
+                this.consecutiveCorrectAnswers++;
                 //Sumamos los puntos base
                 this.score += 100;
                 //Sumamos los puntos extra por respuestas consecutivas correctas
