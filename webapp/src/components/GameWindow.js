@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import Grid from "@mui/material/Grid";
-import { Typography, Button, Paper, AppBar, Toolbar, IconButton } from "@mui/material";
-import { Home as HomeIcon, Whatshot as WhatshotIcon } from "@mui/icons-material";
+import { Typography, Button, Paper } from "@mui/material";
+import { Whatshot as WhatshotIcon } from "@mui/icons-material";
 import ChatClues from "./ChatClues";
 import Game from "./Game";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar"; // Importa la barra de navegación
 
 export function GameWindow() {
   const navigate = useNavigate();
-  const gameRef = useRef(new Game(navigate)); 
+  const gameRef = useRef(new Game(navigate));
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [points, setPoints] = useState(0);
   const [streak, setStreak] = useState(0);
@@ -37,37 +38,8 @@ export function GameWindow() {
 
   return (
     <Grid container sx={{ bgcolor: "#f4f4f4", p: 2 }}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton edge="start" color="inherit" onClick={() => navigate("/")}>
-            <HomeIcon />
-          </IconButton>
-
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Home Page
-          </Typography>
-
-          <Button color="inherit" onClick={() => navigate("/game")}>
-            Jugar
-          </Button>
-
-          <Button color="inherit" onClick={() => navigate("/ranking")}>
-            Ranking
-          </Button>
-
-          <Button color="inherit" onClick={() => navigate("/statistics")}>
-            Stats
-          </Button>
-
-          <Button color="inherit" onClick={() => navigate("/home")}>
-            Home
-          </Button>
-
-          <Button color="inherit" onClick={() => navigate("/")}>
-            Logout
-          </Button>
-        </Toolbar>
-      </AppBar>
+      {/* Barra de navegación */}
+      <Navbar />
 
       <ChatClues />
 

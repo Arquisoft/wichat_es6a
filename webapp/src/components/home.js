@@ -1,16 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {
-  AppBar,
-  Toolbar,
-  Button,
-  IconButton,
-  Typography,
-  Box,
-  Snackbar,
-} from "@mui/material";
-import { Home as HomeIcon } from "@mui/icons-material";
+import { Box, Typography, Snackbar } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import Navbar from "./Navbar";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -47,43 +39,11 @@ const Home = () => {
         backgroundSize: "cover",
       }}
     >
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton edge="start" color="inherit" onClick={() => navigate("/")}>
-            <HomeIcon />
-          </IconButton>
-
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Home Page
-          </Typography>
-
-          <Button color="inherit" onClick={() => navigate("/game")}>
-            Jugar
-          </Button>
-
-          <Button color="inherit" onClick={() => navigate("/ranking")}>
-            Ranking
-          </Button>
-
-          <Button color="inherit" onClick={() => navigate("/statistics")}>
-            Stats
-          </Button>
-
-          <Button color="inherit" onClick={() => navigate("/home")}>
-            Home
-          </Button>
-
-          <Button color="inherit" onClick={() => navigate("/")}>
-            Logout
-          </Button>
-        </Toolbar>
-      </AppBar>
-
+      <Navbar />
       <Box sx={{ textAlign: "center", paddingTop: 4 }}>
         <Typography variant="h5">{welcomeMessage}</Typography>
         <Box
           sx={{
-            
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -102,7 +62,8 @@ const Home = () => {
             sx={{ maxWidth: "100%", height: "auto", marginBottom: 2 }}
           />
           <Typography variant="body1" sx={{ textAlign: "justify", fontSize: "1rem" }}>
-            Wichat es un juego digital de trivia diseñado para poner a prueba tus conocimientos y habilidades de pensamiento rápido.
+            Wichat es un juego digital de trivia diseñado para poner a prueba tus
+            conocimientos y habilidades de pensamiento rápido.
           </Typography>
         </Box>
       </Box>

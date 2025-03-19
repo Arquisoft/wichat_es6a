@@ -7,13 +7,9 @@ import {
   Grid,
   LinearProgress,
   Alert,
-  AppBar,
-  Toolbar,
-  Button,
-  IconButton,
 } from "@mui/material";
-import { Home as HomeIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
 
 const StatisticsWindow = () => {
   const [stats, setStats] = useState(null);
@@ -40,23 +36,7 @@ const StatisticsWindow = () => {
   return (
     <Container component="main" maxWidth={false} sx={{ width: "100%" }}>
       {/* Barra de navegación siempre visible */}
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton edge="start" color="inherit" onClick={() => navigate("/")}>
-            <HomeIcon />
-          </IconButton>
-
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Statistics
-          </Typography>
-
-          <Button color="inherit" onClick={() => navigate("/game")}>Jugar</Button>
-          <Button color="inherit" onClick={() => navigate("/ranking")}>Ranking</Button>
-          <Button color="inherit" onClick={() => navigate("/statistics")}>Stats</Button>
-          <Button color="inherit" onClick={() => navigate("/home")}>Home</Button>
-          <Button color="inherit" onClick={() => navigate("/")}>Logout</Button>
-        </Toolbar>
-      </AppBar>
+      <Navbar />
 
       {/* Mostrar carga o error */}
       {loading && <LinearProgress sx={{ marginTop: 4 }} />}

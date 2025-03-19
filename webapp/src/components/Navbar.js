@@ -17,20 +17,21 @@ const Navbar = () => {
           Home Page
         </Typography>
 
-        <Button color="inherit" onClick={() => navigate("/game")}>
-          Jugar
+        
+        <Button color="inherit" onClick={() => navigate("/home")}>
+          Home
         </Button>
 
-        <Button color="inherit" onClick={() => navigate("/ranking")}>
-          Ranking
+        <Button color="inherit" onClick={() => navigate("/game")}>
+          Jugar
         </Button>
 
         <Button color="inherit" onClick={() => navigate("/statistics")}>
           Stats
         </Button>
 
-        <Button color="inherit" onClick={() => navigate("/home")}>
-          Home
+        <Button color="inherit" onClick={() => navigate("/ranking")}>
+          Ranking
         </Button>
 
         <Button color="inherit" onClick={() => navigate("/")}>
