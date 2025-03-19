@@ -4,7 +4,7 @@ COPY . /app
 WORKDIR /app
 
 #Install the dependencies
-RUN npm install --ignore-scripts
+RUN npm install  --ignore-scripts
 
 ARG API_URI="http://localhost:8003"
 ARG LLM_API_KEY

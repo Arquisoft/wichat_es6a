@@ -6,6 +6,7 @@ import ChatClues from "./ChatClues";
 import Game from "./Game";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
+import axios from "axios";
 
 export function GameWindow() {
   const navigate = useNavigate();
@@ -16,13 +17,17 @@ export function GameWindow() {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [feedbackColors, setFeedbackColors] = useState([]);
   const isInitializedRef = useRef(false);
+  const chatCluesRef = useRef(null);
+  const apiEndpoint =
+    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
+  const apiKey = process.env.GEMINI_API_KEY;
 
   useEffect(() => {
     const initializeGame = async () => {
       if (isInitializedRef.current) return;
       isInitializedRef.current = true;
 
-      await gameRef.current.Init();
+      await gameRef.current.TestingInit();
 
       setCurrentQuestion(gameRef.current.getCurrentQuestion());
       setPoints(gameRef.current.getCurrentPoints());
@@ -35,10 +40,12 @@ export function GameWindow() {
   const handleAnswerClick = (index) => {
     if (selectedAnswer !== null) return;
 
-    const correctIndex = currentQuestion.answers.findIndex(ans => ans.isCorrect);
+    const correctIndex = currentQuestion.answers.findIndex(
+      (ans) => ans.isCorrect
+    );
     setSelectedAnswer(index);
 
-    const newColors = currentQuestion.answers.map((_, i) => 
+    const newColors = currentQuestion.answers.map((_, i) =>
       i === correctIndex ? "#a5d6a7" : "#ef9a9a"
     );
 
@@ -54,24 +61,70 @@ export function GameWindow() {
     }, 1500);
   };
 
+  const handleGetHint = async () => {
+    if (
+      !currentQuestion ||
+      !currentQuestion.answers ||
+      currentQuestion.answers.length === 0
+    ) {
+      chatCluesRef.current.addMessage(
+        "IA: No question or answers available to get a hint."
+      );
+      return;
+    }
+
+    try {
+      const response = await axios.post(`${apiEndpoint}/getHint`, {
+        question: currentQuestion.questionText,
+        answers: currentQuestion.answers.map((answer) => answer.text),
+        apiKey: apiKey,
+      });
+
+      const hintMessage = `IA: ${response.data.hint}`;
+      chatCluesRef.current.addMessage(hintMessage);
+    } catch (error) {
+      console.error("Error getting hint:", error);
+      let errorMessage = "IA: Error retrieving hint. Please try again later.";
+      if (error.response) {
+        errorMessage = `IA: Server error: ${error.response.status}`;
+      } else if (error.request) {
+        errorMessage =
+          "IA: No response from server. Please check your connection.";
+      } else {
+        errorMessage = "IA: Error setting up request.";
+      }
+      chatCluesRef.current.addMessage(errorMessage);
+    }
+  };
+
   return (
     <Grid container sx={{ bgcolor: "#f4f4f4", p: 2 }}>
       <Navbar />
-      <ChatClues />
+      <ChatClues
+        ref={chatCluesRef}
+        question={currentQuestion?.questionText}
+        answers={currentQuestion?.answers}
+      />
 
       <Grid item xs={9} container direction="column" sx={{ p: 3, mx: "auto" }}>
-        <Grid item container justifyContent="flex-end" spacing={1} sx={{ mb: 2 }}>
+        <Grid
+          item
+          container
+          justifyContent="flex-end"
+          spacing={1}
+          sx={{ mb: 2 }}
+        >
           <Grid item>
-            <Button variant="contained" color="primary">Hint</Button>
-          </Grid>
-          <Grid item>
-            <Button variant="contained" color="error" onClick={() => gameRef.current.endGame()}>Exit</Button>
+            <Button variant="contained" color="primary" onClick={handleGetHint}>
+              Hint
+            </Button>
           </Grid>
         </Grid>
 
         <Grid item sx={{ textAlign: "center", mb: 2 }}>
           <Typography variant="h5" fontWeight="bold">
-            Question {gameRef.current.questionIndex + 1}/{gameRef.current.questions.length}
+            Question {gameRef.current.questionIndex + 1}/
+            {gameRef.current.questions.length}
           </Typography>
         </Grid>
 
@@ -94,7 +147,13 @@ export function GameWindow() {
           IMAGE
         </Grid>
 
-        <Grid item container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+        <Grid
+          item
+          container
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 2 }}
+        >
           <Typography variant="h6">
             {currentQuestion ? currentQuestion.questionText : "Cargando..."}
           </Typography>
@@ -120,7 +179,8 @@ export function GameWindow() {
                     borderRadius: 2,
                     bgcolor: feedbackColors[index] || "#1976d2",
                     color: "white",
-                    border: selectedAnswer === index ? "3px solid black" : "none",
+                    border:
+                      selectedAnswer === index ? "3px solid black" : "none",
                     transition: "background-color 0.3s, border 0.3s",
                     "&:disabled": {
                       bgcolor: feedbackColors[index] || "#1976d2",

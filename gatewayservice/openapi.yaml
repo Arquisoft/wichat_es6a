@@ -29,7 +29,7 @@ paths:
                   description: User password.
                   example: pass
       responses:
-        '200':
+        "200":
           description: User added successfully.
           content:
             application/json:
@@ -50,11 +50,11 @@ paths:
                   createdAt:
                     type: string
                     description: Creation date.
-                    example: '2024-03-17T20:47:23.935Z'
+                    example: "2024-03-17T20:47:23.935Z"
                   ___v:
                     type: integer
-                    example: '0'                                        
-        '400':
+                    example: "0"
+        "400":
           description: Failed to add user.
           content:
             application/json:
@@ -70,7 +70,7 @@ paths:
       summary: Check the health status of the service.
       operationId: checkHealth
       responses:
-        '200':
+        "200":
           description: Service is healthy.
           content:
             application/json:
@@ -101,7 +101,7 @@ paths:
                   description: User password.
                   example: pass
       responses:
-        '200':
+        "200":
           description: Login successful. Returns user token, username, and creation date.
           content:
             application/json:
@@ -119,8 +119,8 @@ paths:
                   createdAt:
                     type: string
                     description: Creation date.
-                    example: '2024-03-17T20:47:23.935Z'
-        '401':
+                    example: "2024-03-17T20:47:23.935Z"
+        "401":
           description: Invalid credentials.
           content:
             application/json:
@@ -131,7 +131,7 @@ paths:
                     type: string
                     description: Shows the error info..
                     example: Invalid credentials
-        '500':
+        "500":
           description: Internal server error.
           content:
             application/json:
