@@ -1,27 +1,29 @@
 import React, { useEffect, useState, useRef } from "react";
 import Grid from "@mui/material/Grid";
 import { Typography, Button, Paper } from "@mui/material";
+import { Whatshot as WhatshotIcon } from "@mui/icons-material";
 import ChatClues from "./ChatClues";
 import Game from "./Game";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar"; // Importa la barra de navegación
 
 export function GameWindow() {
   const navigate = useNavigate();
-  const gameRef = useRef(new Game(navigate)); 
+  const gameRef = useRef(new Game(navigate));
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [points, setPoints] = useState(0);
-  const isInitializedRef = useRef(false); // Ref para controlar la inicialización
-
+  const [streak, setStreak] = useState(0);
+  const isInitializedRef = useRef(false);
 
   useEffect(() => {
     const initializeGame = async () => {
-      if (isInitializedRef.current) return; // Si ya se inicializó, no hacer nada
-      isInitializedRef.current = true; // Marcar como inicializado
+      if (isInitializedRef.current) return;
+      isInitializedRef.current = true;
 
       await gameRef.current.init();
-      console.log("Game iniciado:", gameRef.current);
       setCurrentQuestion(gameRef.current.getCurrentQuestion());
       setPoints(gameRef.current.getCurrentPoints());
+      setStreak(gameRef.current.getCurrentStreak());
     };
 
     initializeGame();
@@ -31,10 +33,14 @@ export function GameWindow() {
     gameRef.current.answerQuestion(index);
     setCurrentQuestion(gameRef.current.getCurrentQuestion());
     setPoints(gameRef.current.getCurrentPoints());
+    setStreak(gameRef.current.getCurrentStreak());
   };
 
   return (
     <Grid container sx={{ bgcolor: "#f4f4f4", p: 2 }}>
+      {/* Barra de navegación */}
+      <Navbar />
+
       <ChatClues />
 
       {/* Contenedor Principal */}
@@ -42,9 +48,7 @@ export function GameWindow() {
         {/* Botones de Info y Exit */}
         <Grid item container justifyContent="flex-end" spacing={1} sx={{ mb: 2 }}>
           <Grid item>
-            <Button variant="contained" color="primary">
-              Hint
-            </Button>
+            <Button variant="contained" color="primary">Hint</Button>
           </Grid>
           <Grid item>
             <Button variant="contained" color="error" onClick={() => gameRef.current.endGame()}>
@@ -80,14 +84,20 @@ export function GameWindow() {
           IMAGE
         </Grid>
 
-        {/* Pregunta y Puntuacion */}
-        <Grid item container justifyContent="space-between" sx={{ mb: 2 }}>
+        {/* Pregunta, Puntuación y Racha */}
+        <Grid item container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
           <Typography variant="h6">
             {currentQuestion ? currentQuestion.questionText : "Cargando..."}
           </Typography>
-          <Typography variant="h6" color="primary">
-            Points: {points}
-          </Typography>
+          <Grid item display="flex" alignItems="center">
+            <Typography variant="h6" color="primary" sx={{ mr: 1 }}>
+              Points: {points}
+            </Typography>
+            <WhatshotIcon color="error" />
+            <Typography variant="h6" color="error" sx={{ ml: 1 }}>
+              {streak}
+            </Typography>
+          </Grid>
         </Grid>
 
         {/* Respuestas */}
