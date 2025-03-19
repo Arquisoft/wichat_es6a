@@ -18,6 +18,9 @@ class Answer {
         this.questionIndex = 0;
         this.score = 0;
         this.navigate = navigate;
+        this.consecutiveCorrectAnswers = 0;
+        this.correctAnswers = 0;
+        this.maxConsecutiveCorrectAnswers = 0;
     }
   
     async init() {
@@ -57,16 +60,65 @@ class Answer {
             console.error("Error fetching questions:", error.message);
         }
     }    
-    
+
+    async TestingInit() {
+      console.log("Modo de prueba activado: Cargando preguntas predefinidas");
   
-    endGame() {
-        if (this.navigate) {
-            this.navigate("/");
-        }
+      // Preguntas predefinidas
+      this.questions = [
+          new Question("¿Cuál es la capital de Francia?", [
+              new Answer("Madrid", false),
+              new Answer("París", true),
+              new Answer("Berlín", false),
+              new Answer("Lisboa", false),
+          ]),
+          new Question("¿Quién escribió 'Don Quijote de la Mancha'?", [
+              new Answer("Miguel de Cervantes", true),
+              new Answer("Gabriel García Márquez", false),
+              new Answer("William Shakespeare", false),
+              new Answer("Federico García Lorca", false),
+          ]),
+          new Question("¿En qué año llegó el ser humano a la Luna?", [
+              new Answer("1969", true),
+              new Answer("1975", false),
+              new Answer("1965", false),
+              new Answer("1980", false),
+          ]),
+          new Question("¿Cuál es el océano más grande del mundo?", [
+              new Answer("Atlántico", false),
+              new Answer("Índico", false),
+              new Answer("Pacífico", true),
+              new Answer("Ártico", false),
+          ]),
+      ];
+  
+      console.log("Preguntas de prueba cargadas:", this.questions);
+  }   
+    
+  endGame() {
+    if(this.consecutiveCorrectAnswers > this.maxConsecutiveCorrectAnswers){
+      this.maxConsecutiveCorrectAnswers = this.consecutiveCorrectAnswers;
     }
+    if (this.navigate) {
+        this.navigate("/endGame", {
+            state: {
+                score: this.score || 0,
+                correctAnswers: this.correctAnswers || 0,
+                totalQuestions: this.questions.length || 0,
+                streak: this.maxConsecutiveCorrectAnswers || 0
+            }
+        });
+    }
+  }
+
+
   
     getCurrentQuestionText() {
         return this.questions[this.questionIndex].questionText;
+    }
+
+    getCurrentStreak() {
+      return this.consecutiveCorrectAnswers;
     }
   
     getCurrentQuestionAnswer(index) {
@@ -82,12 +134,28 @@ class Answer {
             this.questionIndex < this.questions.length &&
             this.questions[this.questionIndex].answers[index]
         ) {
+            //Comprobamos si la respuesta es correcta
             if (this.questions[this.questionIndex].answers[index].isCorrect) {
+                //Marcamos la pregunta como respondida correctamente
+                this.correctAnswers++;
+                //Aumentamos la racha de respuestas correctas
+                this.consecutiveCorrectAnswers++;
+                //Sumamos los puntos base
                 this.score += 100;
+                //Sumamos los puntos extra por respuestas consecutivas correctas
+                this.score += this.consecutiveCorrectAnswers * 20;
+            }else{
+              if(this.consecutiveCorrectAnswers > this.maxConsecutiveCorrectAnswers){
+                this.maxConsecutiveCorrectAnswers = this.consecutiveCorrectAnswers;
+              }
+              //Si la respuesta es incorrecta reiniciamos la racaha de respuestas correctas a 0
+              this.consecutiveCorrectAnswers = 0;
             }
+            //Pasamos a la siguiente pregunta
             this.questionIndex++;
         }
-  
+        
+        //Si ya respondio todas las preguntas terminamos el juego
         if (this.questionIndex >= this.questions.length) {
             this.endGame();
         }

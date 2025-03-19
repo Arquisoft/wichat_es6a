@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import Grid from "@mui/material/Grid";
 import { Typography, Button, Paper } from "@mui/material";
+import { Whatshot as WhatshotIcon } from "@mui/icons-material";
 import ChatClues from "./ChatClues";
 import Game from "./Game";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
 import axios from "axios";
 
 export function GameWindow() {
@@ -11,30 +13,52 @@ export function GameWindow() {
   const gameRef = useRef(new Game(navigate));
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [points, setPoints] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [feedbackColors, setFeedbackColors] = useState([]);
   const isInitializedRef = useRef(false);
+  const chatCluesRef = useRef(null);
   const apiEndpoint =
     process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
-  const apiKey = process.env.LLM_API_KEY;
-  const chatCluesRef = useRef(null);
+  const apiKey = process.env.GEMINI_API_KEY;
 
   useEffect(() => {
     const initializeGame = async () => {
       if (isInitializedRef.current) return;
       isInitializedRef.current = true;
 
-      await gameRef.current.init();
-      console.log("Game iniciado:", gameRef.current);
+      await gameRef.current.TestingInit();
+
       setCurrentQuestion(gameRef.current.getCurrentQuestion());
       setPoints(gameRef.current.getCurrentPoints());
+      setStreak(gameRef.current.getCurrentStreak());
     };
 
     initializeGame();
   }, []);
 
   const handleAnswerClick = (index) => {
-    gameRef.current.answerQuestion(index);
-    setCurrentQuestion(gameRef.current.getCurrentQuestion());
-    setPoints(gameRef.current.getCurrentPoints());
+    if (selectedAnswer !== null) return;
+
+    const correctIndex = currentQuestion.answers.findIndex(
+      (ans) => ans.isCorrect
+    );
+    setSelectedAnswer(index);
+
+    const newColors = currentQuestion.answers.map((_, i) =>
+      i === correctIndex ? "#a5d6a7" : "#ef9a9a"
+    );
+
+    setFeedbackColors(newColors);
+
+    setTimeout(() => {
+      gameRef.current.answerQuestion(index);
+      setCurrentQuestion(gameRef.current.getCurrentQuestion());
+      setPoints(gameRef.current.getCurrentPoints());
+      setStreak(gameRef.current.getCurrentStreak());
+      setSelectedAnswer(null);
+      setFeedbackColors([]);
+    }, 1500);
   };
 
   const handleGetHint = async () => {
@@ -75,33 +99,35 @@ export function GameWindow() {
 
   return (
     <Grid container sx={{ bgcolor: "#f4f4f4", p: 2 }}>
-      {/* Panel de chat a la izquierda */}
+      <Navbar />
       <ChatClues
         ref={chatCluesRef}
         question={currentQuestion?.questionText}
         answers={currentQuestion?.answers}
       />
 
-      {/* Contenido principal a la derecha */}
       <Grid item xs={9} container direction="column" sx={{ p: 3, mx: "auto" }}>
-        {/* Encabezado: número de pregunta y botón de pista a la derecha */}
         <Grid
           item
           container
-          alignItems="center"
-          justifyContent="space-between"
+          justifyContent="flex-end"
+          spacing={1}
           sx={{ mb: 2 }}
         >
+          <Grid item>
+            <Button variant="contained" color="primary" onClick={handleGetHint}>
+              Hint
+            </Button>
+          </Grid>
+        </Grid>
+
+        <Grid item sx={{ textAlign: "center", mb: 2 }}>
           <Typography variant="h5" fontWeight="bold">
             Question {gameRef.current.questionIndex + 1}/
             {gameRef.current.questions.length}
           </Typography>
-          <Button variant="outlined" onClick={handleGetHint}>
-            Get Hint
-          </Button>
         </Grid>
 
-        {/* Imagen */}
         <Grid
           item
           component={Paper}
@@ -121,17 +147,27 @@ export function GameWindow() {
           IMAGE
         </Grid>
 
-        {/* Texto de la pregunta y puntos */}
-        <Grid item container justifyContent="space-between" sx={{ mb: 2 }}>
+        <Grid
+          item
+          container
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 2 }}
+        >
           <Typography variant="h6">
             {currentQuestion ? currentQuestion.questionText : "Cargando..."}
           </Typography>
-          <Typography variant="h6" color="primary">
-            Points: {points}
-          </Typography>
+          <Grid item display="flex" alignItems="center">
+            <Typography variant="h6" color="primary" sx={{ mr: 1 }}>
+              Points: {points}
+            </Typography>
+            <WhatshotIcon color="error" />
+            <Typography variant="h6" color="error" sx={{ ml: 1 }}>
+              {streak}
+            </Typography>
+          </Grid>
         </Grid>
 
-        {/* Opciones de respuesta */}
         <Grid container spacing={2} sx={{ mt: 2 }}>
           {currentQuestion &&
             currentQuestion.answers.map((answer, index) => (
@@ -139,8 +175,20 @@ export function GameWindow() {
                 <Button
                   variant="contained"
                   fullWidth
-                  sx={{ borderRadius: 2 }}
+                  sx={{
+                    borderRadius: 2,
+                    bgcolor: feedbackColors[index] || "#1976d2",
+                    color: "white",
+                    border:
+                      selectedAnswer === index ? "3px solid black" : "none",
+                    transition: "background-color 0.3s, border 0.3s",
+                    "&:disabled": {
+                      bgcolor: feedbackColors[index] || "#1976d2",
+                      color: "white",
+                    },
+                  }}
                   onClick={() => handleAnswerClick(index)}
+                  disabled={selectedAnswer !== null}
                 >
                   {answer.text}
                 </Button>
