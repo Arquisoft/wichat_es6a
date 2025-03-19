@@ -1,15 +1,12 @@
 import React from "react";
 import {
-  AppBar,
-  Toolbar,
-  Button,
-  IconButton,
-  Typography,
   Container,
+  Typography,
   Box,
+  Button,
 } from "@mui/material";
-import { Home as HomeIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
 
 export default function ScoreWindow({ correctAnswers, totalQuestions, onRestart }) {
   const navigate = useNavigate();
@@ -17,23 +14,7 @@ export default function ScoreWindow({ correctAnswers, totalQuestions, onRestart 
   return (
     <Container component="main" maxWidth={false} sx={{ width: "100%", minHeight: "100vh", paddingTop: 8 }}>
       {/* Barra de navegación */}
-      <AppBar position="fixed">
-        <Toolbar>
-          <IconButton edge="start" color="inherit" onClick={() => navigate("/")}>
-            <HomeIcon />
-          </IconButton>
-
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Score
-          </Typography>
-
-          <Button color="inherit" onClick={() => navigate("/game")}>Jugar</Button>
-          <Button color="inherit" onClick={() => navigate("/ranking")}>Ranking</Button>
-          <Button color="inherit" onClick={() => navigate("/statistics")}>Stats</Button>
-          <Button color="inherit" onClick={() => navigate("/home")}>Home</Button>
-          <Button color="inherit" onClick={() => navigate("/")}>Logout</Button>
-        </Toolbar>
-      </AppBar>
+      <Navbar />
 
       {/* Contenido */}
       <Box
@@ -57,14 +38,30 @@ export default function ScoreWindow({ correctAnswers, totalQuestions, onRestart 
         <Typography variant="h3" fontWeight="bold" sx={{ my: 2 }}>
           {correctAnswers} / {totalQuestions}
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ mt: 2 }}
-          onClick={onRestart}
-        >
-          Volver a jugar
-        </Button>
+        
+        <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate("/game")}
+          >
+            Volver a jugar
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => navigate("/statistics")}
+          >
+            Estadísticas
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => navigate("/home")}
+          >
+            Menú Principal
+          </Button>
+        </Box>
       </Box>
     </Container>
   );
