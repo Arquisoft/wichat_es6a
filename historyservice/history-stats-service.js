@@ -1,42 +1,41 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const History = require('./history-model');
-const User = require('./user-model');
+const express = require("express");
+const cors = require("cors");
+
+const connectDatabase = require('/usr/src/llmservice/config/database');
+connectDatabase(mongoose); // Connect to MongoDB using the centralized configuration
+
+const User = require("./llmservice/models/user-model")(mongoose);
+const History = require("./llmservice/models/history-model")(mongoose);
 
 const app = express();
 const port = process.env.PORT || 8010;
 
-// Middleware to parse JSON in request body
+// Middleware
 app.use(express.json());
-
-// Middleware to enable CORS
 app.use(cors());
 
-// Connect to MongoDB
-const mongoUri = 'mongodb://mongodb-wichat_es6a:27017/gameStats';
-mongoose.connect(mongoUri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("MongoDB connection error:", err));
-
-// Route for player statistics
+// Route to fetch user game statistics
 app.get("/stats", async (req, res) => {
   try {
     const userName = "testuser1";
+    
+    // Find the user by username
     const user = await User.findOne({ username: userName });
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const history = user.games;
+    // Retrieve the user's game history from the History collection
+    const history = await History.find({ username: userName });
+
+    // Calculate statistics
     const wins = history.filter((game) => game.score > 50).length;
     const losses = history.length - wins;
     const totalPoints = history.reduce((acc, game) => acc + game.score, 0);
     const pointsPerGame = history.length > 0 ? totalPoints / history.length : 0;
 
+    // Get the top 3 best games based on score
     const bestGames = history
       .sort((a, b) => b.score - a.score)
       .slice(0, 3)
@@ -46,9 +45,9 @@ app.get("/stats", async (req, res) => {
         date: game.recordedAt.toISOString(),
       }));
 
+    // Send response with user statistics
     res.json({
       username: user.username,
-      password: user.password,
       gamesPlayed: history.length,
       totalPoints,
       pointsPerGame,
@@ -62,14 +61,7 @@ app.get("/stats", async (req, res) => {
   }
 });
 
-// Start the server
-const server = app.listen(port, () => {
-  console.log(`History Stats Service listening at http://localhost:${port}`);
+// Start the History Service
+app.listen(port, () => {
+  console.log(`History Service running on port ${port}`);
 });
-
-// Handle server close event
-server.on('close', () => {
-  mongoose.connection.close();
-});
-
-module.exports = server;
