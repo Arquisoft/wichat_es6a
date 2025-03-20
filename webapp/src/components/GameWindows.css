@@ -1,0 +1,60 @@
+.game-container {
+    background-color: #f4f4f4;
+    padding: 16px;
+  }
+  
+  .game-content {
+    padding: 24px;
+    margin: auto;
+  }
+  
+  .hint-button-container {
+    margin-bottom: 16px;
+  }
+  
+  .question-header {
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  
+  .image-container {
+    background-color: #ffffff;
+    width: 50%;
+    height: 450px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    margin: auto;
+    margin-bottom: 16px;
+  }
+  
+  .score-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .points {
+    margin-right: 8px;
+  }
+  
+  .streak {
+    margin-left: 8px;
+  }
+  
+  .answers-container {
+    margin-top: 16px;
+  }
+  
+  .answer-button {
+    border-radius: 8px;
+    color: white;
+    transition: background-color 0.3s, border 0.3s;
+  }
+  
+  .answer-button:disabled {
+    color: white;
+  }
+  

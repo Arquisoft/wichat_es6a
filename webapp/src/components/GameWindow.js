@@ -7,6 +7,7 @@ import Game from "./Game";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import axios from "axios";
+import "./GameWindow.css";
 
 export function GameWindow() {
   const navigate = useNavigate();
@@ -18,8 +19,7 @@ export function GameWindow() {
   const [feedbackColors, setFeedbackColors] = useState([]);
   const isInitializedRef = useRef(false);
   const chatCluesRef = useRef(null);
-  const apiEndpoint =
-    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
+  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
   const apiKey = process.env.GEMINI_API_KEY;
 
   useEffect(() => {
@@ -40,9 +40,7 @@ export function GameWindow() {
   const handleAnswerClick = (index) => {
     if (selectedAnswer !== null) return;
 
-    const correctIndex = currentQuestion.answers.findIndex(
-      (ans) => ans.isCorrect
-    );
+    const correctIndex = currentQuestion.answers.findIndex((ans) => ans.isCorrect);
     setSelectedAnswer(index);
 
     const newColors = currentQuestion.answers.map((_, i) =>
@@ -62,14 +60,8 @@ export function GameWindow() {
   };
 
   const handleGetHint = async () => {
-    if (
-      !currentQuestion ||
-      !currentQuestion.answers ||
-      currentQuestion.answers.length === 0
-    ) {
-      chatCluesRef.current.addMessage(
-        "IA: No question or answers available to get a hint."
-      );
+    if (!currentQuestion || !currentQuestion.answers || currentQuestion.answers.length === 0) {
+      chatCluesRef.current.addMessage("IA: No question or answers available to get a hint.");
       return;
     }
 
@@ -88,8 +80,7 @@ export function GameWindow() {
       if (error.response) {
         errorMessage = `IA: Server error: ${error.response.status}`;
       } else if (error.request) {
-        errorMessage =
-          "IA: No response from server. Please check your connection.";
+        errorMessage = "IA: No response from server. Please check your connection.";
       } else {
         errorMessage = "IA: Error setting up request.";
       }
@@ -98,102 +89,40 @@ export function GameWindow() {
   };
 
   return (
-    <Grid container sx={{ bgcolor: "#f4f4f4", p: 2 }}>
+    <Grid container className="game-container">
       <Navbar />
-      <ChatClues
-        ref={chatCluesRef}
-        question={currentQuestion?.questionText}
-        answers={currentQuestion?.answers}
-      />
+      <ChatClues ref={chatCluesRef} question={currentQuestion?.questionText} answers={currentQuestion?.answers} />
 
-      <Grid item xs={9} container direction="column" sx={{ p: 3, mx: "auto" }}>
-        <Grid
-          item
-          container
-          justifyContent="flex-end"
-          spacing={1}
-          sx={{ mb: 2 }}
-        >
+      <Grid item xs={9} container direction="column" className="game-content">
+        <Grid item container justifyContent="flex-end" spacing={1} className="hint-button-container">
           <Grid item>
-            <Button variant="contained" color="primary" onClick={handleGetHint}>
-              Hint
-            </Button>
+            <Button variant="contained" color="primary" onClick={handleGetHint}>Hint</Button>
           </Grid>
         </Grid>
 
-        <Grid item sx={{ textAlign: "center", mb: 2 }}>
-          <Typography variant="h5" fontWeight="bold">
-            Question {gameRef.current.questionIndex + 1}/
-            {gameRef.current.questions.length}
-          </Typography>
+        <Grid item className="question-header">
+          <Typography variant="h5" fontWeight="bold">Question {gameRef.current.questionIndex + 1}/{gameRef.current.questions.length}</Typography>
         </Grid>
 
-        <Grid
-          item
-          component={Paper}
-          elevation={3}
-          sx={{
-            bgcolor: "#ffffff",
-            width: "50%",
-            height: 450,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: 2,
-            mx: "auto",
-            mb: 2,
-          }}
-        >
-          IMAGE
-        </Grid>
+        <Grid item component={Paper} elevation={3} className="image-container">IMAGE</Grid>
 
-        <Grid
-          item
-          container
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{ mb: 2 }}
-        >
-          <Typography variant="h6">
-            {currentQuestion ? currentQuestion.questionText : "Cargando..."}
-          </Typography>
+        <Grid item container justifyContent="space-between" alignItems="center" className="score-container">
+          <Typography variant="h6">{currentQuestion ? currentQuestion.questionText : "Cargando..."}</Typography>
           <Grid item display="flex" alignItems="center">
-            <Typography variant="h6" color="primary" sx={{ mr: 1 }}>
-              Points: {points}
-            </Typography>
+            <Typography variant="h6" color="primary" className="points">Points: {points}</Typography>
             <WhatshotIcon color="error" />
-            <Typography variant="h6" color="error" sx={{ ml: 1 }}>
-              {streak}
-            </Typography>
+            <Typography variant="h6" color="error" className="streak">{streak}</Typography>
           </Grid>
         </Grid>
 
-        <Grid container spacing={2} sx={{ mt: 2 }}>
-          {currentQuestion &&
-            currentQuestion.answers.map((answer, index) => (
-              <Grid item xs={6} key={index}>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  sx={{
-                    borderRadius: 2,
-                    bgcolor: feedbackColors[index] || "#1976d2",
-                    color: "white",
-                    border:
-                      selectedAnswer === index ? "3px solid black" : "none",
-                    transition: "background-color 0.3s, border 0.3s",
-                    "&:disabled": {
-                      bgcolor: feedbackColors[index] || "#1976d2",
-                      color: "white",
-                    },
-                  }}
-                  onClick={() => handleAnswerClick(index)}
-                  disabled={selectedAnswer !== null}
-                >
-                  {answer.text}
-                </Button>
-              </Grid>
-            ))}
+        <Grid container spacing={2} className="answers-container">
+          {currentQuestion && currentQuestion.answers.map((answer, index) => (
+            <Grid item xs={6} key={index}>
+              <Button variant="contained" fullWidth className="answer-button" onClick={() => handleAnswerClick(index)} disabled={selectedAnswer !== null}>
+                {answer.text}
+              </Button>
+            </Grid>
+          ))}
         </Grid>
       </Grid>
     </Grid>
