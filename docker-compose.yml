@@ -9,7 +9,7 @@ services:
       - "27017:27017"
     networks:
       - mynetwork
-
+      
   authservice:
     container_name: authservice-wichat_es6a
     image: ghcr.io/arquisoft/wichat_es6a/authservice:latest
@@ -17,12 +17,15 @@ services:
     build: ./users/authservice
     depends_on:
       - mongodb
+      - llmservice
     ports:
       - "8002:8002"
     networks:
       - mynetwork
     environment:
       MONGODB_URI: mongodb://mongodb-wichat_es6a:27017/wichatdb
+    volumes:
+      - ./llmservice:/usr/src/llmservice 
 
   userservice:
     container_name: userservice-wichat_es6a
@@ -31,12 +34,15 @@ services:
     build: ./users/userservice
     depends_on:
       - mongodb
+      - llmservice
     ports:
       - "8001:8001"
     networks:
       - mynetwork
     environment:
       MONGODB_URI: mongodb://mongodb-wichat_es6a:27017/wichatdb
+    volumes:
+      - ./llmservice:/usr/src/llmservice 
 
   llmservice:
     container_name: llmservice-wichat_es6a
