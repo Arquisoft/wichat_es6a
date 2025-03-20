@@ -22,7 +22,7 @@ services:
     networks:
       - mynetwork
     environment:
-      MONGODB_URI: mongodb://mongodb:27017/userdb
+      MONGODB_URI: mongodb://mongodb-wichat_es6a:27017/wichatdb
 
   userservice:
     container_name: userservice-wichat_es6a
@@ -36,7 +36,7 @@ services:
     networks:
       - mynetwork
     environment:
-      MONGODB_URI: mongodb://mongodb:27017/userdb
+      MONGODB_URI: mongodb://mongodb-wichat_es6a:27017/wichatdb
 
   llmservice:
     container_name: llmservice-wichat_es6a
@@ -126,7 +126,7 @@ services:
     networks:
       - mynetwork
     environment:
-      MONGODB_URI: mongodb://mongodb-wichat_es6a:27017/gameStats
+      MONGODB_URI: mongodb://mongodb-wichat_es6a:27017/wichatdb
   
   wikidataservice:
     container_name: wikidataservice-wichat_es6a
