@@ -1,20 +1,19 @@
 // user-service.js
 const express = require('express');
+const bcrypt = require('bcrypt'); 
+const path = require('path');
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const User = require('./user-model')
+
+const connectDatabase = require('/usr/src/llmservice/config/database');
+connectDatabase(mongoose); // Connect to MongoDB using the centralized configuration
+
+const User = require("/usr/src/llmservice/models/user-model")(mongoose);
 
 const app = express();
 const port = 8001;
 
 // Middleware to parse JSON in request body
 app.use(express.json());
-
-// Connect to MongoDB
-const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/userdb';
-mongoose.connect(mongoUri);
-
-
 
 // Function to validate required fields in the request body
 function validateRequiredFields(req, requiredFields) {
