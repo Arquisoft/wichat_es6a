@@ -4,8 +4,8 @@ const cors = require("cors");
 const connectDatabase = require('/usr/src/llmservice/config/database');
 connectDatabase(mongoose); // Connect to MongoDB using the centralized configuration
 
-const User = require("./llmservice/models/user-model")(mongoose);
-const History = require("./llmservice/models/history-model")(mongoose);
+const User = require("../llmservice/models/stats-model")(mongoose);
+const History = require("../llmservice/models/history-model")(mongoose);
 
 const app = express();
 const port = process.env.PORT || 8010;

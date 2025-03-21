@@ -127,12 +127,16 @@ services:
     build: ./historyservice
     depends_on:
       - mongodb
+      - llmservice
     ports:
       - "8010:8010"
     networks:
       - mynetwork
     environment:
       MONGODB_URI: mongodb://mongodb-wichat_es6a:27017/wichatdb
+    volumes:
+      - ./llmservice:/usr/src/llmservice
+    
   
   wikidataservice:
     container_name: wikidataservice-wichat_es6a
