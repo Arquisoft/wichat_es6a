@@ -1,74 +1,73 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import WikiQueries from './wikidataQueries.js';
+import connectDatabase from '/usr/src/llmservice/config/database.js'; // Importamos la conexión centralizada
+
 const app = express();
 const port = 8020;
 
-app.get('/api/paises', async (req, res) => {
+// Conectar a la base de datos usando la configuración centralizada
+connectDatabase(mongoose);
+
+// Definimos un esquema y modelo para almacenar las preguntas en MongoDB
+const questionSchema = new mongoose.Schema({}, { strict: false }); // Permite cualquier estructura de datos
+const QuestionModel = mongoose.model('Question', questionSchema);
+
+async function obtenerYGuardarPreguntas(coleccion, obtenerDatos) {
     try {
-        const data = await WikiQueries.obtenerPaisYCapital();
-        res.json(data);
+        const data = await obtenerDatos();
+        
+        for (const item of data) {
+            const existe = await QuestionModel.findOne(item);
+            if (!existe) {
+                await QuestionModel.create(item);
+            }
+        }
+        return data;
     } catch (error) {
-        res.status(500).json({ error: "Error al obtener los países" });
-        console.log(error);
+        console.error(`Error al obtener y guardar datos en ${coleccion}:`, error);
+        return [];
     }
+}
+
+// Definición de rutas
+app.get('/api/paises', async (req, res) => {
+    const data = await obtenerYGuardarPreguntas('paises', WikiQueries.obtenerPaisYCapital);
+    res.json(data);
 });
 
 app.get('/api/monumentos', async (req, res) => {
-    try {
-        const data = await WikiQueries.obtenerMonumentoYPais();
-        res.json(data);
-    } catch (error) {
-        res.status(500).json({ error: "Error al obtener los monumentos" });
-    }
+    const data = await obtenerYGuardarPreguntas('monumentos', WikiQueries.obtenerMonumentoYPais);
+    res.json(data);
 });
 
 app.get('/api/elementos', async (req, res) => {
-    try {
-        const data = await WikiQueries.obtenerSimboloQuimico();
-        res.json(data);
-    } catch (error) {
-        res.status(500).json({ error: "Error al obtener los elementos químicos" });
-    }
+    const data = await obtenerYGuardarPreguntas('elementos', WikiQueries.obtenerSimboloQuimico);
+    res.json(data);
 });
 
 app.get('/api/peliculas', async (req, res) => {
-    try {
-        const data = await WikiQueries.obtenerPeliculaYDirector();
-        res.json(data);
-    } catch (error) {
-        res.status(500).json({ error: "Error al obtener las películas" });
-    }
+    const data = await obtenerYGuardarPreguntas('peliculas', WikiQueries.obtenerPeliculaYDirector);
+    res.json(data);
 });
 
 app.get('/api/canciones', async (req, res) => {
-    try {
-        const data = await WikiQueries.obtenerCancionYArtista();
-        res.json(data);
-    } catch (error) {
-        res.status(500).json({ error: "Error al obtener las canciones" });
-    }
+    const data = await obtenerYGuardarPreguntas('canciones', WikiQueries.obtenerCancionYArtista);
+    res.json(data);
 });
 
 app.get('/api/formula1', async (req, res) => {
-    try {
-        const data = await WikiQueries.obtenerAñoYGanadorF1();
-        res.json(data);
-    } catch (error) {
-        res.status(500).json({ error: "Error al obtener los datos de Fórmula 1" });
-    }
+    const data = await obtenerYGuardarPreguntas('formula1', WikiQueries.obtenerAñoYGanadorF1);
+    res.json(data);
 });
 
 app.get('/api/pinturas', async (req, res) => {
-    try {
-        const data = await WikiQueries.obtenerPintorYObras();
-        res.json(data);
-    } catch (error) {
-        res.status(500).json({ error: "Error al obtener las pinturas" });
-    }
+    const data = await obtenerYGuardarPreguntas('pinturas', WikiQueries.obtenerPintorYObras);
+    res.json(data);
 });
 
 const server = app.listen(port, () => {
-    console.log(`🚀 API corriendo en http://localhost:${port}`);
+    console.log(`API corriendo en http://localhost:${port}`);
 });
 
 export { server };
