@@ -44,18 +44,21 @@ export function GameWindow() {
 
   const handleAnswerClick = (index) => {
     if (selectedAnswer !== null) return;
-
+  
     const correctIndex = currentQuestion.answers.findIndex(
       (ans) => ans.isCorrect
     );
-
+  
     setSelectedAnswer(index);
-
-    const newColors = currentQuestion.answers.map((_, i) =>
-      i === correctIndex ? "#a5d6a7" : "#ef9a9a"
-    );
+  
+    const newColors = currentQuestion.answers.map((_, i) => {
+      if (i === correctIndex) return "#a5d6a7"; // verde para la correcta
+      if (i === index && i !== correctIndex) return "#ef9a9a"; // rojo si pulsaste mal
+      return null; // el resto sin color
+    });
+  
     setFeedbackColors(newColors);
-
+  
     setTimeout(() => {
       gameRef.current.answerQuestion(index);
       setCurrentQuestion(gameRef.current.getCurrentQuestion());
@@ -65,6 +68,7 @@ export function GameWindow() {
       setFeedbackColors([]);
     }, 1500);
   };
+  
 
   const handleGetHint = async () => {
     if (
