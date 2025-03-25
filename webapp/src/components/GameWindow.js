@@ -23,7 +23,6 @@ export function GameWindow() {
   const apiEndpoint =
     process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
   const apiKey = process.env.GEMINI_API_KEY;
-  const [timeRemaining, setTimeRemaining] = useState(30);
 
   useEffect(() => {
     const initializeGame = async () => {
@@ -41,48 +40,7 @@ export function GameWindow() {
     initializeGame();
   }, []);
 
-  // Cada vez que se carga una nueva pregunta, reiniciamos el contador y el timer
-  useEffect(() => {
-    // Reinicia el tiempo para la nueva pregunta
-    setTimeRemaining(30);
-    const interval = setInterval(() => {
-      setTimeRemaining((prevTime) => {
-        if (prevTime <= 1) {
-          clearInterval(interval);
-          if (currentQuestion && currentQuestion.answers) {
-            // Obtiene el índice de la respuesta correcta
-            const correctIndex = currentQuestion.answers.findIndex(
-              (ans) => ans.isCorrect
-            );
-            // Establece los colores: verde para la correcta, rojo para las demás
-            const newColors = currentQuestion.answers.map((_, i) =>
-              i === correctIndex ? "#a5d6a7" : "#ef9a9a"
-            );
-            setFeedbackColors(newColors);
-            setSelectedAnswer(correctIndex);
-
-            setTimeout(() => {
-              // Avanza a la siguiente pregunta usando la respuesta correcta y marcando timeout para no sumar puntos
-              gameRef.current.answerQuestion(correctIndex, true);
-              setCurrentQuestion(gameRef.current.getCurrentQuestion());
-              setPoints(gameRef.current.getCurrentPoints());
-              setStreak(gameRef.current.getCurrentStreak());
-              setSelectedAnswer(null);
-              setFeedbackColors([]);
-            }, 1500);
-          } else {
-            gameRef.current.answerQuestion(-1, true);
-            setCurrentQuestion(gameRef.current.getCurrentQuestion());
-          }
-          return 30;
-        } else {
-          return prevTime - 1;
-        }
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [currentQuestion]);
+  
 
   const handleAnswerClick = (index) => {
     if (selectedAnswer !== null) return;
@@ -176,7 +134,7 @@ export function GameWindow() {
 
       <QuestionTimer
             keyProp={currentQuestion?.id || gameRef.current.questionIndex}
-            duration={30}
+            duration={10}
             onComplete={() => {
               
               if (currentQuestion && currentQuestion.answers) {
