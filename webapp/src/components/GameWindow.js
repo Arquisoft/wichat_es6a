@@ -7,6 +7,8 @@ import Game from "./Game";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import axios from "axios";
+import QuestionTimer from "./QuestionTimer";
+
 
 export function GameWindow() {
   const navigate = useNavigate();
@@ -171,7 +173,39 @@ export function GameWindow() {
             Question {gameRef.current.questionIndex + 1}/
             {gameRef.current.questions.length}
           </Typography>
-          <Typography variant="h6">Time Remaining: {timeRemaining}s</Typography>
+
+      <QuestionTimer
+            keyProp={currentQuestion?.id || gameRef.current.questionIndex}
+            duration={30}
+            onComplete={() => {
+              
+              if (currentQuestion && currentQuestion.answers) {
+                const correctIndex = currentQuestion.answers.findIndex(
+                  (ans) => ans.isCorrect
+                );
+                const newColors = currentQuestion.answers.map((_, i) =>
+                  i === correctIndex ? "#a5d6a7" : "#ef9a9a"
+                );
+                setFeedbackColors(newColors);
+                setSelectedAnswer(correctIndex);
+
+                setTimeout(() => {
+                  gameRef.current.answerQuestion(correctIndex, true);
+                  setCurrentQuestion(gameRef.current.getCurrentQuestion());
+                  setPoints(gameRef.current.getCurrentPoints());
+                  setStreak(gameRef.current.getCurrentStreak());
+                  setSelectedAnswer(null);
+                  setFeedbackColors([]);
+                }, 1500);
+              } else {
+                gameRef.current.answerQuestion(-1, true);
+                setCurrentQuestion(gameRef.current.getCurrentQuestion());
+              }
+
+              return { shouldRepeat: false };
+            }}
+      />
+
         </Grid>
 
         <Grid
