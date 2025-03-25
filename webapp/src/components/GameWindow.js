@@ -134,7 +134,7 @@ export function GameWindow() {
 
       <QuestionTimer
             keyProp={currentQuestion?.id || gameRef.current.questionIndex}
-            duration={10}
+            duration={30}
             onComplete={() => {
               
               if (currentQuestion && currentQuestion.answers) {
