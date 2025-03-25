@@ -126,64 +126,81 @@ export function GameWindow() {
           </Grid>
         </Grid>
 
-        <Grid item sx={{ textAlign: "center", mb: 2 }}>
-          <Typography variant="h5" fontWeight="bold">
+        
+
+        <Grid item sx={{ mb: 4 }}>
+          <Typography variant="h5" fontWeight="bold" align="center" sx={{ mb: 3 }}>
             Question {gameRef.current.questionIndex + 1}/
             {gameRef.current.questions.length}
           </Typography>
 
-      <QuestionTimer
-            keyProp={currentQuestion?.id || gameRef.current.questionIndex}
-            duration={30}
-            onComplete={() => {
-              
-              if (currentQuestion && currentQuestion.answers) {
-                const correctIndex = currentQuestion.answers.findIndex(
-                  (ans) => ans.isCorrect
-                );
-                const newColors = currentQuestion.answers.map((_, i) =>
-                  i === correctIndex ? "#a5d6a7" : "#ef9a9a"
-                );
-                setFeedbackColors(newColors);
-                setSelectedAnswer(correctIndex);
+          <Grid
+            container
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+            spacing={4}
+          >
+            <Grid
+              item
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <Paper
+                elevation={3}
+                sx={{
+                  bgcolor: "#ffffff",
+                  width: 350,
+                  height: 350,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: 2,
+                }}
+              >
+                IMAGE
+              </Paper>
+            </Grid>
 
-                setTimeout(() => {
-                  gameRef.current.answerQuestion(correctIndex, true);
-                  setCurrentQuestion(gameRef.current.getCurrentQuestion());
-                  setPoints(gameRef.current.getCurrentPoints());
-                  setStreak(gameRef.current.getCurrentStreak());
-                  setSelectedAnswer(null);
-                  setFeedbackColors([]);
-                }, 1500);
-              } else {
-                gameRef.current.answerQuestion(-1, true);
-                setCurrentQuestion(gameRef.current.getCurrentQuestion());
-              }
+            <Grid item>
+              <QuestionTimer
+                keyProp={currentQuestion?.id || gameRef.current.questionIndex}
+                duration={30}
+                onComplete={() => {
+                  if (selectedAnswer !== null) return;
 
-              return { shouldRepeat: false };
-            }}
-      />
+                  if (currentQuestion && currentQuestion.answers) {
+                    const correctIndex = currentQuestion.answers.findIndex(
+                      (ans) => ans.isCorrect
+                    );
+                    const newColors = currentQuestion.answers.map((_, i) =>
+                      i === correctIndex ? "#a5d6a7" : "#ef9a9a"
+                    );
+                    setFeedbackColors(newColors);
+                    setSelectedAnswer(correctIndex);
 
+                    setTimeout(() => {
+                      gameRef.current.answerQuestion(correctIndex, true);
+                      setCurrentQuestion(gameRef.current.getCurrentQuestion());
+                      setPoints(gameRef.current.getCurrentPoints());
+                      setStreak(gameRef.current.getCurrentStreak());
+                      setSelectedAnswer(null);
+                      setFeedbackColors([]);
+                    }, 1500);
+                  } else {
+                    gameRef.current.answerQuestion(-1, true);
+                    setCurrentQuestion(gameRef.current.getCurrentQuestion());
+                  }
+
+                  return { shouldRepeat: false };
+                }}
+              />
+            </Grid>
+          </Grid>
         </Grid>
 
-        <Grid
-          item
-          component={Paper}
-          elevation={3}
-          sx={{
-            bgcolor: "#ffffff",
-            width: "50%",
-            height: 450,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: 2,
-            mx: "auto",
-            mb: 2,
-          }}
-        >
-          IMAGE
-        </Grid>
 
         <Grid
           item
