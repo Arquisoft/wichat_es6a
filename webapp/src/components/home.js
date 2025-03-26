@@ -52,7 +52,7 @@ const Home = () => {
           flexWrap: "wrap",
         }}
       >
-        {/* Cuadro 1: mensaje LLM */}
+
         <Paper
           elevation={6}
           sx={{
@@ -81,33 +81,35 @@ const Home = () => {
           </Typography>
         </Paper>
 
-        {/* Cuadro 2: imagen */}
-        <Paper
-          elevation={6}
-          sx={{
-            width: 300,
-            height: 350,
-            p: 2,
-            backgroundColor: "#1e1e1e",
-            borderRadius: 4,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            textAlign: "center",
-            color: "#f0f0f0",
-          }}
-        >
-          <Box
-            component="img"
-            src="/WichatAmigos.png"
-            alt="Game"
-            sx={{ width: "80%", height: "auto", mb: 2 }}
-          />
-          
-        </Paper>
 
-        {/* Cuadro 3: botones */}
+        
+        <Box sx={{ position: "relative", width: 300, height: 350 }}>
+
+  <Box
+  sx={{
+    width: 300,
+    height: 350,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  }}
+>
+  <Box
+    component="img"
+    src="/WichatAmigos.png"
+    alt="Game"
+    sx={{
+      width: "100%",
+      height: "auto",
+      borderRadius: "16px",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+    }}
+  />
+</Box>
+
+</Box>
+  
+
         <Paper
           elevation={6}
           sx={{
