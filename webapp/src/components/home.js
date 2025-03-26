@@ -61,10 +61,7 @@ const Home = () => {
             alt="Game"
             sx={{ maxWidth: "100%", height: "auto", marginBottom: 2 }}
           />
-          <Typography variant="body1" sx={{ textAlign: "justify", fontSize: "1rem" }}>
-            Wichat es un juego digital de trivia diseñado para poner a prueba tus
-            conocimientos y habilidades de pensamiento rápido.
-          </Typography>
+          
         </Box>
       </Box>
 
