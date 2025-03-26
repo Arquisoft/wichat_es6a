@@ -33,14 +33,12 @@ const Home = () => {
 
   return (
     <Box
-      sx={{
-        minHeight: "100vh",
-        backgroundColor: "#121212",
-        backgroundImage: 'url("/fondoHome.png")',
-        backgroundSize: "cover",
-        color: "#e0e0e0",
-      }}
-    >
+  sx={{
+    minHeight: "100vh",
+    backgroundColor: "#121212",
+    color: "#e0e0e0",
+  }}
+>
       <Navbar />
 
       <Box
