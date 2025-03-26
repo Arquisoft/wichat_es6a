@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Snackbar } from "@mui/material";
+import { Box, Typography, Snackbar, Button, Paper } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import Navbar from "./Navbar";
@@ -35,34 +35,136 @@ const Home = () => {
     <Box
       sx={{
         minHeight: "100vh",
+        backgroundColor: "#121212",
         backgroundImage: 'url("/fondoHome.png")',
         backgroundSize: "cover",
+        color: "#e0e0e0",
       }}
     >
       <Navbar />
-      <Box sx={{ textAlign: "center", paddingTop: 4 }}>
-        <Typography variant="h5">{welcomeMessage}</Typography>
-        <Box
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "80vh",
+          gap: 4,
+          px: 4,
+          flexWrap: "wrap",
+        }}
+      >
+        {/* Cuadro 1: mensaje LLM */}
+        <Paper
+          elevation={6}
           sx={{
+            width: 300,
+            height: 350,
+            p: 3,
+            backgroundColor: "#1e1e1e",
+            borderRadius: 4,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            color: "#f0f0f0",
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: "bold", mb: 1, textAlign: "center", color: "#90caf9" }}
+          >
+            Bienvenida
+          </Typography>
+          <Typography
+            variant="body1"
+            sx={{ fontSize: "0.95rem", textAlign: "justify" }}
+          >
+            {welcomeMessage}
+          </Typography>
+        </Paper>
+
+        {/* Cuadro 2: imagen */}
+        <Paper
+          elevation={6}
+          sx={{
+            width: 300,
+            height: 350,
+            p: 2,
+            backgroundColor: "#1e1e1e",
+            borderRadius: 4,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            padding: 3,
-            border: "1px solid #e0e0e0",
-            borderRadius: 8,
-            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#f9f9f9",
-            marginTop: 3,
+            justifyContent: "center",
+            textAlign: "center",
+            color: "#f0f0f0",
           }}
         >
           <Box
             component="img"
             src="/WichatAmigos.png"
             alt="Game"
-            sx={{ maxWidth: "100%", height: "auto", marginBottom: 2 }}
+            sx={{ width: "80%", height: "auto", mb: 2 }}
           />
           
-        </Box>
+        </Paper>
+
+        {/* Cuadro 3: botones */}
+        <Paper
+          elevation={6}
+          sx={{
+            width: 300,
+            height: 350,
+            p: 3,
+            backgroundColor: "#1e1e1e",
+            borderRadius: 4,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            color: "#f0f0f0",
+          }}
+        >
+          <Button
+            variant="contained"
+            sx={{ backgroundColor: "#90caf9", color: "#000", fontWeight: "bold" }}
+            onClick={() => navigate("/home")}
+          >
+            Home
+          </Button>
+          <Button
+            variant="contained"
+            sx={{ backgroundColor: "#90caf9", color: "#000", fontWeight: "bold" }}
+            onClick={() => navigate("/game")}
+          >
+            Jugar
+          </Button>
+          <Button
+            variant="contained"
+            sx={{ backgroundColor: "#90caf9", color: "#000", fontWeight: "bold" }}
+            onClick={() => navigate("/statistics")}
+          >
+            Stats
+          </Button>
+          <Button
+            variant="contained"
+            sx={{ backgroundColor: "#90caf9", color: "#000", fontWeight: "bold" }}
+            onClick={() => navigate("/ranking")}
+          >
+            Ranking
+          </Button>
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={() => navigate("/")}
+            sx={{
+              borderColor: "#f44336",
+              color: "#f44336",
+              fontWeight: "bold",
+            }}
+          >
+            Logout
+          </Button>
+        </Paper>
       </Box>
 
       {error && <Snackbar open={!!error} autoHideDuration={6000} message={error} />}
