@@ -73,8 +73,7 @@ async function sendQuestionToLLM(question, apiKey, moderation) {
 
     return config.transformResponse(response);
   } catch (error) {
-    console.error(`Error sending question:`, error.message || error);
-    return "Error processing request.";
+    throw new Error("External API error");
   }
 }
 
@@ -87,19 +86,28 @@ app.post("/configureAssistant", async (req, res) => {
   res.json({ message: "Moderation prompt updated" });
 });
 
-// Ruta para enviar una pregunta
 app.post("/ask", async (req, res) => {
   try {
+    // Verificar que los campos requeridos están presentes
     validateRequiredFields(req, ["question"]);
+    
+    const { question, apiKey } = req.body;  // Recuperamos los valores de la solicitud
 
-    const { question, apiKey } = req.body; // La apiKey ya ha sido añadida automáticamente
-    const answer = await sendQuestionToLLM(question, apiKey, moderation);
+    const answer = await sendQuestionToLLM(question, apiKey);
 
-    res.json({ answer });
+    res.status(200).json({ answer });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    // Si es un error por falta de campos, devolvemos un 400
+    if (error.message.startsWith("Missing required field")) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    // Si es un error en la API externa, devolvemos un 500
+    console.error("Error processing request:", error.message || error);
+    res.status(500).json({ error: 'Error processing request.' });
   }
 });
+
 
 // Servicio 1: Generación de preguntas y respuestas a partir del contexto
 app.post("/generateQuestions", async (req, res) => {
@@ -202,7 +210,9 @@ app.post("/generateQuestions", async (req, res) => {
 // Servicio 2: Generación de pista
 app.post("/getHint", async (req, res) => {
   try {
-    const { question, answers } = req.body;
+    const { question, answers, apiKey } = req.body;
+
+    // Validación de entrada
     if (!question || !answers || !Array.isArray(answers)) {
       return res
         .status(400)
@@ -210,7 +220,6 @@ app.post("/getHint", async (req, res) => {
     }
 
     const answerTexts = answers.map((a) => a.text).join(", ");
-
     const prompt = `Dada la siguiente pregunta y respuestas, proporciona una pista breve, útil y relevante, 
     que no revele directamente la respuesta correcta, pero que sea lo suficientemente informativa como para 
     ayudar al jugador a tomar una decisión informada. La pista debe centrarse en el contexto de la pregunta, 
@@ -222,23 +231,26 @@ app.post("/getHint", async (req, res) => {
 
     Ejemplo de respuesta: "Piensa en eventos relacionados con el contexto histórico o en los elementos clave de la pregunta."
 
-    Responde en este formato :
+    Responde en este formato : 
+    Este evento marcó una transición importante, pero no ocurrió en el siglo XX.`;
 
-    
-      Este evento marcó una transición importante, pero no ocurrió en el siglo XX.
-    `;
-
-    const response = await sendQuestionToLLM(
-      prompt,
-      req.body.apiKey,
-      moderation
-    );
-    console.log("Response:", response);
-    res.json({ hint: response });
+    try {
+      // Intentamos enviar la pregunta al LLM (Modelo de Lenguaje Generativo)
+      const response = await sendQuestionToLLM(prompt, apiKey, moderation);
+      console.log("Response:", response);
+      res.json({ hint: response });
+    } catch (apiError) {
+      // Si la llamada a la API falla, devolvemos un 500
+      console.error('Error in external API:', apiError);
+      res.status(500).json({ error: "External API error" });
+    }
   } catch (error) {
-    res.status(500).json({ error: "Failed to generate hint" });
+    // Capturamos cualquier otro error en el proceso y devolvemos un 500
+    console.error('Error processing the request:', error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
+
 // Servicio 2: Generación de pista con query
 
 app.post("/getHintWithQuery", async (req, res) => {

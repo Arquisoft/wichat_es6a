@@ -1,5 +1,6 @@
-import express from 'express';
-import WikiQueries from './wikidataQueries.js';
+const express = require('express');
+const WikiQueries = require('./wikidataQueries');
+
 const app = express();
 const port = 8020;
 
@@ -68,7 +69,8 @@ app.get('/api/pinturas', async (req, res) => {
 });
 
 const server = app.listen(port, () => {
-    console.log(`🚀 API corriendo en http://localhost:${port}`);
+    console.log(` API corriendo en http://localhost:${port}`);
 });
 
-export { server };
+module.exports = server;
+
