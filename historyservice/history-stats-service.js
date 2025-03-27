@@ -1,7 +1,8 @@
+const mongoose = require("mongoose");
 const express = require("express");
 const cors = require("cors");
 
-const connectDatabase = require('/usr/src/llmservice/config/database');
+const connectDatabase = require('/usr/src/llmservice/config/database.js');
 connectDatabase(mongoose); // Connect to MongoDB using the centralized configuration
 
 const User = require("./llmservice/models/user-model")(mongoose);

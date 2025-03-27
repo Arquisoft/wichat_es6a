@@ -28,7 +28,7 @@ export function GameWindow() {
       if (isInitializedRef.current) return;
       isInitializedRef.current = true;
 
-      await gameRef.current.TestingInit();
+      await gameRef.current.init();
 
       setCurrentQuestion(gameRef.current.getCurrentQuestion());
       setPoints(gameRef.current.getCurrentPoints());

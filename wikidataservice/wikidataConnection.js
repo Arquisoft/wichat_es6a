@@ -5,7 +5,7 @@ const cache = new NodeCache({ stdTTL: 1800 }); // Caché de 30 min
 
 async function consulta(query) {
     const apiUrl = `https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}&format=json`;
-    console.log("🔎 Ejecutando consulta SPARQL:", query);
+    console.log("Ejecutando consulta SPARQL:", query);
 
     // Verificar caché antes de consultar a Wikidata
     const cachedResult = cache.get(query);
@@ -44,7 +44,7 @@ async function consulta(query) {
         }
     }
 
-    console.error("❌ No se pudo completar la consulta tras múltiples intentos.");
+    console.error("No se pudo completar la consulta tras múltiples intentos.");
     return null;
 }
 
