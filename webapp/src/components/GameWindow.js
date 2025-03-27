@@ -92,7 +92,7 @@ export function GameWindow() {
     <Box sx={{ bgcolor: "#121212", minHeight: "100vh", p: 0 }}>
       <Navbar />
 
-      <Typography variant="h5" align="center" fontWeight="bold" color="white" sx={{ mb: 3 }}>
+      <Typography variant="h5" align="center" fontWeight="bold" color="white" sx={{ mb: 5, mt: 3 }}>
         Question {gameRef.current.questionIndex + 1}/{gameRef.current.questions.length}
       </Typography>
 
@@ -127,7 +127,7 @@ export function GameWindow() {
     >
       <QuestionTimer
         keyProp={currentQuestion?.id || gameRef.current.questionIndex}
-        duration={30}
+        duration={300}
         onComplete={() => {
           if (selectedAnswer !== null) return;
 
@@ -162,7 +162,7 @@ export function GameWindow() {
 </Grid>
 
 
-      <Box sx={{ mt: 4, mx: "auto", maxWidth: 800 }}>
+      <Box sx={{ mt: 6, mx: "auto", maxWidth: 650 }}>
         <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
           <Typography variant="h6" color="white">
             {currentQuestion ? currentQuestion.questionText : "Cargando..."}
@@ -178,11 +178,11 @@ export function GameWindow() {
           </Grid>
         </Grid>
 
-        <Grid container spacing={2}>
+        <Grid container spacing={2} mt={3}>
           {currentQuestion &&
             currentQuestion.answers.map((answer, index) => (
-              <Grid item xs={6} key={index}>
-                <Button
+              <Grid item xs={12} key={index} mt={0}>
+                <Button 
                   variant="contained"
                   fullWidth
                   sx={{
