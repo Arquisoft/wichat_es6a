@@ -4,13 +4,12 @@ import { Typography, Button, Paper } from "@mui/material";
 import { Whatshot as WhatshotIcon } from "@mui/icons-material";
 import ChatClues from "./ChatClues";
 import Game from "./Game";
-import { useNavigate, useLocation } from "react-router-dom"; // Añadimos useLocation
+import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
 import axios from "axios";
 
 export function GameWindow() {
   const navigate = useNavigate();
-  const location = useLocation(); // Para obtener la categoría del estado
-  const category = location.state?.category; // Obtenemos la categoría seleccionada
   const gameRef = useRef(new Game(navigate));
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [points, setPoints] = useState(0);
@@ -29,13 +28,7 @@ export function GameWindow() {
       if (isInitializedRef.current) return;
       isInitializedRef.current = true;
 
-      // Pasamos la categoría al método init
-      if (category) {
-        await gameRef.current.init(category);
-      } else {
-        // Si no hay categoría, usamos el modo de prueba como fallback
-        await gameRef.current.TestingInit();
-      }
+      await gameRef.current.TestingInit();
 
       setCurrentQuestion(gameRef.current.getCurrentQuestion());
       setPoints(gameRef.current.getCurrentPoints());
@@ -44,45 +37,7 @@ export function GameWindow() {
     };
 
     initializeGame();
-  }, [category]); // Añadimos category como dependencia
-
-  useEffect(() => {
-    setTimeRemaining(30);
-    const interval = setInterval(() => {
-      setTimeRemaining((prevTime) => {
-        if (prevTime <= 1) {
-          clearInterval(interval);
-          if (currentQuestion && currentQuestion.answers) {
-            const correctIndex = currentQuestion.answers.findIndex(
-              (ans) => ans.isCorrect
-            );
-            const newColors = currentQuestion.answers.map((_, i) =>
-              i === correctIndex ? "#a5d6a7" : "#ef9a9a"
-            );
-            setFeedbackColors(newColors);
-            setSelectedAnswer(correctIndex);
-
-            setTimeout(() => {
-              gameRef.current.answerQuestion(correctIndex, true);
-              setCurrentQuestion(gameRef.current.getCurrentQuestion());
-              setPoints(gameRef.current.getCurrentPoints());
-              setStreak(gameRef.current.getCurrentStreak());
-              setSelectedAnswer(null);
-              setFeedbackColors([]);
-            }, 1500);
-          } else {
-            gameRef.current.answerQuestion(-1, true);
-            setCurrentQuestion(gameRef.current.getCurrentQuestion());
-          }
-          return 30;
-        } else {
-          return prevTime - 1;
-        }
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [currentQuestion]);
+  }, []);
 
   const handleAnswerClick = (index) => {
     if (selectedAnswer !== null) return;
@@ -132,20 +87,20 @@ export function GameWindow() {
     } catch (error) {
       console.error("Error getting hint:", error);
       let errorMessage = "IA: Error retrieving hint. Please try again later.";
-      if (error.response) {
+      if (error.response)
         errorMessage = `IA: Server error: ${error.response.status}`;
-      } else if (error.request) {
+      else if (error.request)
         errorMessage =
           "IA: No response from server. Please check your connection.";
-      } else {
-        errorMessage = "IA: Error setting up request.";
-      }
+      else errorMessage = "IA: Error setting up request.";
+
       chatCluesRef.current.addMessage(errorMessage);
     }
   };
 
   return (
     <Grid container sx={{ bgcolor: "#f4f4f4", p: 2 }}>
+      <Navbar />
       <ChatClues
         ref={chatCluesRef}
         question={currentQuestion?.questionText}
