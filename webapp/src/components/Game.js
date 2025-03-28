@@ -22,18 +22,22 @@ class Game {
     this.correctAnswers = 0;
     this.maxConsecutiveCorrectAnswers = 0;
     this.timer = null;
-    this.timeRemaining = 30; // 30 segundos por pregunta
+    this.timeRemaining = 30;
   }
 
-  async init() {
-    console.log("Cambio realizado");
+  async init(category) {
+    // Añadimos el parámetro category
+    console.log("Inicializando juego con categoría:", category);
     try {
       const response = await fetch("http://localhost:8003/generateQuestions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ context: "Historia universal" }),
+        body: JSON.stringify({
+          context: "Historia universal", // Esto podría ajustarse según la categoría
+          category: category.name.toLowerCase(), // Enviamos el nombre de la categoría en minúsculas
+        }),
       });
 
       console.log("Response:", response);
@@ -47,10 +51,10 @@ class Game {
       const data = JSON.parse(textData);
       var stringData = JSON.stringify(data);
       stringData = stringData
-        .replace(/^`jso/, "") // Elimina "`jso" del inicio
-        .replace(/`$/, "") // Elimina "`" del final
-        .replace(/\\n|\\/g, "") // Elimina todos los \n, \ y letras n innecesarias
-        .replace(/\\"/g, '"'); // Convierte las comillas escapadas `\"` en comillas normales `"`.
+        .replace(/^`jso/, "")
+        .replace(/`$/, "")
+        .replace(/\\n|\\/g, "")
+        .replace(/\\"/g, '"');
 
       console.log(stringData);
 
@@ -127,10 +131,6 @@ class Game {
     return this.score;
   }
 
-  /**
-   * @param {number} index - El índice de la respuesta seleccionada.
-   * @param {boolean} [isTimeout=false] - Si es true, indica que se respondió por timeout.
-   */
   answerQuestion(index, isTimeout = false) {
     if (
       this.questionIndex < this.questions.length &&
@@ -151,7 +151,6 @@ class Game {
           this.consecutiveCorrectAnswers = 0;
         }
       } else {
-        // Timeout: No se suman puntos y se reinicia la racha.
         this.consecutiveCorrectAnswers = 0;
       }
       this.questionIndex++;
@@ -159,7 +158,6 @@ class Game {
 
     if (this.questionIndex >= this.questions.length) {
       this.endGame();
-    } else {
     }
   }
 

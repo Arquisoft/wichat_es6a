@@ -19,7 +19,8 @@ export function GameWindow() {
   const [feedbackColors, setFeedbackColors] = useState([]);
   const isInitializedRef = useRef(false);
   const chatCluesRef = useRef(null);
-  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
+  const apiEndpoint =
+    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
   const apiKey = process.env.GEMINI_API_KEY;
 
   useEffect(() => {
@@ -41,7 +42,9 @@ export function GameWindow() {
   const handleAnswerClick = (index) => {
     if (selectedAnswer !== null) return;
 
-    const correctIndex = currentQuestion.answers.findIndex((ans) => ans.isCorrect);
+    const correctIndex = currentQuestion.answers.findIndex(
+      (ans) => ans.isCorrect
+    );
 
     setSelectedAnswer(index);
 
@@ -64,8 +67,14 @@ export function GameWindow() {
   };
 
   const handleGetHint = async () => {
-    if (!currentQuestion || !currentQuestion.answers || currentQuestion.answers.length === 0) {
-      chatCluesRef.current.addMessage("IA: No question or answers available to get a hint.");
+    if (
+      !currentQuestion ||
+      !currentQuestion.answers ||
+      currentQuestion.answers.length === 0
+    ) {
+      chatCluesRef.current.addMessage(
+        "IA: No question or answers available to get a hint."
+      );
       return;
     }
 
@@ -80,8 +89,11 @@ export function GameWindow() {
       chatCluesRef.current.addMessage(hintMessage);
     } catch (error) {
       let errorMessage = "IA: Error retrieving hint. Please try again later.";
-      if (error.response) errorMessage = `IA: Server error: ${error.response.status}`;
-      else if (error.request) errorMessage = "IA: No response from server. Please check your connection.";
+      if (error.response)
+        errorMessage = `IA: Server error: ${error.response.status}`;
+      else if (error.request)
+        errorMessage =
+          "IA: No response from server. Please check your connection.";
       else errorMessage = "IA: Error setting up request.";
 
       chatCluesRef.current.addMessage(errorMessage);
@@ -90,80 +102,91 @@ export function GameWindow() {
 
   return (
     <Box sx={{ bgcolor: "#121212", minHeight: "100vh", p: 0 }}>
-      <Navbar />
-
-      <Typography variant="h5" align="center" fontWeight="bold" color="white" sx={{ mb: 5, mt: 3 }}>
-        Question {gameRef.current.questionIndex + 1}/{gameRef.current.questions.length}
+      <Typography
+        variant="h5"
+        align="center"
+        fontWeight="bold"
+        color="white"
+        sx={{ mb: 5, mt: 3 }}
+      >
+        Question {gameRef.current.questionIndex + 1}/
+        {gameRef.current.questions.length}
       </Typography>
 
       <Grid container justifyContent="center" spacing={3} alignItems="center">
-  <Grid item>
-    <Box sx={{ width: 250, height: 250 }}>
-      <ChatClues
-        ref={chatCluesRef}
-        question={currentQuestion?.questionText}
-        answers={currentQuestion?.answers}
-      />
-    </Box>
-  </Grid>
+        <Grid item>
+          <Box sx={{ width: 250, height: 250 }}>
+            <ChatClues
+              ref={chatCluesRef}
+              question={currentQuestion?.questionText}
+              answers={currentQuestion?.answers}
+            />
+          </Box>
+        </Grid>
 
-  <Grid item>
-    <Box
-      component="img"
-      src="/WichatAmigos.png"
-      alt="Game"
-      sx={{ width: 250, height: 250, borderRadius: 4, boxShadow: 3 }}
-    />
-  </Grid>
+        <Grid item>
+          <Box
+            component="img"
+            src="/WichatAmigos.png"
+            alt="Game"
+            sx={{ width: 250, height: 250, borderRadius: 4, boxShadow: 3 }}
+          />
+        </Grid>
 
-  <Grid item>
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 2,
-      }}
-    >
-      <QuestionTimer
-        keyProp={currentQuestion?.id || gameRef.current.questionIndex}
-        duration={300}
-        onComplete={() => {
-          if (selectedAnswer !== null) return;
+        <Grid item>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 2,
+            }}
+          >
+            <QuestionTimer
+              keyProp={currentQuestion?.id || gameRef.current.questionIndex}
+              duration={300}
+              onComplete={() => {
+                if (selectedAnswer !== null) return;
 
-          if (currentQuestion && currentQuestion.answers) {
-            const correctIndex = currentQuestion.answers.findIndex((ans) => ans.isCorrect);
-            const newColors = currentQuestion.answers.map((_, i) =>
-              i === correctIndex ? "#a5d6a7" : "#ef9a9a"
-            );
-            setFeedbackColors(newColors);
-            setSelectedAnswer(correctIndex);
+                if (currentQuestion && currentQuestion.answers) {
+                  const correctIndex = currentQuestion.answers.findIndex(
+                    (ans) => ans.isCorrect
+                  );
+                  const newColors = currentQuestion.answers.map((_, i) =>
+                    i === correctIndex ? "#a5d6a7" : "#ef9a9a"
+                  );
+                  setFeedbackColors(newColors);
+                  setSelectedAnswer(correctIndex);
 
-            setTimeout(() => {
-              gameRef.current.answerQuestion(correctIndex, true);
-              setCurrentQuestion(gameRef.current.getCurrentQuestion());
-              setPoints(gameRef.current.getCurrentPoints());
-              setStreak(gameRef.current.getCurrentStreak());
-              setSelectedAnswer(null);
-              setFeedbackColors([]);
-            }, 1500);
-          } else {
-            gameRef.current.answerQuestion(-1, true);
-            setCurrentQuestion(gameRef.current.getCurrentQuestion());
-          }
-          return { shouldRepeat: false };
-        }}
-      />
-      <Button variant="contained" color="primary" onClick={handleGetHint}>
-        Hint
-      </Button>
-    </Box>
-  </Grid>
-</Grid>
-
+                  setTimeout(() => {
+                    gameRef.current.answerQuestion(correctIndex, true);
+                    setCurrentQuestion(gameRef.current.getCurrentQuestion());
+                    setPoints(gameRef.current.getCurrentPoints());
+                    setStreak(gameRef.current.getCurrentStreak());
+                    setSelectedAnswer(null);
+                    setFeedbackColors([]);
+                  }, 1500);
+                } else {
+                  gameRef.current.answerQuestion(-1, true);
+                  setCurrentQuestion(gameRef.current.getCurrentQuestion());
+                }
+                return { shouldRepeat: false };
+              }}
+            />
+            <Button variant="contained" color="primary" onClick={handleGetHint}>
+              Hint
+            </Button>
+          </Box>
+        </Grid>
+      </Grid>
 
       <Box sx={{ mt: 6, mx: "auto", maxWidth: 650 }}>
-        <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+        <Grid
+          container
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 2 }}
+        >
           <Typography variant="h6" color="white">
             {currentQuestion ? currentQuestion.questionText : "Cargando..."}
           </Typography>
@@ -182,14 +205,15 @@ export function GameWindow() {
           {currentQuestion &&
             currentQuestion.answers.map((answer, index) => (
               <Grid item xs={12} key={index} mt={0}>
-                <Button 
+                <Button
                   variant="contained"
                   fullWidth
                   sx={{
                     borderRadius: 2,
                     bgcolor: feedbackColors[index] || "#1976d2",
                     color: "white",
-                    border: selectedAnswer === index ? "3px solid black" : "none",
+                    border:
+                      selectedAnswer === index ? "3px solid black" : "none",
                     transition: "background-color 0.3s, border 0.3s",
                     "&:disabled": {
                       bgcolor: feedbackColors[index] || "#1976d2",
