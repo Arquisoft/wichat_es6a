@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import Grid from "@mui/material/Grid";
-import { Typography, Button, Paper } from "@mui/material";
+import { Typography, Button, Box } from "@mui/material";
 import { Whatshot as WhatshotIcon } from "@mui/icons-material";
 import ChatClues from "./ChatClues";
 import Game from "./Game";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import axios from "axios";
+import QuestionTimer from "./QuestionTimer";
 
 export function GameWindow() {
   const navigate = useNavigate();
@@ -18,10 +19,8 @@ export function GameWindow() {
   const [feedbackColors, setFeedbackColors] = useState([]);
   const isInitializedRef = useRef(false);
   const chatCluesRef = useRef(null);
-  const apiEndpoint =
-    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
+  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
   const apiKey = process.env.GEMINI_API_KEY;
-  const [timeRemaining, setTimeRemaining] = useState(30);
 
   useEffect(() => {
     const initializeGame = async () => {
@@ -39,61 +38,19 @@ export function GameWindow() {
     initializeGame();
   }, []);
 
-  // Cada vez que se carga una nueva pregunta, reiniciamos el contador y el timer
-  useEffect(() => {
-    // Reinicia el tiempo para la nueva pregunta
-    setTimeRemaining(30);
-    const interval = setInterval(() => {
-      setTimeRemaining((prevTime) => {
-        if (prevTime <= 1) {
-          clearInterval(interval);
-          if (currentQuestion && currentQuestion.answers) {
-            // Obtiene el índice de la respuesta correcta
-            const correctIndex = currentQuestion.answers.findIndex(
-              (ans) => ans.isCorrect
-            );
-            // Establece los colores: verde para la correcta, rojo para las demás
-            const newColors = currentQuestion.answers.map((_, i) =>
-              i === correctIndex ? "#a5d6a7" : "#ef9a9a"
-            );
-            setFeedbackColors(newColors);
-            setSelectedAnswer(correctIndex);
-
-            setTimeout(() => {
-              // Avanza a la siguiente pregunta usando la respuesta correcta y marcando timeout para no sumar puntos
-              gameRef.current.answerQuestion(correctIndex, true);
-              setCurrentQuestion(gameRef.current.getCurrentQuestion());
-              setPoints(gameRef.current.getCurrentPoints());
-              setStreak(gameRef.current.getCurrentStreak());
-              setSelectedAnswer(null);
-              setFeedbackColors([]);
-            }, 1500);
-          } else {
-            gameRef.current.answerQuestion(-1, true);
-            setCurrentQuestion(gameRef.current.getCurrentQuestion());
-          }
-          return 30;
-        } else {
-          return prevTime - 1;
-        }
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [currentQuestion]);
-
   const handleAnswerClick = (index) => {
     if (selectedAnswer !== null) return;
 
-    const correctIndex = currentQuestion.answers.findIndex(
-      (ans) => ans.isCorrect
-    );
+    const correctIndex = currentQuestion.answers.findIndex((ans) => ans.isCorrect);
 
     setSelectedAnswer(index);
 
-    const newColors = currentQuestion.answers.map((_, i) =>
-      i === correctIndex ? "#a5d6a7" : "#ef9a9a"
-    );
+    const newColors = currentQuestion.answers.map((_, i) => {
+      if (i === correctIndex) return "#a5d6a7";
+      if (i === index && i !== correctIndex) return "#ef9a9a";
+      return null;
+    });
+
     setFeedbackColors(newColors);
 
     setTimeout(() => {
@@ -107,14 +64,8 @@ export function GameWindow() {
   };
 
   const handleGetHint = async () => {
-    if (
-      !currentQuestion ||
-      !currentQuestion.answers ||
-      currentQuestion.answers.length === 0
-    ) {
-      chatCluesRef.current.addMessage(
-        "IA: No question or answers available to get a hint."
-      );
+    if (!currentQuestion || !currentQuestion.answers || currentQuestion.answers.length === 0) {
+      chatCluesRef.current.addMessage("IA: No question or answers available to get a hint.");
       return;
     }
 
@@ -128,83 +79,96 @@ export function GameWindow() {
       const hintMessage = `IA: ${response.data.hint}`;
       chatCluesRef.current.addMessage(hintMessage);
     } catch (error) {
-      console.error("Error getting hint:", error);
       let errorMessage = "IA: Error retrieving hint. Please try again later.";
-      if (error.response) {
-        errorMessage = `IA: Server error: ${error.response.status}`;
-      } else if (error.request) {
-        errorMessage =
-          "IA: No response from server. Please check your connection.";
-      } else {
-        errorMessage = "IA: Error setting up request.";
-      }
+      if (error.response) errorMessage = `IA: Server error: ${error.response.status}`;
+      else if (error.request) errorMessage = "IA: No response from server. Please check your connection.";
+      else errorMessage = "IA: Error setting up request.";
+
       chatCluesRef.current.addMessage(errorMessage);
     }
   };
 
   return (
-    <Grid container sx={{ bgcolor: "#f4f4f4", p: 2 }}>
+    <Box sx={{ bgcolor: "#121212", minHeight: "100vh", p: 0 }}>
       <Navbar />
+
+      <Typography variant="h5" align="center" fontWeight="bold" color="white" sx={{ mb: 5, mt: 3 }}>
+        Question {gameRef.current.questionIndex + 1}/{gameRef.current.questions.length}
+      </Typography>
+
+      <Grid container justifyContent="center" spacing={3} alignItems="center">
+  <Grid item>
+    <Box sx={{ width: 250, height: 250 }}>
       <ChatClues
         ref={chatCluesRef}
         question={currentQuestion?.questionText}
         answers={currentQuestion?.answers}
       />
+    </Box>
+  </Grid>
 
-      <Grid item xs={9} container direction="column" sx={{ p: 3, mx: "auto" }}>
-        <Grid
-          item
-          container
-          justifyContent="flex-end"
-          spacing={1}
-          sx={{ mb: 2 }}
-        >
-          <Grid item>
-            <Button variant="contained" color="primary" onClick={handleGetHint}>
-              Hint
-            </Button>
-          </Grid>
-        </Grid>
+  <Grid item>
+    <Box
+      component="img"
+      src="/WichatAmigos.png"
+      alt="Game"
+      sx={{ width: 250, height: 250, borderRadius: 4, boxShadow: 3 }}
+    />
+  </Grid>
 
-        <Grid item sx={{ textAlign: "center", mb: 2 }}>
-          <Typography variant="h5" fontWeight="bold">
-            Question {gameRef.current.questionIndex + 1}/
-            {gameRef.current.questions.length}
-          </Typography>
-          <Typography variant="h6">Time Remaining: {timeRemaining}s</Typography>
-        </Grid>
+  <Grid item>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 2,
+      }}
+    >
+      <QuestionTimer
+        keyProp={currentQuestion?.id || gameRef.current.questionIndex}
+        duration={300}
+        onComplete={() => {
+          if (selectedAnswer !== null) return;
 
-        <Grid
-          item
-          component={Paper}
-          elevation={3}
-          sx={{
-            bgcolor: "#ffffff",
-            width: "50%",
-            height: 450,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: 2,
-            mx: "auto",
-            mb: 2,
-          }}
-        >
-          IMAGE
-        </Grid>
+          if (currentQuestion && currentQuestion.answers) {
+            const correctIndex = currentQuestion.answers.findIndex((ans) => ans.isCorrect);
+            const newColors = currentQuestion.answers.map((_, i) =>
+              i === correctIndex ? "#a5d6a7" : "#ef9a9a"
+            );
+            setFeedbackColors(newColors);
+            setSelectedAnswer(correctIndex);
 
-        <Grid
-          item
-          container
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{ mb: 2 }}
-        >
-          <Typography variant="h6">
+            setTimeout(() => {
+              gameRef.current.answerQuestion(correctIndex, true);
+              setCurrentQuestion(gameRef.current.getCurrentQuestion());
+              setPoints(gameRef.current.getCurrentPoints());
+              setStreak(gameRef.current.getCurrentStreak());
+              setSelectedAnswer(null);
+              setFeedbackColors([]);
+            }, 1500);
+          } else {
+            gameRef.current.answerQuestion(-1, true);
+            setCurrentQuestion(gameRef.current.getCurrentQuestion());
+          }
+          return { shouldRepeat: false };
+        }}
+      />
+      <Button variant="contained" color="primary" onClick={handleGetHint}>
+        Hint
+      </Button>
+    </Box>
+  </Grid>
+</Grid>
+
+
+      <Box sx={{ mt: 6, mx: "auto", maxWidth: 650 }}>
+        <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+          <Typography variant="h6" color="white">
             {currentQuestion ? currentQuestion.questionText : "Cargando..."}
           </Typography>
           <Grid item display="flex" alignItems="center">
-            <Typography variant="h6" color="primary" sx={{ mr: 1 }}>
+            <Typography variant="h6" color="#90caf9" sx={{ mr: 1 }}>
               Points: {points}
             </Typography>
             <WhatshotIcon color="error" />
@@ -214,19 +178,18 @@ export function GameWindow() {
           </Grid>
         </Grid>
 
-        <Grid container spacing={2} sx={{ mt: 2 }}>
+        <Grid container spacing={2} mt={3}>
           {currentQuestion &&
             currentQuestion.answers.map((answer, index) => (
-              <Grid item xs={6} key={index}>
-                <Button
+              <Grid item xs={12} key={index} mt={0}>
+                <Button 
                   variant="contained"
                   fullWidth
                   sx={{
                     borderRadius: 2,
                     bgcolor: feedbackColors[index] || "#1976d2",
                     color: "white",
-                    border:
-                      selectedAnswer === index ? "3px solid black" : "none",
+                    border: selectedAnswer === index ? "3px solid black" : "none",
                     transition: "background-color 0.3s, border 0.3s",
                     "&:disabled": {
                       bgcolor: feedbackColors[index] || "#1976d2",
@@ -241,8 +204,8 @@ export function GameWindow() {
               </Grid>
             ))}
         </Grid>
-      </Grid>
-    </Grid>
+      </Box>
+    </Box>
   );
 }
 
