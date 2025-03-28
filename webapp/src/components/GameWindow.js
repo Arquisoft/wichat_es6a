@@ -4,12 +4,13 @@ import { Typography, Button, Paper } from "@mui/material";
 import { Whatshot as WhatshotIcon } from "@mui/icons-material";
 import ChatClues from "./ChatClues";
 import Game from "./Game";
-import { useNavigate } from "react-router-dom";
-import Navbar from "./Navbar";
+import { useNavigate, useLocation } from "react-router-dom"; // Añadimos useLocation
 import axios from "axios";
 
 export function GameWindow() {
   const navigate = useNavigate();
+  const location = useLocation(); // Para obtener la categoría del estado
+  const category = location.state?.category; // Obtenemos la categoría seleccionada
   const gameRef = useRef(new Game(navigate));
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [points, setPoints] = useState(0);
@@ -28,7 +29,13 @@ export function GameWindow() {
       if (isInitializedRef.current) return;
       isInitializedRef.current = true;
 
-      await gameRef.current.TestingInit();
+      // Pasamos la categoría al método init
+      if (category) {
+        await gameRef.current.init(category);
+      } else {
+        // Si no hay categoría, usamos el modo de prueba como fallback
+        await gameRef.current.TestingInit();
+      }
 
       setCurrentQuestion(gameRef.current.getCurrentQuestion());
       setPoints(gameRef.current.getCurrentPoints());
@@ -37,22 +44,18 @@ export function GameWindow() {
     };
 
     initializeGame();
-  }, []);
+  }, [category]); // Añadimos category como dependencia
 
-  // Cada vez que se carga una nueva pregunta, reiniciamos el contador y el timer
   useEffect(() => {
-    // Reinicia el tiempo para la nueva pregunta
     setTimeRemaining(30);
     const interval = setInterval(() => {
       setTimeRemaining((prevTime) => {
         if (prevTime <= 1) {
           clearInterval(interval);
           if (currentQuestion && currentQuestion.answers) {
-            // Obtiene el índice de la respuesta correcta
             const correctIndex = currentQuestion.answers.findIndex(
               (ans) => ans.isCorrect
             );
-            // Establece los colores: verde para la correcta, rojo para las demás
             const newColors = currentQuestion.answers.map((_, i) =>
               i === correctIndex ? "#a5d6a7" : "#ef9a9a"
             );
@@ -60,7 +63,6 @@ export function GameWindow() {
             setSelectedAnswer(correctIndex);
 
             setTimeout(() => {
-              // Avanza a la siguiente pregunta usando la respuesta correcta y marcando timeout para no sumar puntos
               gameRef.current.answerQuestion(correctIndex, true);
               setCurrentQuestion(gameRef.current.getCurrentQuestion());
               setPoints(gameRef.current.getCurrentPoints());
@@ -144,7 +146,6 @@ export function GameWindow() {
 
   return (
     <Grid container sx={{ bgcolor: "#f4f4f4", p: 2 }}>
-      <Navbar />
       <ChatClues
         ref={chatCluesRef}
         question={currentQuestion?.questionText}
