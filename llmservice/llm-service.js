@@ -160,7 +160,7 @@ async function getWikidataRandomEntry() {
 }
 
 // Obtener datos de varias categorías aleatorias
-async function getMultipleRandomEntries(questionsCount = 4) {
+async function getMultipleRandomEntries(questionsCount = 10) {
   /* const categories = [
     "paises", "monumentos", "elementos", "peliculas", 
     "canciones", "formula1", "pinturas"
