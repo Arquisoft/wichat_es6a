@@ -52,9 +52,21 @@ app.post('/askllm', async (req, res) => {
     const llmResponse = await axios.post(llmServiceUrl+'/ask', req.body);
     res.json(llmResponse.data);
   } catch (error) {
-    res.status(error.response.status).json({ error: error.response.data.error });
+      res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
+
+// **Nuevo endpoint para generar preguntas**
+app.post('/generateQuestions', async (req, res) => {
+  try {
+    const questionResponse = await axios.post(`${llmServiceUrl}/generateQuestions`, req.body);
+    res.json(questionResponse.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+
 
 // Read the OpenAPI YAML file synchronously
 openapiPath='./openapi.yaml'

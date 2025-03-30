@@ -1,12 +1,17 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
-const Question = require('./question-model');
-const User = require('./user-model');
+const mongoose = require('mongoose');
+
+const connectDatabase = require('/usr/src/llmservice/config/database');
+connectDatabase(mongoose);
+
+const User = require("/usr/src/llmservice/models/user-mode")(mongoose);
+const History = require("/usr/src/llmservice/models/history-model")(mongoose);
 
 const app = express();
+
 app.use(express.json());
-app.use(cors()); 
+app.use(cors());
 
 // Connect to MongoDB
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/userdb';
