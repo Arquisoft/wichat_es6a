@@ -1,4 +1,10 @@
-import React, { useState, forwardRef, useImperativeHandle, useEffect, useRef } from "react";
+import React, {
+  useState,
+  forwardRef,
+  useImperativeHandle,
+  useEffect,
+  useRef,
+} from "react";
 import { Grid, Typography, Button, TextField, Paper, Box } from "@mui/material";
 import axios from "axios";
 
@@ -6,7 +12,8 @@ const ChatClues = forwardRef(({ question, answers }, ref) => {
   const [messages, setMessages] = useState(["IA: How can I help you?"]);
   const [input, setInput] = useState("");
   const scrollRef = useRef(null);
-  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
+  const apiEndpoint =
+    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
   const apiKey = process.env.LLM_API_KEY;
 
   // Scroll to bottom on new message
@@ -34,7 +41,11 @@ const ChatClues = forwardRef(({ question, answers }, ref) => {
         console.log("Peticion lanzada: query " + input);
 
         const hintMessage = `IA: ${response.data.hint}`;
-        setMessages((prevMessages) => [...prevMessages, userMessage, hintMessage]);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          userMessage,
+          hintMessage,
+        ]);
       } catch (error) {
         console.error("Error getting hint:", error);
         let errorMessage = "IA: Error retrieving hint. Please try again later.";
@@ -52,7 +63,11 @@ const ChatClues = forwardRef(({ question, answers }, ref) => {
         } else {
           console.error("Error setting up request:", error.message);
         }
-        setMessages((prevMessages) => [...prevMessages, userMessage, errorMessage]);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          userMessage,
+          errorMessage,
+        ]);
       }
     }
   };
