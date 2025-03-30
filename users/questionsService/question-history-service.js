@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const connectDatabase = require('/usr/src/llmservice/config/database');
 connectDatabase(mongoose);
 
-const User = require("/usr/src/llmservice/models/user-mode")(mongoose);
+const User = require("/usr/src/llmservice/models/user-model")(mongoose);
 const History = require("/usr/src/llmservice/models/history-model")(mongoose);
 
 const app = express();
