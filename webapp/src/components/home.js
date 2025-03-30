@@ -33,12 +33,12 @@ const Home = () => {
 
   return (
     <Box
-  sx={{
-    minHeight: "100vh",
-    backgroundColor: "#121212",
-    color: "#e0e0e0",
-  }}
->
+      sx={{
+        minHeight: "100vh",
+        backgroundColor: "#EEF7FF", // fondo azulado muy suave
+        color: "#4D869C", // texto principal
+      }}
+    >
       <Navbar />
 
       <Box
@@ -53,118 +53,95 @@ const Home = () => {
         }}
       >
 
-        <Paper
-          elevation={6}
+        <Box sx={{ position: "relative", width: 600, height: 550 }}>
+          <Box
+            sx={{
+              width: 600,
+              height: 600,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Box
+              component="img"
+              src="/WichatAmigos.png"
+              alt="Game"
+              sx={{
+                width: "100%",
+                height: "100%",
+                borderRadius: "16px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+              }}
+            />
+          </Box>
+        </Box>
+
+        <Box
+          elevation={0}
           sx={{
-            width: 300,
-            height: 350,
+            width: 500,
+            height: 600,
             p: 3,
-            backgroundColor: "#1e1e1e",
-            borderRadius: 4,
             display: "flex",
             flexDirection: "column",
-            justifyContent: "center",
-            color: "#f0f0f0",
+            justifyContent: "flex-start",
+            color: "#000000",
+            position: "relative", // 👈 necesario para que el absolute funcione
           }}
         >
           <Typography
-            variant="h6"
-            sx={{ fontWeight: "bold", mb: 1, textAlign: "center", color: "#90caf9" }}
+            variant="h5"
+            sx={{
+              fontWeight: "bold",
+              mb: 1,
+              textAlign: "center",
+              color: "#000000",
+            }}
           >
             Bienvenida
           </Typography>
+
           <Typography
             variant="body1"
-            sx={{ fontSize: "0.95rem", textAlign: "justify" }}
+            sx={{
+              fontSize: "1.2rem",
+              textAlign: "justify",
+              overflowY: "auto",
+              maxHeight: "500px",
+            }}
           >
             {welcomeMessage}
           </Typography>
-        </Paper>
 
-
-        
-        <Box sx={{ position: "relative", width: 300, height: 350 }}>
-
-  <Box
-  sx={{
-    width: 300,
-    height: 350,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  }}
->
-  <Box
-    component="img"
-    src="/WichatAmigos.png"
-    alt="Game"
-    sx={{
-      width: "100%",
-      height: "auto",
-      borderRadius: "16px",
-      boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
-    }}
-  />
-</Box>
-
-</Box>
-  
-
-        <Paper
-          elevation={6}
-          sx={{
-            width: 300,
-            height: 350,
-            p: 3,
-            backgroundColor: "#1e1e1e",
-            borderRadius: 4,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            color: "#f0f0f0",
-          }}
-        >
           <Button
             variant="contained"
-            sx={{ backgroundColor: "#90caf9", color: "#000", fontWeight: "bold" }}
-            onClick={() => navigate("/home")}
-          >
-            Home
-          </Button>
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: "#90caf9", color: "#000", fontWeight: "bold" }}
+            size="large"
             onClick={() => navigate("/game")}
-          >
-            Jugar
-          </Button>
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: "#90caf9", color: "#000", fontWeight: "bold" }}
-            onClick={() => navigate("/statistics")}
-          >
-            Stats
-          </Button>
-          <Button
-            variant="contained"
-            sx={{ backgroundColor: "#90caf9", color: "#000", fontWeight: "bold" }}
-            onClick={() => navigate("/ranking")}
-          >
-            Ranking
-          </Button>
-          <Button
-            variant="outlined"
-            color="error"
-            onClick={() => navigate("/")}
             sx={{
-              borderColor: "#f44336",
-              color: "#f44336",
-              fontWeight: "bold",
+              position: "absolute",
+              bottom: 32,        
+              left: "50%",
+              transform: "translateX(-50%)",
+              px: 5,
+              py: 1.5,
+              fontSize: "1.1rem",
+              borderRadius: "12px",
+              backgroundColor: "#4D869C",
+              color: "#fff",
+              fontFamily: "Poppins, sans-serif",
+              boxShadow: "0px 4px 12px rgba(0,0,0,0.2)",
+              '&:hover': {
+                backgroundColor: "#3a6d81",
+              },
             }}
           >
-            Logout
+            🎮 Empezar a Jugar
           </Button>
-        </Paper>
+        </Box>
+
+
+
       </Box>
 
       {error && <Snackbar open={!!error} autoHideDuration={6000} message={error} />}

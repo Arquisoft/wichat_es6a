@@ -7,7 +7,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ backgroundColor: "#4D869C" }}>
       <Toolbar>
         <IconButton edge="start" color="inherit" onClick={() => navigate("/")}>
           <HomeIcon />
@@ -17,7 +17,6 @@ const Navbar = () => {
           Home Page
         </Typography>
 
-        
         <Button color="inherit" onClick={() => navigate("/home")}>
           Home
         </Button>
