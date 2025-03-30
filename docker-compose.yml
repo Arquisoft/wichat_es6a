@@ -9,9 +9,7 @@ services:
       - "27017:27017"
     networks:
       - mynetwork
-    environment:
-      MONGODB_URI: ${MONGODB_URI}
-
+      
   authservice:
     container_name: authservice-wichat_es6a
     image: ghcr.io/arquisoft/wichat_es6a/authservice:latest
@@ -19,12 +17,15 @@ services:
     build: ./users/authservice
     depends_on:
       - mongodb
+      - llmservice
     ports:
       - "8002:8002"
     networks:
       - mynetwork
     environment:
-      MONGODB_URI: mongodb://mongodb:27017/userdb
+      MONGODB_URI: mongodb://mongodb-wichat_es6a:27017/wichatdb
+    volumes:
+      - ./llmservice:/usr/src/llmservice 
 
   userservice:
     container_name: userservice-wichat_es6a
@@ -33,18 +34,23 @@ services:
     build: ./users/userservice
     depends_on:
       - mongodb
+      - llmservice
     ports:
       - "8001:8001"
     networks:
       - mynetwork
     environment:
-      MONGODB_URI: mongodb://mongodb:27017/userdb
+      MONGODB_URI: mongodb://mongodb-wichat_es6a:27017/wichatdb
+    volumes:
+      - ./llmservice:/usr/src/llmservice 
 
   llmservice:
     container_name: llmservice-wichat_es6a
     image: ghcr.io/arquisoft/wichat_es6a/llmservice:latest
     profiles: ["dev", "prod"]
     build: ./llmservice
+    env_file:
+      - ./llmservice/.env
     ports:
       - "8003:8003"
     networks:
@@ -73,7 +79,7 @@ services:
     container_name: webapp-wichat_es6a
     image: ghcr.io/arquisoft/wichat_es6a/webapp:latest
     profiles: ["dev", "prod"]
-    build: 
+    build:
       context: ./webapp
       args:
         LLM_API_KEY: ${LLM_API_KEY}
@@ -93,9 +99,9 @@ services:
       - prometheus_data:/prometheus
     ports:
       - "9090:9090"
-    depends_on: 
+    depends_on:
       - gatewayservice
-      
+
   grafana:
     image: grafana/grafana
     container_name: grafana-wichat_es6a
@@ -112,14 +118,42 @@ services:
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
     ports:
       - "9091:9091"
-    depends_on: 
+    depends_on:
       - prometheus
+
+  historyservice:
+    container_name: historyservice-wichat_es6a
+    profiles: ["dev", "prod"]
+    build: ./historyservice
+    depends_on:
+      - mongodb
+    ports:
+      - "8010:8010"
+    networks:
+      - mynetwork
+    environment:
+      MONGODB_URI: mongodb://mongodb-wichat_es6a:27017/wichatdb
+    volumes:
+      - ./llmservice:/usr/src/llmservice 
+  
+  wikidataservice:
+    container_name: wikidataservice-wichat_es6a
+    profiles: ["dev", "prod"]
+    build: ./wikidataservice
+    ports:
+      - "8020:8020"
+    networks:
+      - mynetwork
+    environment:
+      MONGODB_URI: mongodb://mongodb-wichat_es6a:27017/wichatdb
+    volumes:
+      - ./llmservice:/usr/src/llmservice 
 
 
 volumes:
   mongodb_data:
-  prometheus_data: 
-  grafana_data: 
+  prometheus_data:
+  grafana_data:
 
 networks:
   mynetwork:

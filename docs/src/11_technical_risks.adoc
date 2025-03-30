@@ -66,6 +66,14 @@ ifndef::imagesdir[:imagesdir: ../images]
 
 === Technical Debt  
 
-==== There is no technical debt  
+1. **Tasks organization** 
 
-Currently, there is no significant technical debt in the project. However, we will monitor the codebase to ensure that technical debt does not accumulate over time.
+**** Poor organization of the tasks to be carried out. We started by selecting a few key points to work on, but as we developed them and due to the relationships between them, we ended up covering more than what was initially selected. As a result, our current application has a significant amount of development across all parts, but none of them are fully complete or entirely functional.
+
+2. **Tasks organization** 
+
+**** Functionality has been developed, but no testing has been done. This means our code
+ has a coverage percentage below the required level, and it is not entirely clear 
+ whether everything implemented works correctly. Tests must be carried out as soon as 
+ possible, and proper planning is necessary since they take time and should not affect 
+ development.
