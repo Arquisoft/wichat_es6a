@@ -1,9 +1,17 @@
-import fetch from 'node-fetch'; // ✔️ Cambiar a import
+let fetch;
 
-import NodeCache from 'node-cache'; // ✔️ Cambiar a import
-const cache = new NodeCache({ stdTTL: 1800 }); // Caché de 30 min
+async function loadFetch() {
+    // Cargar 'node-fetch' de forma dinámica
+    const module = await import('node-fetch');
+    fetch = module.default;
+}
 
+const NodeCache = require('node-cache');
+const cache = new NodeCache({ stdTTL: 1800 }); // Caché de 30 minutos
+
+// Asegurarse de que fetch esté disponible antes de hacer la consulta
 async function consulta(query) {
+    await loadFetch();  // Espera a que `fetch` esté disponible
     const apiUrl = `https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}&format=json`;
     console.log("Ejecutando consulta SPARQL:", query);
 
@@ -48,4 +56,4 @@ async function consulta(query) {
     return null;
 }
 
-export { consulta };
+module.exports = { consulta };  // Cambiar export a module.exports
