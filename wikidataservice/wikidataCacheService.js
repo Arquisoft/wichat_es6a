@@ -24,21 +24,31 @@ class WikidataCacheService {
    */
   async getEntriesForCategory(category, count = 1) {
     try {
-      // Intentar obtener entradas de la base de datos
-      const entries = await WikidataEntry.find({ category })
-        .sort({ createdAt: -1 })
-        .limit(count);
+      // Obtener el conteo total de entradas para esa categoría
+      const totalEntries = await WikidataEntry.countDocuments({ category });
       
-      // Si hay suficientes entradas, retornarlas
-      if (entries.length >= count) {
-        return entries;
+      // Si hay suficientes entradas, obtener una muestra aleatoria
+      if (totalEntries >= count) {
+        // Usando la agregación con $sample para obtener entradas aleatorias
+        const randomEntries = await WikidataEntry.aggregate([
+          { $match: { category } },
+          { $sample: { size: count } }
+        ]);
+        
+        return randomEntries;
       }
       
-      // Si no hay suficientes entradas, obtener nuevas y guardarlas
-      const neededEntries = count - entries.length;
+      // Si no hay suficientes entradas, obtener las que existen
+      const existingEntries = await WikidataEntry.find({ category });
+      
+      // Calcular cuántas entradas adicionales necesitamos
+      const neededEntries = count - existingEntries.length;
+      
+      // Obtener nuevas entradas y guardarlas
       const newEntries = await this.fetchAndSaveEntries(category, neededEntries);
       
-      return [...entries, ...newEntries];
+      // Combinar las entradas existentes con las nuevas
+      return [...existingEntries, ...newEntries];
     } catch (error) {
       console.error(`Error al obtener entradas para la categoría ${category}:`, error);
       return [];

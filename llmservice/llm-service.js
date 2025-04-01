@@ -351,7 +351,7 @@ app.post("/generateQuestions", async (req, res) => {
       });
     }
     
-    console.log(`Se obtuvieron ${entries.length} entradas para preguntas`);
+    console.log(`Se obtuvieron ${entries.length} entradas para preguntas: `,entries);
     
     // Generar preguntas para las entradas
     const questionPromises = entries.map(entry => generateQuestionForEntry(entry, req.body.apiKey));

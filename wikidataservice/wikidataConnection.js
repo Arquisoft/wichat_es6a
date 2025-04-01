@@ -6,11 +6,11 @@ async function loadFetch() {
     fetch = module.default;
 }
 
-const NodeCache = require('node-cache');
+import NodeCache from 'node-cache';
 const cache = new NodeCache({ stdTTL: 1800 }); // Caché de 30 minutos
 
 // Asegurarse de que fetch esté disponible antes de hacer la consulta
-async function consulta(query) {
+export async function consulta(query) {
     await loadFetch();  // Espera a que `fetch` esté disponible
     const apiUrl = `https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}&format=json`;
     console.log("Ejecutando consulta SPARQL:", query);
@@ -55,5 +55,3 @@ async function consulta(query) {
     console.error("No se pudo completar la consulta tras múltiples intentos.");
     return null;
 }
-
-module.exports = { consulta };  // Cambiar export a module.exports

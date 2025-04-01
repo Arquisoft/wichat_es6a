@@ -1,4 +1,4 @@
-const { consulta } = require('./wikidataConnection.js');
+import { consulta } from './wikidataConnection.js';
 
 class WikiQueries {
     static regExp = /^Q\d+$/;
@@ -89,4 +89,4 @@ class WikiQueries {
     }
 }
 
-module.exports = WikiQueries;
+export default WikiQueries;
