@@ -30,6 +30,19 @@ app.use((req, res, next) => {
 });
 
 const llmConfigs = {
+  gemini: {
+    url: () => `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.LLM_API_KEY}`,
+    transformRequest: (question, moderation) => ({
+      contents: [
+        { role: "user", parts: [{ text: `${moderation}\n${question}` }] }
+      ]
+    }),
+    transformResponse: (response) =>
+      response.data.candidates?.[0]?.content?.parts?.[0]?.text || "No response",
+    headers: (apiKey) => ({
+      "Content-Type": "application/json",
+    }),
+  },
   empathy: {
     url: () => "https://empathyai.prod.empathy.co/v1/chat/completions",
     transformRequest: (question, moderation) => ({
@@ -61,14 +74,14 @@ function validateRequiredFields(req, requiredFields) {
 // Función genérica para enviar preguntas al LLM
 async function sendQuestionToLLM(question, apiKey, moderation) {
   try {
-    const config = llmConfigs["empathy"];
+    const model = process.env.LLM_PROVIDER || "gemini";
+    const config = llmConfigs[model];
     if (!config) {
       throw new Error(`Model is not supported.`);
     }
 
     const url = config.url();
     const requestData = config.transformRequest(question, moderation);
-    const headers = config.headers(apiKey);
 
     const response = await axios.post(url, requestData, { headers });
 
