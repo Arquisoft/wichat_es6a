@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import { Typography, Button, Box } from "@mui/material";
 import { Whatshot as WhatshotIcon } from "@mui/icons-material";
@@ -11,6 +12,8 @@ import QuestionTimer from "./QuestionTimer";
 
 export function GameWindow() {
   const navigate = useNavigate();
+  const location = useLocation(); 
+  const category = location.state?.category || { name: "Variado", endpoint: "/variado" }; // Extraer la categoría del estado de navegación
   const gameRef = useRef(new Game(navigate));
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [points, setPoints] = useState(0);
@@ -28,7 +31,10 @@ export function GameWindow() {
       if (isInitializedRef.current) return;
       isInitializedRef.current = true;
 
-      await gameRef.current.init();
+      console.log("Inicializando juego con categoría:", category);
+      
+      // Pasar la categoría al método init
+      await gameRef.current.init(category);
 
       setCurrentQuestion(gameRef.current.getCurrentQuestion());
       setPoints(gameRef.current.getCurrentPoints());
@@ -37,7 +43,7 @@ export function GameWindow() {
     };
 
     initializeGame();
-  }, []);
+  }, [category]); // Añadir category como dependencia
 
   const handleAnswerClick = (index) => {
     if (selectedAnswer !== null) return;

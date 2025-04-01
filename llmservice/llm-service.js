@@ -34,7 +34,7 @@ const llmConfigs = {
     url: () => `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.LLM_API_KEY}`,
     transformRequest: (question, moderation) => ({
       contents: [
-        { role: "user", parts: [{ text: `${moderation}\n${question}` }] }
+        { parts: [{ text: `${moderation}\n${question}` }] }
       ]
     }),
     transformResponse: (response) =>
@@ -153,8 +153,16 @@ app.post("/ask", async (req, res) => {
 // Obtener datos de WikiData para una categoría específica
 async function getWikidataForCategory(category, count = 1) {
   try {
+    console.log(`Obteniendo ${count} entradas para categoría: ${category}`);
+    
     // Usar el endpoint específico para obtener entradas de una categoría
     const response = await axios.get(`${WIKIDATA_SERVICE_URL}/entries/${category}?count=${count}`);
+    
+    // Para una sola entrada, retornar el primer elemento
+    if (count === 1 && response.data && response.data.length > 0) {
+      return response.data[0];
+    }
+    
     return response.data;
   } catch (error) {
     console.error(`Error al obtener datos de WikiData para ${category}:`, error.message);
@@ -175,32 +183,25 @@ async function getWikidataRandomEntry() {
 
 // Obtener datos de varias categorías aleatorias
 async function getMultipleRandomEntries(questionsCount = 10) {
-  /* const categories = [
-    "paises", "monumentos", "elementos", "peliculas", 
-    "canciones", "formula1", "pinturas"
-  ]; */
-  
   const entries = [];
   
   // Obtener entradas aleatorias
   for (let i = 0; i < questionsCount; i++) {
     try {
-      // Seleccionar una categoría aleatoria
-      /* const randomCategory = categories[Math.floor(Math.random() * categories.length)]; */
-      
-      // Obtener una entrada para la categoría seleccionada
+      // Usar el endpoint para obtener una entrada aleatoria de cualquier categoría
       const categoryData = await getWikidataRandomEntry();
-      const randomCategory = categoryData.category;
       
-      entries.push({
-        data: categoryData
-      });
+      if (categoryData) {
+        entries.push({
+          data: categoryData
+        });
+      }
     } catch (error) {
       console.error("Error al obtener entrada aleatoria:", error);
     }
   }
 
-  console.log("Entradas aleatorias:", entries);
+  console.log("Entradas aleatorias obtenidas:", entries.length);
   return entries;
 }
 
@@ -309,21 +310,50 @@ async function generateQuestionForEntry(entry, apiKey) {
 // Servicio 1: Generación de preguntas y respuestas a partir de múltiples entradas de WikiData
 app.post("/generateQuestions", async (req, res) => {
   try {
-    // Determinar cuántas preguntas generar (predeterminado: 4)
+    // Obtener parámetros de la solicitud
     const questionCount = req.body.questionCount || 4;
+    const category = req.body.category || "variado";
     
-    console.log(`Generando ${questionCount} preguntas con entradas diferentes de WikiData...`);
+    console.log(`Generando ${questionCount} preguntas, categoría: ${category}`);
     
-    // Obtener múltiples entradas aleatorias de WikiData
-    const entries = await getMultipleRandomEntries(questionCount);
+    let entries = [];
     
-    if (entries.length === 0) {
-      return res.status(500).json({ error: "No se pudieron obtener datos de WikiData" });
+    // Si es "variado", obtener entradas aleatorias
+    if (category === "variado") {
+      entries = await getMultipleRandomEntries(questionCount);
+    } 
+    // Para categorías específicas
+    else {
+      // Normalizar el nombre de la categoría
+      const normalizedCategory = category.toLowerCase()
+        .replace(/í/g, 'i')
+        .replace(/ó/g, 'o')
+        .replace(/á/g, 'a');
+      
+      // Obtener entradas para la categoría específica
+      for (let i = 0; i < questionCount; i++) {
+        try {
+          const categoryData = await getWikidataForCategory(normalizedCategory);
+          if (categoryData) {
+            entries.push({
+              data: categoryData
+            });
+          }
+        } catch (error) {
+          console.error(`Error al obtener datos para categoría ${normalizedCategory}:`, error);
+        }
+      }
     }
     
-    console.log(`Se obtuvieron ${entries.length} entradas de WikiData`);
+    if (entries.length === 0) {
+      return res.status(500).json({ 
+        error: `No se pudieron obtener datos para la categoría ${category}` 
+      });
+    }
     
-    // Generar una pregunta para cada entrada
+    console.log(`Se obtuvieron ${entries.length} entradas para preguntas`);
+    
+    // Generar preguntas para las entradas
     const questionPromises = entries.map(entry => generateQuestionForEntry(entry, req.body.apiKey));
     const generatedQuestions = await Promise.all(questionPromises);
     
@@ -334,7 +364,7 @@ app.post("/generateQuestions", async (req, res) => {
       return res.status(500).json({ error: "No se pudieron generar preguntas válidas" });
     }
     
-    // Formatear respuesta
+    // Formatear y retornar las preguntas
     const responseObject = {
       questions: validQuestions.map(q => ({
         question: q.question,

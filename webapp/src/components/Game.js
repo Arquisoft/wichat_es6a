@@ -26,28 +26,32 @@ class Game {
   }
 
   async init(category) {
-    // Añadimos el parámetro category
     console.log("Inicializando juego con categoría:", category);
     try {
+      // Preparar el endpoint y el nombre de la categoría
+      const categoryName = category ? category.name.toLowerCase() : "variado";
+      
       const response = await fetch("http://localhost:8003/generateQuestions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          context: "Historia universal", // Esto podría ajustarse según la categoría
-          category: category.name.toLowerCase(), // Enviamos el nombre de la categoría en minúsculas
+          category: categoryName,
+          questionCount: 4
         }),
       });
-
-      console.log("Response:", response);
+  
+      console.log("Response status:", response.status);
       if (!response.ok) {
         throw new Error(
           `Failed to fetch questions: ${response.status} ${response.statusText}`
         );
       }
-
+  
       const textData = await response.text();
+      console.log("Response text:", textData);
+      
       const data = JSON.parse(textData);
       var stringData = JSON.stringify(data);
       stringData = stringData
@@ -55,14 +59,22 @@ class Game {
         .replace(/`$/, "")
         .replace(/\\n|\\/g, "")
         .replace(/\\"/g, '"');
-
-      console.log(stringData);
-
+  
+      console.log("Processed data:", stringData);
+  
       this.questions = this.parseQuestions(stringData);
-
+  
+      // Si no hay preguntas, cargar las de prueba
+      if (!this.questions || this.questions.length === 0) {
+        console.warn("No se obtuvieron preguntas del servidor, cargando preguntas de prueba");
+        await this.TestingInit();
+      }
+  
       console.log("Preguntas guardadas en el objeto Game:", this.questions);
     } catch (error) {
       console.error("Error fetching questions:", error.message);
+      // En caso de error, cargar preguntas de prueba
+      await this.TestingInit();
     }
   }
 

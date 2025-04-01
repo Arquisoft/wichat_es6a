@@ -46,11 +46,18 @@ app.get('/api/entries/:category', async (req, res) => {
     const { category } = req.params;
     const count = parseInt(req.query.count) || 1;
     
+    console.log(`Solicitadas ${count} entradas de categoría: ${category}`);
+    
     const entries = await WikidataCacheService.getEntriesForCategory(category, count);
+    
+    if (!entries || entries.length === 0) {
+      return res.status(404).json({ error: `No se encontraron entradas para la categoría ${category}` });
+    }
+    
     res.json(entries);
   } catch (error) {
+    console.error(`Error al recuperar entradas para ${category}:`, error);
     res.status(500).json({ error: "Error al recuperar entradas" });
-    console.error(error);
   }
 });
 
