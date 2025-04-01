@@ -77,17 +77,18 @@ async function sendQuestionToLLM(question, apiKey, moderation) {
     const model = process.env.LLM_PROVIDER || "gemini";
     const config = llmConfigs[model];
     if (!config) {
-      throw new Error(`Model is not supported.`);
+      throw new Error(`Model '${model}' is not supported.`);
     }
 
     const url = config.url();
     const requestData = config.transformRequest(question, moderation);
+    const headers = config.headers(apiKey); 
 
     const response = await axios.post(url, requestData, { headers });
 
     return config.transformResponse(response);
   } catch (error) {
-    console.error(`Error sending question:`, error.message || error);
+    console.error(`Error sending question:`, error.response?.data || error.message || error);
     return "Error processing request.";
   }
 }
