@@ -18,7 +18,7 @@ const historySchema = new mongoose.Schema({
       default: Date.now, 
     },
     gameId: {
-        type: Number,
+        type: String,
         required: true,
     },
     category: {

@@ -97,6 +97,78 @@ app.get("/stats", async (req, res) => {
   }
 });
 
+app.post("/addGame", async (req, res) => {
+  try {
+    const { username, score, correctQuestions, gameId, category, timeTaken } = req.body;
+
+    // Validación de campos obligatorios
+    const requiredFields = {
+      'username': { type: 'string', message: 'Username must be a string' },
+      'score': { type: 'number', message: 'Score must be a number' },
+      'correctQuestions': { type: 'number', message: 'CorrectQuestions must be a number' },
+      'gameId': { type: 'string', message: 'GameId must be a string' }
+    };
+
+    const errors = [];
+
+    // Verificar campos obligatorios
+    for (const [field, validation] of Object.entries(requiredFields)) {
+      if (!req.body[field]) {
+        errors.push(`${field} is required`);
+      } else if (typeof req.body[field] !== validation.type) {
+        errors.push(validation.message);
+      }
+    }
+
+    // Validaciones numéricas
+    if (score !== undefined && score < 0) errors.push("Score cannot be negative");
+    if (correctQuestions !== undefined && correctQuestions < 0) errors.push("CorrectQuestions cannot be negative");
+    if (timeTaken !== undefined && timeTaken < 0) errors.push("TimeTaken cannot be negative");
+
+    if (errors.length > 0) {
+      return res.status(400).json({
+        message: "Validation failed",
+        errors
+      });
+    }
+
+    // Crear nueva partida
+    const newGame = new UserGame({
+      username,
+      score: Math.floor(score),
+      correctQuestions: Math.floor(correctQuestions),
+      gameId,
+      category: category || null, // Si no se proporciona, se guarda como null
+      timeTaken: timeTaken ? Math.floor(timeTaken) : null // Si no se proporciona, se guarda como null
+    });
+
+    const savedGame = await newGame.save();
+
+    // Formatear respuesta
+    const responseGame = {
+      username: savedGame.username,
+      score: savedGame.score,
+      correctQuestions: savedGame.correctQuestions,
+      gameId: savedGame.gameId,
+      recordedAt: savedGame.recordedAt,
+      category: savedGame.category,
+      timeTaken: savedGame.timeTaken
+    };
+
+    res.status(201).json({
+      message: "Game successfully added",
+      game: responseGame
+    });
+
+  } catch (error) {
+    console.error("Error in /addGame:", error);
+    res.status(500).json({ 
+      message: "Internal server error",
+      error: error.message 
+    });
+  }
+});
+
 // Iniciar el servicio de Historia
 app.listen(port, () => {
   console.log(`History Service running on port ${port}`);

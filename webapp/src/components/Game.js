@@ -23,10 +23,14 @@ class Game {
     this.maxConsecutiveCorrectAnswers = 0;
     this.timer = null;
     this.timeRemaining = 30;
+    this.category = "";
+    this.startTime = null;
+    this.totalTimeTaken = 0;
   }
 
   async init(category) {
     console.log("Inicializando juego con categoría:", category);
+    this.category = category;
     try {
       // Preparar el endpoint y el nombre de la categoría
       const categoryName = category ? category.name.toLowerCase() : "variado";
@@ -73,7 +77,6 @@ class Game {
       console.log("Preguntas guardadas en el objeto Game:", this.questions);
     } catch (error) {
       console.error("Error fetching questions:", error.message);
-      // En caso de error, cargar preguntas de prueba
       await this.TestingInit();
     }
   }
@@ -111,10 +114,45 @@ class Game {
     console.log("Preguntas de prueba cargadas:", this.questions);
   }
 
-  endGame() {
+  async endGame() {
+    // Calcular tiempo total de la partida
+    this.totalTimeTaken = Math.floor((Date.now() - this.startTime) / 1000); // en segundos
+    
     if (this.consecutiveCorrectAnswers > this.maxConsecutiveCorrectAnswers) {
       this.maxConsecutiveCorrectAnswers = this.consecutiveCorrectAnswers;
     }
+
+    // Guardar la partida en el backend
+    try {
+      const username = localStorage.getItem("username");
+      if (!username) throw new Error("No username found");
+
+      const response = await fetch("http://localhost:8010/addGame", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "username": username
+        },
+        body: JSON.stringify({
+          username: username,
+          score: this.score,
+          correctQuestions: this.correctAnswers,
+          category: this.category?.name || "General",
+          timeTaken: this.totalTimeTaken
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error saving game: ${response.status}`);
+      }
+
+      console.log("Game saved successfully");
+    } catch (error) {
+      console.error("Error saving game:", error);
+      // Puedes manejar el error como prefieras (ej: mostrar un mensaje al usuario)
+    }
+
+    // Navegar a la pantalla de fin de juego
     if (this.navigate) {
       this.navigate("/endGame", {
         state: {
@@ -122,6 +160,8 @@ class Game {
           correctAnswers: this.correctAnswers || 0,
           totalQuestions: this.questions.length || 0,
           streak: this.maxConsecutiveCorrectAnswers || 0,
+          timeTaken: this.totalTimeTaken,
+          category: this.category?.name || "General"
         },
       });
     }
