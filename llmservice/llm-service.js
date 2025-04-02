@@ -133,7 +133,10 @@ app.post("/configureAssistant", async (req, res) => {
     return res.status(400).json({ error: "Missing moderation prompt" });
   }
   moderation = req.body.moderation;
-  res.json({ message: "Moderation prompt updated" });
+  res.json({ 
+    message: "Moderation prompt updated",
+    currentModeration: moderation // Devuelve el valor actualizado
+  });
 });
 
 // Ruta para enviar una pregunta
@@ -460,8 +463,22 @@ app.post("/getHintWithQuery", async (req, res) => {
   }
 });
 
+// Exportación modificada para las pruebas
 const server = app.listen(port, () => {
   console.log(`LLM Service listening at http://localhost:${port}`);
 });
 
-module.exports = server;
+// Exportación modificada para pruebas
+module.exports = {
+  server,
+  app,
+  getModeration: () => moderation, // Getter para acceder a moderation
+  setModeration: (value) => { moderation = value; }, // Setter para modificar moderation
+  parseJsonResponse,
+  sendQuestionToLLM,
+  formatEntryInfo,
+  generateQuestionForEntry,
+  getWikidataForCategory,
+  getWikidataRandomEntry,
+  close: () => server.close()
+};

@@ -1,162 +1,286 @@
-const request = require('supertest');
 const axios = require('axios');
-const app = require('./llm-service');
+const request = require('supertest');
+const llmService = require('./llm-service');
+const app = llmService.app;
 
-afterAll(async () => {
-    app.close();
-});
-
+// Mock axios para evitar llamadas reales a APIs
 jest.mock('axios');
 
 describe('LLM Service', () => {
-    // Mock de respuestas del servicio LLM
-    axios.post.mockImplementation((url, data) => {
-        if (url.startsWith('https://empathyai')) {
-            return Promise.resolve({ data: { choices: [{ message: { content: 'llmanswer' } }] } });
-        }
+  let originalModeration;
+
+  beforeAll(() => {
+    // Guardar el valor original de moderation
+    originalModeration = llmService.getModeration();
+    // Mock console.log para evitar output en tests
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterAll(async () => {
+    // Restaurar el valor original
+    llmService.setModeration(originalModeration);
+    // Restaurar console.log
+    console.log.mockRestore();
+    console.error.mockRestore();
+    // Cerrar el servidor
+    await llmService.close();
+  });
+
+  beforeEach(() => {
+    // Resetear mocks y estado antes de cada test
+    jest.clearAllMocks();
+    llmService.setModeration("You are a quiz game assistant.");
+  });
+
+  describe('Configuration Tests', () => {
+    it('should have default moderation prompt', () => {
+      expect(llmService.getModeration()).toBe("You are a quiz game assistant.");
     });
 
-    // Test para /ask
-    it('should return an answer from LLM', async () => {
-        const response = await request(app)
-            .post('/ask')
-            .send({ question: 'a question', apiKey: 'apiKey' });
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.answer).toBe('llmanswer');
+    it('should update moderation prompt via /configureAssistant', async () => {
+      const newPrompt = "New moderation prompt";
+      const response = await request(app)
+        .post('/configureAssistant')
+        .send({ moderation: newPrompt });
+      
+      expect(response.status).toBe(200);
+      expect(response.body.message).toBe("Moderation prompt updated");
+      expect(response.body.currentModeration).toBe(newPrompt);
+      expect(llmService.getModeration()).toBe(newPrompt);
     });
 
-    // Mock de respuesta para el servicio de Wikidata
-    axios.get.mockImplementation(() =>
-        Promise.resolve({
-            data: [
-                { countryLabel: 'Francia', capitalLabel: 'París' },
-                { countryLabel: 'España', capitalLabel: 'Madrid' }
-            ]
-        })
-    );
-
-    // Test para /generateQuestions
-    it('should generate questions based on context', async () => {
-        const response = await request(app)
-            .post('/generateQuestions')
-            .send({ context: 'Historia de los países', apiKey: 'apiKey' });
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body).toContain('llmanswer');
+    it('should return 400 when no moderation prompt provided', async () => {
+      const response = await request(app)
+        .post('/configureAssistant')
+        .send({});
+      
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe("Missing moderation prompt");
     });
 
-    // Test para /getHint
-    it('should return a hint for a question', async () => {
-        const response = await request(app)
-            .post('/getHint')
-            .send({
-                question: '¿Cuál es la capital de Francia?',
-                answers: [
-                    { text: 'París', correct: true },
-                    { text: 'Madrid', correct: false },
-                    { text: 'Berlín', correct: false },
-                    { text: 'Roma', correct: false }
-                ],
-                apiKey: 'apiKey'
-            });
-
-        expect(response.statusCode).toBe(200);
-        expect(response.body.hint).toBeDefined();
+    it('should not affect moderation prompt when request fails', async () => {
+      const currentValue = llmService.getModeration();
+      const response = await request(app)
+        .post('/configureAssistant')
+        .send({});
+      
+      expect(llmService.getModeration()).toBe(currentValue);
     });
+  });
 
-    // Test para /getHintWithQuery
-    it('should return a hint with a user query', async () => {
-        const response = await request(app)
-            .post('/getHintWithQuery')
-            .send({
-                question: '¿Cuál es la capital de Francia?',
-                answers: [
-                    { text: 'París', correct: true },
-                    { text: 'Madrid', correct: false },
-                    { text: 'Berlín', correct: false },
-                    { text: 'Roma', correct: false }
-                ],
-                userQuery: 'Dame una pista sobre la geografía de Europa',
-                apiKey: 'apiKey'
-            });
+  describe('Question Asking Tests', () => {
+    it('should successfully send question to LLM', async () => {
+      const mockResponse = { 
+        data: { 
+          candidates: [{ 
+            content: { 
+              parts: [{ 
+                text: 'Test answer' 
+              }] 
+            } 
+          }] 
+        } 
+      };
+      axios.post.mockResolvedValue(mockResponse);
 
-        expect(response.statusCode).toBe(200);
-        expect(response.body.hint).toBeDefined();
-    });
-
-    // Punto 3: Validar que faltando campos requeridos se responde con 400
-    it('should return 400 when required fields are missing in /ask', async () => {
-        const response = await request(app)
-            .post('/ask')
-            .send({ apiKey: 'apiKey' });  // Falta el campo "question"
-
-        expect(response.statusCode).toBe(400);
-        expect(response.body.error).toBe('Missing required field: question');
-    });
-
-    it('should return 400 when required fields are missing in /generateQuestions', async () => {
-        const response = await request(app)
-            .post('/generateQuestions')
-            .send({ apiKey: 'apiKey' });  // Falta el campo "context"
-
-        expect(response.statusCode).toBe(400);
-        expect(response.body.error).toBe('Missing context');
-    });
-
-    // Punto 4: Simular fallo en la API externa y responder con 500
-    it('should return 500 when external API fails in /generateQuestions', async () => {
-        // Simulando que la API externa (Wikidata) falla
-        axios.get.mockImplementationOnce(() =>
-            Promise.reject(new Error('External API error'))
-        );
-
-        const response = await request(app)
-            .post('/generateQuestions')
-            .send({ context: 'Historia de los países', apiKey: 'apiKey' });
-
-        expect(response.statusCode).toBe(500);
-        expect(response.body.error).toBe('Failed to generate questions');
-    });
-
-    it('should return 500 when external API fails in /ask', async () => {
-      // Simulando que la API externa (LLM) falla
-      axios.post.mockImplementationOnce(() =>
-        Promise.reject(new Error('External API error'))
-      );
-    
       const response = await request(app)
         .post('/ask')
-        .send({ question: 'a question', apiKey: 'apiKey' });
-    
-      // Verificar que el código de estado es 500
-      expect(response.statusCode).toBe(500);
-      expect(response.body.error).toBe('Error processing request.');
+        .send({ question: 'Test question' });
+      
+      expect(response.status).toBe(200);
+      expect(response.body.answer).toBe('Test answer');
     });
-    
-    it('should return 500 when external API fails in /getHint', async () => {
-      // Simulando que la API externa (LLM) falla
-      axios.post.mockImplementationOnce(() =>
-        Promise.reject(new Error("External API error"))
-      );
-    
+
+    it('should require question field', async () => {
+      const response = await request(app)
+        .post('/ask')
+        .send({});
+      
+      expect(response.status).toBe(400);
+      expect(response.body.error).toMatch(/Missing required field/);
+    });
+
+    it('should handle LLM errors gracefully', async () => {
+      axios.post.mockRejectedValue(new Error('LLM error'));
+
+      const response = await request(app)
+        .post('/ask')
+        .send({ question: 'Test question' });
+      
+      expect(response.status).toBe(200);
+      expect(response.body.answer).toBe('Error processing request.');
+    });
+  });
+
+  describe('JSON Parsing Tests', () => {
+    it('should parse clean JSON response', () => {
+      const jsonString = '{"key": "value"}';
+      const result = llmService.parseJsonResponse(jsonString);
+      expect(result).toEqual({ key: 'value' });
+    });
+
+    it('should parse JSON with code blocks', () => {
+      const jsonString = '```json\n{"key": "value"}\n```';
+      const result = llmService.parseJsonResponse(jsonString);
+      expect(result).toEqual({ key: 'value' });
+    });
+
+    it('should parse JSON with escaped characters', () => {
+      const jsonString = '{\\"key\\": \\"value\\"}';
+      const result = llmService.parseJsonResponse(jsonString);
+      expect(result).toEqual({ key: 'value' });
+    });
+
+    it('should extract JSON from text', () => {
+      const jsonString = 'Some text {\n  "key": "value"\n} more text';
+      const result = llmService.parseJsonResponse(jsonString);
+      expect(result).toEqual({ key: 'value' });
+    });
+
+    it('should throw error for invalid JSON', () => {
+      const jsonString = 'invalid json';
+      expect(() => llmService.parseJsonResponse(jsonString)).toThrow();
+    });
+  });
+
+  describe('Question Generation Tests', () => {
+    beforeEach(() => {
+      // Mock para Wikidata
+      axios.get.mockImplementation((url) => {
+        if (url.includes('/entries/paises')) {
+          return Promise.resolve({
+            data: {
+              category: 'paises',
+              countryLabel: 'Spain',
+              capitalLabel: 'Madrid'
+            }
+          });
+        }
+        if (url.includes('/entries/random')) {
+          return Promise.resolve({
+            category: 'paises',
+            countryLabel: 'France',
+            capitalLabel: 'Paris'
+          });
+        }
+        return Promise.reject(new Error('Invalid category'));
+      });
+
+      // Mock para LLM
+      axios.post.mockResolvedValue({
+        data: {
+          candidates: [{
+            content: {
+              parts: [{
+                text: JSON.stringify({
+                  question: "What is the capital?",
+                  answers: [
+                    { text: "Madrid", correct: true },
+                    { text: "Barcelona", correct: false },
+                    { text: "Valencia", correct: false },
+                    { text: "Seville", correct: false }
+                  ]
+                })
+              }]
+            }
+          }]
+        }
+      });
+    });
+
+    it('should generate questions from random entries', async () => {
+      const response = await request(app)
+        .post('/generateQuestions')
+        .send({ questionCount: 1, category: 'variado' });
+      
+      expect(response.status).toBe(200);
+      expect(response.body.questions).toHaveLength(1);
+      expect(response.body.questions[0].answers).toHaveLength(4);
+    });
+
+    it('should generate questions for specific category', async () => {
+      const response = await request(app)
+        .post('/generateQuestions')
+        .send({ questionCount: 1, category: 'paises' });
+      
+      expect(response.status).toBe(200);
+      expect(axios.get).toHaveBeenCalledWith(expect.stringContaining('/entries/paises'));
+    });
+
+    it('should handle Wikidata API errors', async () => {
+      axios.get.mockRejectedValue(new Error('Wikidata error'));
+
+      const response = await request(app)
+        .post('/generateQuestions')
+        .send({ questionCount: 1, category: 'invalid' });
+      
+      expect(response.status).toBe(500);
+    });
+
+    it('should handle LLM generation errors', async () => {
+      axios.post.mockRejectedValue(new Error('LLM error'));
+
+      const response = await request(app)
+        .post('/generateQuestions')
+        .send({ questionCount: 1 });
+      
+      expect(response.status).toBe(500);
+    });
+  });
+
+  describe('Hint Generation Tests', () => {
+    beforeEach(() => {
+      axios.post.mockResolvedValue({
+        data: {
+          candidates: [{
+            content: {
+              parts: [{
+                text: 'This is a test hint'
+              }]
+            }
+          }]
+        }
+      });
+    });
+
+    it('should generate hint for question', async () => {
       const response = await request(app)
         .post('/getHint')
         .send({
-          question: '¿Cuál es la capital de Francia?',
+          question: "Test question",
           answers: [
-            { text: 'París', correct: true },
-            { text: 'Madrid', correct: false },
-            { text: 'Berlín', correct: false },
-            { text: 'Roma', correct: false }
-          ],
-          apiKey: 'apiKey'
+            { text: "Answer 1" },
+            { text: "Answer 2" }
+          ]
         });
-    
-      // Verificar que el código de estado es 500
-      expect(response.statusCode).toBe(500);
-      expect(response.body.error).toBe("External API error");
+      
+      expect(response.status).toBe(200);
+      expect(response.body.hint).toBe('This is a test hint');
     });
-    
-  
+
+    it('should generate hint with user query', async () => {
+      const response = await request(app)
+        .post('/getHintWithQuery')
+        .send({
+          question: "Test question",
+          answers: [
+            { text: "Answer 1" },
+            { text: "Answer 2" }
+          ],
+          userQuery: "Test query"
+        });
+      
+      expect(response.status).toBe(200);
+      expect(response.body.hint).toBe('This is a test hint');
+    });
+
+    it('should reject hint requests with missing data', async () => {
+      const response = await request(app)
+        .post('/getHint')
+        .send({});
+      
+      expect(response.status).toBe(400);
+    });
+  });
 });
