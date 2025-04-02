@@ -73,10 +73,21 @@ const StatisticsWindow = () => {
             <LinearProgress
               variant="determinate"
               value={(stats.wins / (stats.wins + stats.losses)) * 100 || 0}
-              sx={{ height: 10 }}
+              sx={{
+                height: 10,
+                borderRadius: 5,
+                background: (theme) => {
+                  const winPercentage = stats.wins + stats.losses > 0 ? (stats.wins / (stats.wins + stats.losses)) * 100 : 0;
+                  return `linear-gradient(to right, green ${winPercentage}%, red ${winPercentage}%)`;
+                },
+                '& .MuiLinearProgress-bar': {
+                  backgroundColor: 'transparent',
+                  borderRadius: 5, // Redondea también la barra interna
+                },
+              }}
             />
             <Typography>
-              {stats.losses || 0} Losses / {stats.wins || 0} Wins
+               {stats.wins || 0} Wins / {stats.losses || 0} Losses
             </Typography>
           </Box>
           <Box sx={{ marginTop: 3 }}>

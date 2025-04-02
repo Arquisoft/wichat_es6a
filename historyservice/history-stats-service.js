@@ -1,12 +1,13 @@
 const mongoose = require("mongoose");
 const express = require("express");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
-const connectDatabase = require('../llmservice/config/database');
+const connectDatabase = require("/usr/src/llmservice/config/database.js");
 connectDatabase(mongoose);
 
-const User = require("../llmservice/models/stats-model.js")(mongoose);
-const History = require("../llmservice/models/history-model")(mongoose);
+const UserGame = require("/usr/src/llmservice/models/history-model")(mongoose);
 
 const app = express();
 const port = process.env.PORT || 8010;
@@ -16,45 +17,53 @@ app.use(express.json());
 app.use(cors({
   origin: "http://localhost:3000",
   methods: "GET,POST,PUT,DELETE",
-  allowedHeaders: "Content-Type,Authorization"
+  allowedHeaders: "Content-Type,Authorization,username"
 }));
 
-// Route to fetch user game statistics
+// Ruta para obtener estadísticas de usuario
 app.get("/stats", async (req, res) => {
   try {
-    const userName = "testuser1";
+    console.log("Servicio iniciado:");
+    const username = req.headers.username;
+    console.log("Username recibido:", username);
 
-    // Ensure database connection is established before checking collections
-    await mongoose.connection.asPromise();
-    const collections = await mongoose.connection.db.listCollections().toArray();
-    const gamesCollectionExists = collections.some(col => col.name === "games");
-    
-    let history = [];
-    if (gamesCollectionExists) {
-      history = await History.find({ username: userName });
-      console.log("Historial encontrado:", history);
-    } else {
-      console.log("La colección 'games' no existe. Usando array vacío.");
+    if (!username) {
+      return res.status(400).json({ message: "Username is required" });
     }
 
-    // Calculate statistics
-    const wins = history.filter((game) => game.score > 50).length;
-    const losses = history.length - wins;
-    const totalPoints = history.reduce((acc, game) => acc + game.score, 0);
-    const pointsPerGame = history.length > 0 ? totalPoints / history.length : 0;
+    console.log("Conexión a MongoDB:", mongoose.connection.readyState); // 1 = conectado, 0 = desconectado
+    const games = await UserGame.find({ username });
+    console.log("Partidas encontradas:", games);
 
-    const bestGames = history
+    if (!games || games.length === 0) {
+      return res.json({
+        username: username,
+        gamesPlayed: 0,
+        totalPoints: 0,
+        pointsPerGame: 0,
+        wins: 0,
+        losses: 0,
+        bestGames: [],
+      });
+    }
+
+    const wins = games.filter((game) => game.score > 50).length;
+    const losses = games.length - wins;
+    const totalPoints = games.reduce((acc, game) => acc + game.score, 0);
+    const pointsPerGame = games.length > 0 ? totalPoints / games.length : 0;
+
+    const bestGames = games
       .sort((a, b) => b.score - a.score)
       .slice(0, 3)
       .map((game) => ({
         id: game.gameId,
         points: game.score,
-        date: game.recordedAt ? game.recordedAt.toISOString() : null,
+        date: game.recordedAt.toISOString(),
       }));
 
     res.json({
-      username: userName,
-      gamesPlayed: history.length,
+      username: username,
+      gamesPlayed: games.length,
       totalPoints,
       pointsPerGame,
       wins,
@@ -67,7 +76,7 @@ app.get("/stats", async (req, res) => {
   }
 });
 
-// Start the History Service
+// Iniciar el servicio de Historia
 app.listen(port, () => {
   console.log(`History Service running on port ${port}`);
 });

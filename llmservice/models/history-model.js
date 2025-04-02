@@ -12,7 +12,7 @@ const historySchema = new mongoose.Schema({
     correctQuestions: {
         type: Number,
         required: true,
-      },
+    },
     recordedAt: {
       type: Date,
       default: Date.now, 
@@ -20,9 +20,9 @@ const historySchema = new mongoose.Schema({
     gameId: {
         type: Number,
         required: true,
-      }
+    }
 });
 
-const History = mongoose.model('History', historySchema);
-
-module.exports = History
+module.exports = (mongoose) => {
+  return mongoose.model('History', historySchema, 'usergames');
+};
