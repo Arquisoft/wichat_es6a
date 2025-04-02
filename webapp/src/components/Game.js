@@ -24,8 +24,9 @@ class Game {
     this.timer = null;
     this.timeRemaining = 30;
     this.category = "";
-    this.startTime = null;
-    this.totalTimeTaken = 0;
+    this.startTime = null; // Almacena el tiempo de inicio
+    this.endTime = null;   // Almacena el tiempo de finalización
+    this.totalTimeTaken = 0; // El tiempo total transcurrido en segundos
   }
 
   async init(category) {
@@ -75,6 +76,7 @@ class Game {
       }
   
       console.log("Preguntas guardadas en el objeto Game:", this.questions);
+      this.startTime = Date.now(); 
     } catch (error) {
       console.error("Error fetching questions:", error.message);
       await this.TestingInit();
@@ -114,13 +116,18 @@ class Game {
     console.log("Preguntas de prueba cargadas:", this.questions);
   }
 
+  // Método para terminar el juego y calcular el tiempo total
   async endGame() {
-    // Calcular tiempo total de la partida
-    this.totalTimeTaken = Math.floor((Date.now() - this.startTime) / 1000); // en segundos
-    
-    if (this.consecutiveCorrectAnswers > this.maxConsecutiveCorrectAnswers) {
-      this.maxConsecutiveCorrectAnswers = this.consecutiveCorrectAnswers;
+    this.endTime = Date.now(); // Guarda el tiempo de finalización
+
+    // Asegúrate de que startTime esté inicializado
+    if (!this.startTime) {
+      throw new Error("El tiempo de inicio no está registrado.");
     }
+
+    // Calcular el tiempo total transcurrido en segundos
+    this.totalTimeTaken = Math.floor((this.endTime - this.startTime) / 1000); // En segundos
+    console.log("Tiempo total de la partida (en segundos):", this.totalTimeTaken);
 
     // Guardar la partida en el backend
     try {
@@ -134,6 +141,7 @@ class Game {
           "username": username
         },
         body: JSON.stringify({
+          gameId: `gm${Date.now().toString(36).slice(-3)}${Math.random().toString(36).substr(2, 3)}`,
           username: username,
           score: this.score,
           correctQuestions: this.correctAnswers,
@@ -149,7 +157,6 @@ class Game {
       console.log("Game saved successfully");
     } catch (error) {
       console.error("Error saving game:", error);
-      // Puedes manejar el error como prefieras (ej: mostrar un mensaje al usuario)
     }
 
     // Navegar a la pantalla de fin de juego
@@ -195,12 +202,12 @@ class Game {
           this.score += 100;
           this.score += this.consecutiveCorrectAnswers * 20;
         } else {
-          if (
-            this.consecutiveCorrectAnswers > this.maxConsecutiveCorrectAnswers
-          ) {
-            this.maxConsecutiveCorrectAnswers = this.consecutiveCorrectAnswers;
-          }
           this.consecutiveCorrectAnswers = 0;
+        }
+        if (
+          this.consecutiveCorrectAnswers > this.maxConsecutiveCorrectAnswers
+        ) {
+          this.maxConsecutiveCorrectAnswers = this.consecutiveCorrectAnswers;
         }
       } else {
         this.consecutiveCorrectAnswers = 0;
