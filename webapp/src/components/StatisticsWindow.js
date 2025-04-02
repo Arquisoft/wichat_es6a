@@ -17,7 +17,21 @@ const StatisticsWindow = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:8010/stats")
+    const username = localStorage.getItem("username"); // Obtener el username desde el localStorage
+
+    if (!username) {
+      setError("No user found. Please log in.");
+      setLoading(false);
+      return;
+    }
+
+    fetch("http://localhost:8010/stats", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "username": username, // Enviar el username como parte de los encabezados
+      },
+    })
       .then((res) => {
         if (!res.ok) throw new Error("Network response was not ok");
         return res.json();
@@ -34,7 +48,6 @@ const StatisticsWindow = () => {
 
   return (
     <Container component="main" maxWidth={false} sx={{ width: "100%" }}>
-      {/* Eliminamos <Navbar /> porque ya está en App.js */}
       {loading && <LinearProgress sx={{ marginTop: 4 }} />}
       {error && (
         <Alert severity="error" sx={{ marginTop: 4 }}>
@@ -60,10 +73,21 @@ const StatisticsWindow = () => {
             <LinearProgress
               variant="determinate"
               value={(stats.wins / (stats.wins + stats.losses)) * 100 || 0}
-              sx={{ height: 10 }}
+              sx={{
+                height: 10,
+                borderRadius: 5,
+                background: (theme) => {
+                  const winPercentage = stats.wins + stats.losses > 0 ? (stats.wins / (stats.wins + stats.losses)) * 100 : 0;
+                  return `linear-gradient(to right, green ${winPercentage}%, red ${winPercentage}%)`;
+                },
+                '& .MuiLinearProgress-bar': {
+                  backgroundColor: 'transparent',
+                  borderRadius: 5, // Redondea también la barra interna
+                },
+              }}
             />
             <Typography>
-              {stats.losses || 0} Losses / {stats.wins || 0} Wins
+               {stats.wins || 0} Wins / {stats.losses || 0} Losses
             </Typography>
           </Box>
           <Box sx={{ marginTop: 3 }}>
