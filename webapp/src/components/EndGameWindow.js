@@ -2,23 +2,35 @@ import React, { useEffect } from "react";
 import { Container, Typography, Grid, Button } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
-import WhatshotIcon from "@mui/icons-material/Whatshot"; // 🔥 Icono de fuego
+import WhatshotIcon from "@mui/icons-material/Whatshot";
 
 export default function ScoreWindow() {
   const navigate = useNavigate();
   const location = useLocation();
 
   // Extraer valores del estado de navegación
-  const { score = 0, correctAnswers = 0, totalQuestions = 0, streak = 0 } = location.state || {};
+  const {
+    score = 0,
+    correctAnswers = 0,
+    totalQuestions = 0,
+    streak = 0,
+  } = location.state || {};
 
   useEffect(() => {
-    console.log("Juego finalizado - Mostrando resultados", { score, correctAnswers, totalQuestions, streak });
+    console.log("Juego finalizado - Mostrando resultados", {
+      score,
+      correctAnswers,
+      totalQuestions,
+      streak,
+    });
   }, [score, correctAnswers, totalQuestions, streak]);
 
   return (
-    <Container component="main" maxWidth={false} sx={{ width: "100%", minHeight: "100vh", paddingTop: 8 }}>
-      <Navbar />
-
+    <Container
+      component="main"
+      maxWidth={false}
+      sx={{ width: "100%", minHeight: "100vh", paddingTop: 8 }}
+    >
       <Grid
         container
         direction="column"
@@ -50,10 +62,17 @@ export default function ScoreWindow() {
         </Typography>
 
         {/* Mejor Racha de Respuestas Correctas */}
-        <Typography variant="h6">Mejor racha de respuestas correctas:</Typography>
+        <Typography variant="h6">
+          Mejor racha de respuestas correctas:
+        </Typography>
         <Grid item container justifyContent="center" alignItems="center">
           <WhatshotIcon color="error" sx={{ fontSize: 40 }} />
-          <Typography variant="h3" fontWeight="bold" color="error" sx={{ ml: 1 }}>
+          <Typography
+            variant="h3"
+            fontWeight="bold"
+            color="error"
+            sx={{ ml: 1 }}
+          >
             {streak}
           </Typography>
         </Grid>
@@ -61,17 +80,29 @@ export default function ScoreWindow() {
         {/* Botones */}
         <Grid item container justifyContent="center" spacing={2} sx={{ mt: 3 }}>
           <Grid item>
-            <Button variant="contained" color="primary" onClick={() => navigate("/game")}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => navigate("/game-options")}
+            >
               Volver a jugar
             </Button>
           </Grid>
           <Grid item>
-            <Button variant="contained" color="secondary" onClick={() => navigate("/statistics")}>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => navigate("/statistics")}
+            >
               Estadísticas
             </Button>
           </Grid>
           <Grid item>
-            <Button variant="contained" color="error" onClick={() => navigate("/home")}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => navigate("/home")}
+            >
               Menú Principal
             </Button>
           </Grid>
