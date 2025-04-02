@@ -20,6 +20,14 @@ const historySchema = new mongoose.Schema({
     gameId: {
         type: Number,
         required: true,
+    },
+    category: {
+        type: String,
+        required: false, 
+    },
+    timeTaken: {
+        type: Number,
+        required: false, 
     }
 });
 

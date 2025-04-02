@@ -31,7 +31,7 @@ app.get("/stats", async (req, res) => {
       return res.status(400).json({ message: "Username is required" });
     }
 
-    console.log("Conexión a MongoDB:", mongoose.connection.readyState); // 1 = conectado, 0 = desconectado
+    console.log("Conexión a MongoDB:", mongoose.connection.readyState);
     const games = await UserGame.find({ username });
     console.log("Partidas encontradas:", games);
 
@@ -44,13 +44,30 @@ app.get("/stats", async (req, res) => {
         wins: 0,
         losses: 0,
         bestGames: [],
+        mostPlayedCategory: "Sin categoría",
+        averageGameTime: 0,
       });
     }
 
+    // Calcular estadísticas existentes
     const wins = games.filter((game) => game.score > 50).length;
     const losses = games.length - wins;
     const totalPoints = games.reduce((acc, game) => acc + game.score, 0);
     const pointsPerGame = games.length > 0 ? totalPoints / games.length : 0;
+
+    // Calcular la categoría más jugada
+    const categoryCounts = games.reduce((acc, game) => {
+      const category = game.category || "Sin categoría"; 
+      acc[category] = (acc[category] || 0) + 1;
+      return acc;
+    }, {});
+    const mostPlayedCategory = Object.keys(categoryCounts).reduce((a, b) =>
+      categoryCounts[a] > categoryCounts[b] ? a : b
+    );
+
+    // Calcular el tiempo medio de partida
+    const totalTime = games.reduce((acc, game) => acc + (game.timeTaken || 0), 0); 
+    const averageGameTime = games.length > 0 ? totalTime / games.length : 0;
 
     const bestGames = games
       .sort((a, b) => b.score - a.score)
@@ -59,6 +76,8 @@ app.get("/stats", async (req, res) => {
         id: game.gameId,
         points: game.score,
         date: game.recordedAt.toISOString(),
+        category: game.category || "Sin categoría",
+        timeTaken: game.timeTaken || 0, 
       }));
 
     res.json({
@@ -69,6 +88,8 @@ app.get("/stats", async (req, res) => {
       wins,
       losses,
       bestGames,
+      mostPlayedCategory,
+      averageGameTime,
     });
   } catch (error) {
     console.error("Error en /stats:", error);
