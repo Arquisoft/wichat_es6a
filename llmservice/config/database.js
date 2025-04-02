@@ -1,5 +1,5 @@
 module.exports = (mongoose) => {
-    const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/wichatdb";
+    const MONGO_URI = process.env.MONGO_URI || "mongodb://mongodb-wichat_es6a:27017/wichatdb";
   
     mongoose.connect(MONGO_URI, {
       useNewUrlParser: true,
