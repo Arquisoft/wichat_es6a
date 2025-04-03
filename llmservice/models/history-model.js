@@ -1,5 +1,6 @@
-module.exports = (mongoose) => {
-  const historySchema = new mongoose.Schema({
+const mongoose = require('mongoose');
+
+const historySchema = new mongoose.Schema({
     username: {
       type: String,
       required: true,
@@ -11,16 +12,25 @@ module.exports = (mongoose) => {
     correctQuestions: {
         type: Number,
         required: true,
-      },
+    },
     recordedAt: {
       type: Date,
       default: Date.now, 
     },
     gameId: {
-        type: Number,
+        type: String,
         required: true,
+    },
+    category: {
+        type: String,
+        required: false, 
+    },
+    timeTaken: {
+        type: Number,
+        required: false, 
     }
-  });
+});
 
-  return mongoose.model('History', historySchema);
-}
+module.exports = (mongoose) => {
+  return mongoose.model('History', historySchema, 'usergames');
+};

@@ -23,31 +23,40 @@ class Game {
     this.maxConsecutiveCorrectAnswers = 0;
     this.timer = null;
     this.timeRemaining = 30;
+    this.category = "";
+    this.startTime = null; // Almacena el tiempo de inicio
+    this.endTime = null;   // Almacena el tiempo de finalización
+    this.totalTimeTaken = 0; // El tiempo total transcurrido en segundos
   }
 
   async init(category) {
-    // Añadimos el parámetro category
     console.log("Inicializando juego con categoría:", category);
+    this.category = category;
     try {
+      // Preparar el endpoint y el nombre de la categoría
+      const categoryName = category ? category.name.toLowerCase() : "variado";
+      
       const response = await fetch("http://localhost:8003/generateQuestions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          context: "Historia universal", // Esto podría ajustarse según la categoría
-          category: category.name.toLowerCase(), // Enviamos el nombre de la categoría en minúsculas
+          category: categoryName,
+          questionCount: 4
         }),
       });
-
-      console.log("Response:", response);
+  
+      console.log("Response status:", response.status);
       if (!response.ok) {
         throw new Error(
           `Failed to fetch questions: ${response.status} ${response.statusText}`
         );
       }
-
+  
       const textData = await response.text();
+      console.log("Response text:", textData);
+      
       const data = JSON.parse(textData);
       var stringData = JSON.stringify(data);
       stringData = stringData
@@ -55,14 +64,22 @@ class Game {
         .replace(/`$/, "")
         .replace(/\\n|\\/g, "")
         .replace(/\\"/g, '"');
-
-      console.log(stringData);
-
+  
+      console.log("Processed data:", stringData);
+  
       this.questions = this.parseQuestions(stringData);
-
+  
+      // Si no hay preguntas, cargar las de prueba
+      if (!this.questions || this.questions.length === 0) {
+        console.warn("No se obtuvieron preguntas del servidor, cargando preguntas de prueba");
+        await this.TestingInit();
+      }
+  
       console.log("Preguntas guardadas en el objeto Game:", this.questions);
+      this.startTime = Date.now(); 
     } catch (error) {
       console.error("Error fetching questions:", error.message);
+      await this.TestingInit();
     }
   }
 
@@ -99,10 +116,50 @@ class Game {
     console.log("Preguntas de prueba cargadas:", this.questions);
   }
 
-  endGame() {
-    if (this.consecutiveCorrectAnswers > this.maxConsecutiveCorrectAnswers) {
-      this.maxConsecutiveCorrectAnswers = this.consecutiveCorrectAnswers;
+  // Método para terminar el juego y calcular el tiempo total
+  async endGame() {
+    this.endTime = Date.now(); // Guarda el tiempo de finalización
+
+    // Asegúrate de que startTime esté inicializado
+    if (!this.startTime) {
+      throw new Error("El tiempo de inicio no está registrado.");
     }
+
+    // Calcular el tiempo total transcurrido en segundos
+    this.totalTimeTaken = Math.floor((this.endTime - this.startTime) / 1000); // En segundos
+    console.log("Tiempo total de la partida (en segundos):", this.totalTimeTaken);
+
+    // Guardar la partida en el backend
+    try {
+      const username = localStorage.getItem("username");
+      if (!username) throw new Error("No username found");
+
+      const response = await fetch("http://localhost:8010/addGame", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "username": username
+        },
+        body: JSON.stringify({
+          gameId: `gm${Date.now().toString(36).slice(-3)}${Math.random().toString(36).substr(2, 3)}`,
+          username: username,
+          score: this.score,
+          correctQuestions: this.correctAnswers,
+          category: this.category?.name || "General",
+          timeTaken: this.totalTimeTaken
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error saving game: ${response.status}`);
+      }
+
+      console.log("Game saved successfully");
+    } catch (error) {
+      console.error("Error saving game:", error);
+    }
+
+    // Navegar a la pantalla de fin de juego
     if (this.navigate) {
       this.navigate("/endGame", {
         state: {
@@ -110,6 +167,8 @@ class Game {
           correctAnswers: this.correctAnswers || 0,
           totalQuestions: this.questions.length || 0,
           streak: this.maxConsecutiveCorrectAnswers || 0,
+          timeTaken: this.totalTimeTaken,
+          category: this.category?.name || "General"
         },
       });
     }
@@ -143,12 +202,12 @@ class Game {
           this.score += 100;
           this.score += this.consecutiveCorrectAnswers * 20;
         } else {
-          if (
-            this.consecutiveCorrectAnswers > this.maxConsecutiveCorrectAnswers
-          ) {
-            this.maxConsecutiveCorrectAnswers = this.consecutiveCorrectAnswers;
-          }
           this.consecutiveCorrectAnswers = 0;
+        }
+        if (
+          this.consecutiveCorrectAnswers > this.maxConsecutiveCorrectAnswers
+        ) {
+          this.maxConsecutiveCorrectAnswers = this.consecutiveCorrectAnswers;
         }
       } else {
         this.consecutiveCorrectAnswers = 0;

@@ -26,7 +26,8 @@ const Login = () => {
         password,
       });
 
-      const question = `Please, generate a greeting message for a student called ${username} that is a student of the Software Architecture course in the University of Oviedo. Be nice and polite. Two to three sentences max.`;
+      // Almacenar el username en localStorage después de un login exitoso
+      localStorage.setItem("username", username);  // Guardar el username
 
       setOpenSnackbar(true);
 
