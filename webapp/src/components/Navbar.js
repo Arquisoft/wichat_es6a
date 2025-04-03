@@ -27,6 +27,9 @@ const Navbar = () => {
         <Button color="inherit" onClick={() => navigate("/ranking")}>
           Ranking
         </Button>
+        <Button color="inherit" onClick={() => navigate("/questions")}>
+          Questions
+        </Button>
         <Button color="inherit" onClick={() => navigate("/")}>
           Logout
         </Button>
