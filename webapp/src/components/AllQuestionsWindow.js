@@ -6,21 +6,22 @@ const AllQuestionsWindow = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
+  const apiEndpoint = "http://localhost:8000"; // Asegúrate de que este puerto es el correcto
 
-useEffect(() => {
-  const fetchQuestions = async () => {
-    try {
-      const response = await fetch(`${apiEndpoint}/questions`);
-      if (!response.ok) throw new Error("Failed to fetch questions");
-      const data = await response.json();
-      setQuestions(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const response = await fetch(`http://localhost:8005/questions`);
+        if (!response.ok) throw new Error("Network response was not ok");
+        
+        const data = await response.json();
+        setQuestions(data); // Suponiendo que `data` es un array de preguntas
+      } catch (err) {
+        setError("Error fetching questions: " + err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
     fetchQuestions();
   }, []);
@@ -37,26 +38,30 @@ useEffect(() => {
 
         <Box sx={{ marginTop: 3, maxHeight: 400, overflowY: "auto" }}>
           <Grid container spacing={2}>
-            {questions.map((q, index) => (
-              <Grid item xs={12} key={index}>
-                <Paper sx={{ padding: 2 }}>
-                  <Typography>
-                    <strong>Q:</strong> {q.question}
-                  </Typography>
-                  <Typography>
-                    <strong>Correct Answer:</strong> {q.correctAnswer}
-                  </Typography>
-                  <Typography>
-                    <strong>Incorrect Answers:</strong>
-                  </Typography>
-                  <ul>
-                    {q.incorrectAnswers.map((ans, i) => (
-                      <li key={i}>{ans}</li>
-                    ))}
-                  </ul>
-                </Paper>
-              </Grid>
-            ))}
+            {questions.length > 0 ? (
+              questions.map((q, index) => (
+                <Grid item xs={12} key={index}>
+                  <Paper sx={{ padding: 2 }}>
+                    <Typography>
+                      <strong>Q:</strong> {q.question}
+                    </Typography>
+                    <Typography>
+                      <strong>Correct Answer:</strong> {q.correctAnswer}
+                    </Typography>
+                    <Typography>
+                      <strong>Incorrect Answers:</strong>
+                    </Typography>
+                    <ul>
+                      {q.incorrectAnswers.map((ans, i) => (
+                        <li key={i}>{ans}</li>
+                      ))}
+                    </ul>
+                  </Paper>
+                </Grid>
+              ))
+            ) : (
+              <Typography>No questions found.</Typography>
+            )}
           </Grid>
         </Box>
       </Paper>
