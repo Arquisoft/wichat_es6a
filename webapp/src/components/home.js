@@ -35,8 +35,8 @@ const Home = () => {
     <Box
       sx={{
         minHeight: "100vh",
-        backgroundColor: "#EEF7FF", // fondo azulado muy suave
-        color: "#4D869C", // texto principal
+        backgroundColor: "#EEF7FF",
+        color: "#4D869C",
       }}
     >
       <Navbar />
@@ -87,7 +87,7 @@ const Home = () => {
             flexDirection: "column",
             justifyContent: "flex-start",
             color: "#000000",
-            position: "relative", // 👈 necesario para que el absolute funcione
+            position: "relative",
           }}
         >
           <Typography
@@ -127,7 +127,7 @@ const Home = () => {
               py: 1.5,
               fontSize: "1.1rem",
               borderRadius: "12px",
-              backgroundColor: "#4D869C",
+              backgroundColor: "#1E90FF",
               color: "#fff",
               fontFamily: "Poppins, sans-serif",
               boxShadow: "0px 4px 12px rgba(0,0,0,0.2)",
