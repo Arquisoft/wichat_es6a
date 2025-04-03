@@ -42,7 +42,6 @@ const Home = () => {
         color: "#4D869C",
       }}
     >
-      <Navbar />
 
       <Box
         sx={{
