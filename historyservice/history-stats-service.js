@@ -4,11 +4,16 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-const connectDatabase = require("/usr/src/llmservice/config/database.js");
-connectDatabase(mongoose);
-
-const UserGame = require("/usr/src/llmservice/models/history-model")(mongoose);
-
+try {
+  // Intentamos cargar desde la ruta absoluta
+  connectDatabase = require("/usr/src/llmservice/config/database.js");
+  UserGame = require("/usr/src/llmservice/models/history-model")(mongoose);
+} catch (error) {
+  // Si falla, usamos rutas relativas
+  console.error("Error loading from /usr/src/, falling back to relative paths:", error);
+  connectDatabase = require("../llmservice/config/database.js");
+  UserGame = require("../llmservice/models/history-model")(mongoose);
+}
 const app = express();
 const port = process.env.PORT || 8010;
 
@@ -173,3 +178,5 @@ app.post("/addGame", async (req, res) => {
 app.listen(port, () => {
   console.log(`History Service running on port ${port}`);
 });
+
+module.exports = app;

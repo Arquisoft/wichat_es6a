@@ -32,5 +32,9 @@ const historySchema = new mongoose.Schema({
 });
 
 module.exports = (mongoose) => {
+  if (mongoose.models.History) {
+    return mongoose.models.History; // Si ya existe el modelo, lo usamos
+  }
+  
   return mongoose.model('History', historySchema, 'usergames');
 };
