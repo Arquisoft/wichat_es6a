@@ -228,6 +228,7 @@ export function GameWindow() {
   
     setFeedbackColors(newColors);
     setHasUsedFiftyFifty(true);
+    gameRef.current.useFiftyFifty();
   };
   
 

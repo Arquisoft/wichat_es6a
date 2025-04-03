@@ -26,6 +26,9 @@ class Game {
     this.startTime = null;
     this.endTime = null;
     this.totalTimeTaken = 0;
+
+    this.usedFiftyFiftyOn = new Set();
+
   }
 
   async init(category) {
@@ -227,8 +230,14 @@ class Game {
           console.log("Respuesta Correcta!");
           this.correctAnswers++;
           this.consecutiveCorrectAnswers++;
-          this.score += 100; // Puntos base
-          this.score += this.consecutiveCorrectAnswers * 20; // Bonus por racha
+
+          let basePoints = 100;
+          if (this.usedFiftyFiftyOn.has(currentQ.questionText)) {
+            basePoints = 50; // en caso de haberse usado 50/50
+          }
+          this.score += basePoints;
+          this.score += this.consecutiveCorrectAnswers * 20;
+
           // Actualizar racha máxima
           if (
             this.consecutiveCorrectAnswers > this.maxConsecutiveCorrectAnswers
@@ -318,6 +327,14 @@ class Game {
       return [];
     }
   }
+
+  useFiftyFifty() {
+    const current = this.getCurrentQuestion();
+    if (current) {
+      this.usedFiftyFiftyOn.add(current.questionText);
+    }
+  }
+  
 }
 
 export default Game;
