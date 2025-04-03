@@ -10,7 +10,7 @@ const app = express();
 
 app.use(express.json());
 
-// Questions by user...
+/**  Questions by user...
 app.get("/user/questions", async (req, res) => {
     try {
         const user = await User.findOne();
@@ -40,26 +40,33 @@ app.get("/user/questions", async (req, res) => {
         res.status(500).json({ error: "Error fetching user and questions" });
     }
 });
+*/
 
 app.get("/questions", async (req, res) => {
-  
     try {
-      const users = await UserGames.find();
-      let allQuestions = [];
-  
-      users.forEach(user => {
-        user.games.forEach(game => {
-          if (game.questions) {
-            allQuestions = allQuestions.concat(game.questions);
-          }
+        console.log("Accessing /questions endpoint...");
+        
+        const users = await UserGames.find();
+        console.log("Fetched users:", users);
+        
+        let allQuestions = [];
+
+        users.forEach(user => {
+            user.games.forEach(game => {
+                if (game.questions) {
+                    allQuestions = allQuestions.concat(game.questions);
+                }
+            });
         });
-      });
-  
-      res.json(allQuestions);
+
+        console.log("All questions:", allQuestions);
+        res.json(allQuestions);
     } catch (error) {
-      res.status(500).json({ error: "Error fetching questions" });
+        console.error("Error fetching questions:", error);
+        res.status(500).json({ error: "Error fetching questions" });
     }
-  });
+});
+
 
 const port = 8005;
 const server = app.listen(port, () => {
