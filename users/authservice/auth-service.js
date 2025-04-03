@@ -4,18 +4,32 @@ const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 
-const connectDatabase = require('/usr/src/llmservice/config/database');
-connectDatabase(mongoose); // Connect to MongoDB using the centralized configuration
+let connectDatabase, User;
 
-const User = require("/usr/src/llmservice/models/user-model")(mongoose);
+try {
+  connectDatabase = require('/usr/src/llmservice/config/database');
+  User = require("/usr/src/llmservice/models/user-model")(mongoose);
+} catch (error) {
+  console.error("Error loading database configuration:", error);
+  connectDatabase = require('../../llmservice/config/database');
+  User = require("../../llmservice/models/user-model")(mongoose);
+}
 
 const app = express();
-const port = 8002; 
+const port = 8002;
 
-// Middleware to parse JSON in request body
+// Middleware para parsear JSON en el body
 app.use(express.json());
 
-// Function to validate required fields in the request body
+// Conectar a la base de datos antes de iniciar el servidor
+connectDatabase()
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((err) => {
+    console.error('Error connecting to MongoDB:', err);
+    process.exit(1); // Detener la app si la DB no se conecta
+  });
+
+// Validar campos en la petición
 function validateRequiredFields(req, requiredFields) {
     for (const field of requiredFields) {
         if (!(field in req.body)) {
@@ -24,43 +38,38 @@ function validateRequiredFields(req, requiredFields) {
     }
 }
 
-// Route for user login
-app.post('/login',  [
+// Ruta para login
+app.post('/login', [
   check('username').isLength({ min: 3 }).trim().escape(),
   check('password').isLength({ min: 3 }).trim().escape()
 ], async (req, res) => {
   try {
-    // Check if required fields are present in the request body
     validateRequiredFields(req, ['username', 'password']);
-  
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ error: errors.array().toString()});
+      return res.status(400).json({ error: errors.array() });
     }
 
-    let username = req.body.username.toString();
-    let password = req.body.password.toString();
+    const { username, password } = req.body;
 
-    // Find the user by username in the database
+    // Buscar el usuario en la base de datos
     const user = await User.findOne({ username });
 
-    // Check if the user exists and verify the password
     if (user && await bcrypt.compare(password, user.password)) {
-      // Generate a JWT token
       const token = jwt.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '1h' });
-      // Respond with the token and user information
-      res.json({ token: token, username: username, createdAt: user.createdAt });
+      res.json({ token, username: user.username, createdAt: user.createdAt });
     } else {
       res.status(401).json({ error: 'Invalid credentials' });
     }
   } catch (error) {
+    console.error("Login error:", error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-// Start the server
-const server = app.listen(port, () => {
-  console.log(`Auth Service listening at http://localhost:${port}`);
-});
+  app.listen(port, () => {
+    console.log(`Auth Service listening at http://localhost:${port}`);
+  });
 
-module.exports = server;
+module.exports = { app, User, mongoose };

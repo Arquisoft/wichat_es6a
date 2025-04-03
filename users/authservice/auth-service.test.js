@@ -2,9 +2,11 @@ const request = require('supertest');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const bcrypt = require('bcrypt');
 const User = require('./auth-model');
+mongoose = require('mongoose');
+const app = require('./auth-service');
 
-let mongoServer;
-let app;
+jest.mock('../../llmservice/config/database.js');
+jest.setTimeout(10000); // 10 segundos de timeout
 
 //test user
 const user = {
@@ -22,18 +24,13 @@ async function addUser(user){
   await newUser.save();
 }
 
-beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-  process.env.MONGODB_URI = mongoUri;
-  app = require('./auth-service'); 
-  //Load database with initial conditions
-  await addUser(user);
+beforeAll(() => {
+  mongoose.connect = jest.fn().mockResolvedValue(true);
+  addUser(user);
 });
-
-afterAll(async () => {
-  app.close();
-  await mongoServer.stop();
+  
+afterAll(() => {
+  mongoose.connection.close();
 });
 
 describe('Auth Service', () => {
