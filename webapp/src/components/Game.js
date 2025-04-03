@@ -1,4 +1,3 @@
-// Definición de clases auxiliares (sin cambios)
 class Answer {
   constructor(text, isCorrect) {
     this.text = text;
@@ -16,31 +15,28 @@ class Question {
 // Clase principal del juego
 class Game {
   constructor(navigate) {
-    this.questions = []; // Array para almacenar las preguntas
-    this.questionIndex = 0; // Índice de la pregunta actual
-    this.score = 0; // Puntuación del jugador
-    this.navigate = navigate; // Función de navegación (de react-router-dom)
-    this.consecutiveCorrectAnswers = 0; // Contador de racha actual
-    this.correctAnswers = 0; // Contador total de respuestas correctas
-    this.maxConsecutiveCorrectAnswers = 0; // Máxima racha alcanzada
-    // this.timer = null; // ELIMINADO - Ya no se necesita
-    // this.timeRemaining = 30; // ELIMINADO - Ya no se necesita
-    this.category = ""; // Categoría seleccionada
-    this.startTime = null; // Timestamp de inicio del juego
-    this.endTime = null; // Timestamp de fin del juego
-    this.totalTimeTaken = 0; // Tiempo total jugado en segundos
+    this.questions = [];
+    this.questionIndex = 0;
+    this.score = 0;
+    this.navigate = navigate;
+    this.consecutiveCorrectAnswers = 0;
+    this.correctAnswers = 0;
+    this.maxConsecutiveCorrectAnswers = 0;
+    this.category = "";
+    this.startTime = null;
+    this.endTime = null;
+    this.totalTimeTaken = 0;
   }
 
-  // Inicializa el juego, obtiene preguntas del backend
   async init(category) {
     console.log("Inicializando juego con categoría:", category);
-    this.category = category; // Guardar objeto categoría completo
-    this.startTime = Date.now(); // Registrar tiempo de inicio
-    this.questionIndex = 0; // Reiniciar índice
-    this.score = 0; // Reiniciar puntuación
-    this.correctAnswers = 0; // Reiniciar contador
-    this.consecutiveCorrectAnswers = 0; // Reiniciar racha
-    this.maxConsecutiveCorrectAnswers = 0; // Reiniciar racha máxima
+    this.category = category;
+    this.startTime = Date.now();
+    this.questionIndex = 0;
+    this.score = 0;
+    this.correctAnswers = 0;
+    this.consecutiveCorrectAnswers = 0;
+    this.maxConsecutiveCorrectAnswers = 0;
 
     try {
       const categoryName = category ? category.name.toLowerCase() : "variado";
@@ -49,7 +45,7 @@ class Game {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           category: categoryName,
-          questionCount: 4, // Número de preguntas a solicitar
+          questionCount: 4,
         }),
       });
 
@@ -60,13 +56,10 @@ class Game {
         );
       }
 
-      // Parsear la respuesta JSON directamente
       const data = await response.json();
       console.log("Parsed questions data:", data);
 
-      // Asumiendo que data.questions es el array esperado
       if (data && Array.isArray(data.questions)) {
-        // Mapear la estructura recibida a nuestras clases Question/Answer
         this.questions = data.questions.map((qData) => {
           const answers = qData.answers.map(
             (aData) => new Answer(aData.text, aData.isCorrect)
@@ -81,23 +74,20 @@ class Game {
         throw new Error("Formato de preguntas inesperado.");
       }
 
-      // Fallback a preguntas de prueba si el parseo falla o no devuelve preguntas
       if (!this.questions || this.questions.length === 0) {
         console.warn(
           "No se obtuvieron/parsearon preguntas del servidor, cargando preguntas de prueba"
         );
-        await this.TestingInit(); // Carga preguntas de prueba
+        await this.TestingInit();
       }
 
       console.log("Preguntas guardadas en el objeto Game:", this.questions);
     } catch (error) {
       console.error("Error fetching or parsing questions:", error.message);
-      // Si falla la carga, usar preguntas de prueba
       await this.TestingInit();
     }
   }
 
-  // Carga preguntas de prueba (sin cambios)
   async TestingInit() {
     console.log("Modo de prueba activado: Cargando preguntas predefinidas");
     this.questions = [
@@ -127,20 +117,19 @@ class Game {
       ]),
     ];
     console.log("Preguntas de prueba cargadas:", this.questions);
-    // Asegurar que startTime se registre también en modo prueba si no se hizo antes
     if (!this.startTime) {
       this.startTime = Date.now();
     }
   }
 
-  // Termina el juego, calcula tiempo y guarda resultados (sin cambios)
+  // Termina el juego, calcula tiempo y guarda resultados
   async endGame() {
     this.endTime = Date.now();
     if (!this.startTime) {
       console.error(
         "Error: El tiempo de inicio no está registrado para calcular el total."
       );
-      this.totalTimeTaken = 0; // O algún valor por defecto
+      this.totalTimeTaken = 0;
     } else {
       this.totalTimeTaken = Math.floor((this.endTime - this.startTime) / 1000);
     }
@@ -154,27 +143,23 @@ class Game {
       if (!username) throw new Error("No username found in localStorage");
 
       const response = await fetch("http://localhost:8010/addGame", {
-        // URL del servicio de historial
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // Considerar enviar el username en el body o como header seguro si aplica
-          // username: username, // Ejemplo si se espera como header
         },
         body: JSON.stringify({
-          // gameId: `gm${Date.now().toString(36).slice(-3)}${Math.random().toString(36).substr(2, 3)}`, // ID generado en backend preferiblemente
           username: username,
           score: this.score,
           correctQuestions: this.correctAnswers,
-          category: this.category?.name || "General", // Usar nombre de categoría
+          category: this.category?.name || "General",
           timeTaken: this.totalTimeTaken,
-          totalQuestions: this.questions.length, // Enviar total de preguntas
-          maxStreak: this.maxConsecutiveCorrectAnswers, // Enviar racha máxima
+          totalQuestions: this.questions.length,
+          maxStreak: this.maxConsecutiveCorrectAnswers,
         }),
       });
 
       if (!response.ok) {
-        const errorData = await response.text(); // Leer cuerpo del error
+        const errorData = await response.text();
         throw new Error(`Error saving game: ${response.status}. ${errorData}`);
       }
       console.log("Game saved successfully");
@@ -199,20 +184,20 @@ class Game {
     }
   }
 
-  // Devuelve el texto de la pregunta actual (sin cambios)
+  // Devuelve el texto de la pregunta actual
   getCurrentQuestionText() {
     if (this.questionIndex < this.questions.length) {
       return this.questions[this.questionIndex].questionText;
     }
-    return "Fin del juego"; // O null
+    return "Fin del juego";
   }
 
-  // Devuelve la racha actual (sin cambios)
+  // Devuelve la racha actual
   getCurrentStreak() {
     return this.consecutiveCorrectAnswers;
   }
 
-  // Devuelve el texto de una respuesta específica (sin cambios)
+  // Devuelve el texto de una respuesta específica
   getCurrentQuestionAnswer(index) {
     if (this.questionIndex < this.questions.length) {
       return this.questions[this.questionIndex].answers[index]?.text;
@@ -220,7 +205,7 @@ class Game {
     return undefined;
   }
 
-  // Devuelve la puntuación actual (sin cambios)
+  // Devuelve la puntuación actual
   getCurrentPoints() {
     return this.score;
   }
@@ -230,14 +215,13 @@ class Game {
     // Verificar si el juego ya terminó o la pregunta no existe
     if (this.questionIndex >= this.questions.length) {
       console.warn("answerQuestion called after game should have ended.");
-      return; // No hacer nada si ya no hay preguntas
+      return;
     }
 
     const currentQ = this.questions[this.questionIndex];
 
     // Si no es timeout, verificar la respuesta seleccionada
     if (!isTimeout) {
-      // Asegurarse que el índice es válido para el array de respuestas
       if (index >= 0 && index < currentQ.answers.length) {
         if (currentQ.answers[index].isCorrect) {
           console.log("Respuesta Correcta!");
@@ -277,13 +261,13 @@ class Game {
     }
   }
 
-  // Devuelve el objeto de la pregunta actual (sin cambios)
+  // Devuelve el objeto de la pregunta actual
   getCurrentQuestion() {
     // Devuelve la pregunta actual o undefined si el índice está fuera de rango
     return this.questions[this.questionIndex];
   }
 
-  // Parsea las preguntas desde el string JSON (mejorado)
+  // Parsea las preguntas desde el string JSON
   parseQuestions(inputString) {
     try {
       // Limpieza básica inicial (puede no ser necesaria si el backend devuelve JSON válido)
@@ -323,7 +307,7 @@ class Game {
           });
           return new Question(qData.question, answers);
         })
-        .filter((q) => q !== null); // Filtrar preguntas inválidas
+        .filter((q) => q !== null);
     } catch (error) {
       console.error(
         "Error parsing questions JSON:",
@@ -331,9 +315,7 @@ class Game {
         "Input string:",
         inputString
       );
-      // Devolver array vacío o lanzar error según prefieras
       return [];
-      // throw new Error("No se pudieron parsear las preguntas desde el servidor.");
     }
   }
 }

@@ -56,7 +56,7 @@ const GameOptions = () => {
             md: "repeat(3, 1fr)", // 3 columnas en pantallas medianas
             lg: "repeat(4, 1fr)", // 4 columnas en pantallas grandes
           },
-          gap: 3, // Reducimos el gap para que quepan bien las columnas
+          gap: 3,
           width: "100%",
         }}
       >
@@ -90,7 +90,7 @@ const GameOptions = () => {
               src={category.image}
               alt={`${category.name} icon`}
               sx={{
-                width: "150px", // Reducimos el tamaño para que quepan en 4 columnas
+                width: "150px",
                 height: "150px",
                 objectFit: "contain",
                 borderRadius: 8,
