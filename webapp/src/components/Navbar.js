@@ -9,7 +9,9 @@ const Navbar = () => {
   const profilePic = "webapp/public/profileImg.jpg"; // Static path to profile image
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: "#1976d2" }}>
+
+    <AppBar position="static" sx={{ backgroundColor: "#1E90FF" }}>
+
       <Toolbar>
         <IconButton edge="start" color="inherit" onClick={() => navigate("/")}>
           <HomeIcon />
