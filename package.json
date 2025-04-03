@@ -2,6 +2,7 @@
   "dependencies": {
     "@tsparticles/react": "^3.0.0",
     "dotenv": "^16.4.7",
+    "mongoose": "^8.13.1",
     "react-particles": "^2.12.2",
     "tsparticles": "^3.8.1"
   }

@@ -3,19 +3,18 @@
     "version": "1.0.0",
     "main": "history-stats-service.js",
     "scripts": {
-      "start": "node history-stats-service.js",
-      "test": "jest"
+        "start": "node history-stats-service.js",
+        "test": "jest"
     },
     "dependencies": {
-      "cors": "^2.8.5",
-      "express": "^4.18.2",
-      "mongoose": "^8.13.1",
-      "jsonwebtoken": "^9.0.2",
-      "dotenv": "^10.0.0"
+        "cors": "^2.8.5",
+        "dotenv": "^10.0.0",
+        "express": "^4.18.2",
+        "jsonwebtoken": "^9.0.2",
+        "mongoose": "^8.13.1"
     },
     "devDependencies": {
-      "jest": "^29.0.0",
-      "supertest": "^6.0.0"
+        "jest": "^29.7.0",
+        "supertest": "^6.0.0"
     }
-  }
-  
+}

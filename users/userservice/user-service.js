@@ -4,11 +4,13 @@ const bcrypt = require('bcrypt');
 const path = require('path');
 const mongoose = require('mongoose');
 
-const connectDatabase = require('/usr/src/llmservice/config/database');
-connectDatabase(mongoose); // Connect to MongoDB using the centralized configuration
-
-const User = require("/usr/src/llmservice/models/user-model")(mongoose);
-
+try{
+  connectDatabase = require('/usr/src/llmservice/config/database.js');
+  User = require("/usr/src/llmservice/models/user-model")(mongoose);
+}catch(error){
+  connectDatabase = require("../../llmservice/config/database.js");
+  User = require("../../llmservice/models/user-model")(mongoose);
+}
 const app = express();
 const port = 8001;
 

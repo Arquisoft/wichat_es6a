@@ -1,26 +1,22 @@
 const request = require('supertest');
 const bcrypt = require('bcrypt');
-const { MongoMemoryServer } = require('mongodb-memory-server');
+const mongoose = require('mongoose');
+const app = require('./user-service');
 
-const User = require('./user-model');
+jest.mock('../../llmservice/config/database.js');
+//jest.setTimeout(10000); // 10 segundos de timeout
 
-
-let mongoServer;
-let app;
-
-beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-  process.env.MONGODB_URI = mongoUri;
-  app = require('./user-service'); 
-});
-
-afterAll(async () => {
-    app.close();
-    await mongoServer.stop();
-});
+const User = require("../../llmservice/models/user-model")(mongoose);
 
 describe('User Service', () => {
+  beforeAll(() => {
+      mongoose.connect = jest.fn().mockResolvedValue(true);
+    });
+  
+  afterAll(() => {
+      mongoose.connection.close();
+    });
+
   it('should add a new user on POST /adduser', async () => {
     const newUser = {
       username: 'testuser',
