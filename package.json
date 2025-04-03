@@ -1,8 +1,31 @@
 {
   "dependencies": {
+    "@google/genai": "^0.7.0",
+    "@google/generative-ai": "^0.24.0",
     "@tsparticles/react": "^3.0.0",
     "dotenv": "^16.4.7",
     "react-particles": "^2.12.2",
     "tsparticles": "^3.8.1"
-  }
+  },
+  "name": "wichat_es6a",
+  "version": "1.0.0",
+  "description": "| Contribuyente | Contacto |\r | ------------- | ------------- |\r | Adrián Dumitru | <a href=\"https://github.com/Adrid64\"><img src=\"https://img.shields.io/badge/uo295652-Adrián Dumitru-red\"></a>  |\r | Emilio Izquierdo Fernández  | <a href=\"https://github.com/miloizfer\"><img src=\"https://img.shields.io/badge/uo257691-Emilio Izquierdo-blue\"></a>  |\r | Manuel Menéndez Valledor  | <a href=\"https://github.com/Wetrel\"><img src=\"https://img.shields.io/badge/uo277429-Manuel Menéndez-green\"></a>  |\r | Alejandro Rivada Rodríguez  | <a href=\"https://github.com/Alejandrorr572\"><img src=\"https://img.shields.io/badge/uo295528-Alejandro Rivada-purple\"></a>  |\r | Iyán Solís Rodríguez  | <a href=\"https://github.com/Iyansr97\"><img src=\"https://img.shields.io/badge/uo295103-Iyán Solís-orange\"></a>  |",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Arquisoft/wichat_es6a.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Arquisoft/wichat_es6a/issues"
+  },
+  "homepage": "https://github.com/Arquisoft/wichat_es6a#readme"
 }
