@@ -1,35 +1,26 @@
 const express = require("express");
-const cors = require("cors");
 const mongoose = require('mongoose');
 
 const connectDatabase = require('/usr/src/llmservice/config/database');
 connectDatabase(mongoose);
 
-const User = require("/usr/src/llmservice/models/user-model")(mongoose);
-const History = require("/usr/src/llmservice/models/history-model")(mongoose);
+const User = require("/usr/src/llmservice/models/stats-model")(mongoose);
 
 const app = express();
 
 app.use(express.json());
-app.use(cors());
-
-// Connect to MongoDB
-const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/userdb';
-mongoose.connect(mongoUri);
 
 // Questions by user...
 app.get("/user/questions", async (req, res) => {
     try {
-        // Fetch user (simulated for now)
         const user = await User.findOne();
         if (!user) return res.status(404).json({ error: "User not found" });
 
-        // Fetch all questions (simulated answered questions)
         const allQuestions = await Question.find();
         const answeredQuestions = allQuestions.map((q) => ({
             question: q.question,
             correctAnswer: q.correctAnswer,
-            isCorrect: Math.random() < 0.5, // Simulated correctness
+            isCorrect: Math.random() < 0.5,
         }));
 
         // Calculate stats
@@ -51,17 +42,28 @@ app.get("/user/questions", async (req, res) => {
 });
 
 app.get("/questions", async (req, res) => {
+  
     try {
-        const questions = await Question.find();
-        res.json(questions);
+      const users = await UserGames.find();
+      let allQuestions = [];
+  
+      users.forEach(user => {
+        user.games.forEach(game => {
+          if (game.questions) {
+            allQuestions = allQuestions.concat(game.questions);
+          }
+        });
+      });
+  
+      res.json(allQuestions);
     } catch (error) {
-        res.status(500).json({ error: "Error fetching questions" });
+      res.status(500).json({ error: "Error fetching questions" });
     }
-});
+  });
 
-const port = process.env.PORT || 3000;
+const port = 8005;
 const server = app.listen(port, () => {
-  console.log(`User Service listening at http://localhost:${port}`);
+  console.log(`Questions Service listening at http://localhost:${port}`);
 });
 
 // Listen for the 'close' event on the Express.js server

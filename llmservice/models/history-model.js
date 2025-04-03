@@ -1,6 +1,5 @@
-const mongoose = require('mongoose');
-
-const historySchema = new mongoose.Schema({
+module.exports = (mongoose) => {
+  const historySchema = new mongoose.Schema({
     username: {
       type: String,
       required: true,
@@ -20,9 +19,8 @@ const historySchema = new mongoose.Schema({
     gameId: {
         type: Number,
         required: true,
-      }
-});
+    }
+  });
 
-const History = mongoose.model('History', historySchema);
-
-module.exports = History
+  return mongoose.model('History', historySchema);
+}
