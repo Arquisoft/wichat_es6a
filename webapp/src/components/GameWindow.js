@@ -383,6 +383,26 @@ export function GameWindow() {
             >
               Pista
             </Button>
+
+            <Button
+              variant="contained"
+              sx={{
+                mt: 1,
+                bgcolor: "#f06292",
+                color: "#fff",
+                "&:hover": {
+                  bgcolor: "#ec407a",
+                },
+                "&:disabled": {
+                  bgcolor: "#888",
+                  color: "#eee",
+                },
+              }}
+            >
+              50 / 50
+            </Button>
+
+
           </Box>
         </Grid>
       </Grid>
