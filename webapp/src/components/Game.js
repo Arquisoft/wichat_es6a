@@ -236,8 +236,9 @@ class Game {
             basePoints = 50; // en caso de haberse usado 50/50
           }
           this.score += basePoints;
-          this.score += this.consecutiveCorrectAnswers * 20;
-
+          if(this.consecutiveCorrectAnswers > 1) {
+            this.score += (this.consecutiveCorrectAnswers - 1) * 20;
+          }
           // Actualizar racha máxima
           if (
             this.consecutiveCorrectAnswers > this.maxConsecutiveCorrectAnswers
