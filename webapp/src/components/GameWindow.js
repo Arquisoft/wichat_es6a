@@ -21,6 +21,7 @@ export function GameWindow() {
   const [streak, setStreak] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [feedbackColors, setFeedbackColors] = useState([]);
+  const [hasUsedFiftyFifty, setHasUsedFiftyFifty] = useState(false);
   const [questionImage, setQuestionImage] = useState(null);
   const [isGameLoading, setIsGameLoading] = useState(true);
   const [generatedImagesMap, setGeneratedImagesMap] = useState(new Map());
@@ -205,6 +206,33 @@ export function GameWindow() {
     }
   }, [currentQuestion, apiEndpoint, apiKey]);
 
+  const handleFiftyFifty = () => {
+    if (!currentQuestion || selectedAnswer !== null) return;
+  
+    
+    const correctIndex = currentQuestion.answers.findIndex((ans) => ans.isCorrect);
+  
+    // Elimina 2 respuestas incorrectas aleatorias
+    const incorrectIndices = currentQuestion.answers
+      .map((ans, idx) => ({ ans, idx }))
+      .filter(({ ans }) => !ans.isCorrect)
+      .map(({ idx }) => idx);
+  
+    // Baraja y selecciona 2 a eliminar
+    const toRemove = incorrectIndices.sort(() => Math.random() - 0.5).slice(0, 2);
+  
+    const newColors = currentQuestion.answers.map((_, i) => {
+      if (toRemove.includes(i)) return "#424242"; // deshabilitado gris oscuro
+      return null;
+    });
+  
+    setFeedbackColors(newColors);
+    setHasUsedFiftyFifty(true);
+  };
+  
+
+
+
   // --- Renderizado del Componente ---
   if (isGameLoading) {
     return (
@@ -386,6 +414,8 @@ export function GameWindow() {
 
             <Button
               variant="contained"
+              onClick={handleFiftyFifty}
+              disabled={selectedAnswer !== null || hasUsedFiftyFifty}
               sx={{
                 mt: 1,
                 bgcolor: "#f06292",
