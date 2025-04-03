@@ -2,29 +2,32 @@ import React, { useState, useEffect } from "react";
 import { Box, Typography, Snackbar, Button, Paper } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import Navbar from "./Navbar";
+import StatisticsWindow from "./StatisticsWindow";
+import GameWindow from "./GameWindow";
 
 const Home = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const username = location.state?.username || "Student";
+  const [showStatistics, setShowStatistics] = useState(false);
   const [welcomeMessage, setWelcomeMessage] = useState("");
   const [error, setError] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
-  const apiEndpoint =
-    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8003";
+  const apiEndpoint = "http://localhost:8003";
   const apiKey = process.env.LLM_API_KEY;
 
   useEffect(() => {
     const fetchWelcomeMessage = async () => {
       try {
-        const question = `Please, generate a greeting message for a student called ${username} that is a student of the Software Architecture course in the University of Oviedo.`;
+        const question = `Please, generate a greeting message for a student called ${username} that is a student of the Software Architecture course in the University of Oviedo. Be nice and polite. Two to three sentences max.`;
         const response = await axios.post(`${apiEndpoint}/ask`, {
           question,
           apiKey,
         });
         setWelcomeMessage(response.data.answer);
       } catch (error) {
+        console.error("Error fetching message:", error);
         setError("Failed to fetch welcome message.");
       }
     };
@@ -141,10 +144,11 @@ const Home = () => {
         </Box>
 
 
-
       </Box>
 
-      {error && <Snackbar open={!!error} autoHideDuration={6000} message={error} />}
+      {error && (
+        <Snackbar open={!!error} autoHideDuration={6000} message={error} />
+      )}
     </Box>
   );
 };

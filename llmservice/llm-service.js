@@ -1,20 +1,21 @@
+// llmservice/llm-service.js
 const axios = require("axios");
 const express = require("express");
-const cors = require("cors"); // Import the cors package
+const cors = require("cors");
 const app = express();
 app.use(
   cors({
-    origin: "http://localhost:3000", // Or the correct port of your React app
+    origin: "http://localhost:3000",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
   })
 );
 const port = 8003;
 let moderation = "You are a quiz game assistant.";
-require("dotenv").config(); // Cargar las variables de entorno desde .env
+require("dotenv").config();
 
-// URL del servicio de Wikidata (server.js)
-const WIKIDATA_SERVICE_URL = "http://wikidataservice:8020/api";
+// URL del servicio de Wikidata
+const WIKIDATA_SERVICE_URL = process.env.WIKIDATA_SERVICE_URL || "http://wikidataservice:8020/api";
 
 // Middleware para parsear JSON
 app.use(express.json());
@@ -29,6 +30,19 @@ app.use((req, res, next) => {
 });
 
 const llmConfigs = {
+  gemini: {
+    url: () => `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.LLM_API_KEY}`,
+    transformRequest: (question, moderation) => ({
+      contents: [
+        { parts: [{ text: `${moderation}\n${question}` }] }
+      ]
+    }),
+    transformResponse: (response) =>
+      response.data.candidates?.[0]?.content?.parts?.[0]?.text || "No response",
+    headers: (apiKey) => ({
+      "Content-Type": "application/json",
+    }),
+  },
   empathy: {
     url: () => "https://empathyai.prod.empathy.co/v1/chat/completions",
     transformRequest: (question, moderation) => ({
@@ -60,21 +74,56 @@ function validateRequiredFields(req, requiredFields) {
 // Función genérica para enviar preguntas al LLM
 async function sendQuestionToLLM(question, apiKey, moderation) {
   try {
-    const config = llmConfigs["empathy"];
+    const model = process.env.LLM_PROVIDER || "gemini";
+    const config = llmConfigs[model];
     if (!config) {
-      throw new Error(`Model is not supported.`);
+      throw new Error(`Model '${model}' is not supported.`);
     }
 
     const url = config.url();
     const requestData = config.transformRequest(question, moderation);
-    const headers = config.headers(apiKey);
+    const headers = config.headers(apiKey); 
 
     const response = await axios.post(url, requestData, { headers });
 
     return config.transformResponse(response);
   } catch (error) {
-    console.error(`Error sending question:`, error.message || error);
+    console.error(`Error sending question:`, error.response?.data || error.message || error);
     return "Error processing request.";
+  }
+}
+
+// Función para limpiar y parsear respuestas JSON del LLM
+function parseJsonResponse(jsonString) {
+  try {
+    // Primero intentar parse directo
+    return JSON.parse(jsonString);
+  } catch (e) {
+    // Si falla, intentar limpiar el string
+    try {
+      const cleanedJson = jsonString
+        .replace(/```json|```/g, '') // Eliminar bloques de código
+        .replace(/\\n/g, '') // Eliminar newlines escapados
+        .replace(/\\"/g, '"') // Convertir comillas escapadas
+        .trim();
+      
+      return JSON.parse(cleanedJson);
+    } catch (e2) {
+      console.error("Error parsing LLM response as JSON:", e2);
+      
+      // Como último recurso, intentar extraer el JSON con regex
+      const jsonMatch = jsonString.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        try {
+          return JSON.parse(jsonMatch[0]);
+        } catch (e3) {
+          console.error("Failed all JSON parsing attempts");
+          throw new Error("Could not parse LLM response as JSON");
+        }
+      } else {
+        throw new Error("No JSON object found in LLM response");
+      }
+    }
   }
 }
 
@@ -92,7 +141,7 @@ app.post("/ask", async (req, res) => {
   try {
     validateRequiredFields(req, ["question"]);
 
-    const { question, apiKey } = req.body; // La apiKey ya ha sido añadida automáticamente
+    const { question, apiKey } = req.body;
     const answer = await sendQuestionToLLM(question, apiKey, moderation);
 
     res.json({ answer });
@@ -101,101 +150,232 @@ app.post("/ask", async (req, res) => {
   }
 });
 
-// Servicio 1: Generación de preguntas y respuestas a partir del contexto
+// Obtener datos de WikiData para una categoría específica
+async function getWikidataForCategory(category, count = 1) {
+  try {
+    console.log(`Obteniendo ${count} entradas para categoría: ${category}`);
+    
+    // Usar el endpoint específico para obtener entradas de una categoría
+    const response = await axios.get(`${WIKIDATA_SERVICE_URL}/entries/${category}?count=${count}`);
+    
+    // Para una sola entrada, retornar el primer elemento
+    if (count === 1 && response.data && response.data.length > 0) {
+      return response.data[0];
+    }
+    
+    return response.data;
+  } catch (error) {
+    console.error(`Error al obtener datos de WikiData para ${category}:`, error.message);
+    return null;
+  }
+}
+
+async function getWikidataRandomEntry() {
+  try {
+    // Usar el endpoint específico para obtener una entrada aleatoria
+    const response = await axios.get(`${WIKIDATA_SERVICE_URL}/entries/random`);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener entrada aleatoria de WikiData:", error.message);
+    return null;
+  }
+}
+
+// Obtener datos de varias categorías aleatorias
+async function getMultipleRandomEntries(questionsCount = 10) {
+  const entries = [];
+  
+  // Obtener entradas aleatorias
+  for (let i = 0; i < questionsCount; i++) {
+    try {
+      // Usar el endpoint para obtener una entrada aleatoria de cualquier categoría
+      const categoryData = await getWikidataRandomEntry();
+      
+      if (categoryData) {
+        entries.push({
+          data: categoryData
+        });
+      }
+    } catch (error) {
+      console.error("Error al obtener entrada aleatoria:", error);
+    }
+  }
+
+  console.log("Entradas aleatorias obtenidas:", entries.length);
+  return entries;
+}
+
+// Formatear la información según la categoría
+function formatEntryInfo(entry) {
+  //Codigo para categorias random
+  const category =  entry.data.category;
+  const data = entry.data;
+  //Codigo para una categoria en concreto
+  /* const { category, data } = entry; */
+  let info = "";
+  
+  switch (category) {
+    case "paises":
+      if (data.countryLabel && data.capitalLabel) {
+        info = `País: ${data.countryLabel}, Su Capital: ${data.capitalLabel}`;
+      }
+      break;
+    case "monumentos":
+      if (data.monumentLabel && data.countryLabel) {
+        info = `Monumento: ${data.monumentLabel}, Su País: ${data.countryLabel}`;
+      }
+      break;
+    case "elementos":
+      if (data.elementLabel && data.symbol) {
+        info = `Elemento: ${data.elementLabel}, Su Símbolo: ${data.symbol}`;
+      }
+      break;
+    case "peliculas":
+      if (data.peliculaLabel && data.directorLabel) {
+        info = `Película: ${data.peliculaLabel}, Su Director: ${data.directorLabel}`;
+      }
+      break;
+    case "canciones":
+      if (data.songLabel && data.artistLabel) {
+        info = `Canción: ${data.songLabel}, Su Artista: ${data.artistLabel}`;
+      }
+      break;
+    case "formula1":
+      if (data.year && data.winnerLabel) {
+        info = `Campeonato de formula 1 año: ${data.year}, Ganador: ${data.winnerLabel}`;
+      }
+      break;
+    case "pinturas":
+      if (data.paintingLabel && data.artistLabel) {
+        info = `Pintura: ${data.paintingLabel}, Su Autor: ${data.artistLabel}`;
+      }
+      break;
+  }
+  
+  return info;
+}
+
+// Generar una pregunta para una entrada específica
+async function generateQuestionForEntry(entry, apiKey) {
+  console.log("Generando pregunta para la entrada:", entry);
+  const entryInfo = formatEntryInfo(entry);
+  
+  if (!entryInfo) {
+    console.error("No se pudo formatear la información para la entrada:", entry);
+    return null;
+  }
+  
+  const prompt = `A partir del siguiente texto: "${entryInfo}", genera 1 pregunta de opción múltiple. 
+  La pregunta debe tener 4 respuestas, una correcta y tres incorrectas. Si tiene un codigo buscalo en wikidata.
+  Ten en cuenta que el jugador no tiene acceso al nombre del monumento, pelicula, cancion, etc. Por lo que deberas
+  mencionarlo en las preguntas.
+
+  Texto: "${entryInfo}"
+
+  Responde en formato JSON, la respuesta debe incluir UNICAMENTE un objeto JSON con la pregunta y respuestas:
+  {
+    "question": "Pregunta 1",
+    "answers": [
+      { "text": "Respuesta correcta", "correct": true },
+      { "text": "Respuesta incorrecta 1", "correct": false },
+      { "text": "Respuesta incorrecta 2", "correct": false },
+      { "text": "Respuesta incorrecta 3", "correct": false }
+    ]
+  }
+    
+  Responde unicamente con el JSON`;
+
+  try {
+    const llmResponse = await sendQuestionToLLM(prompt, apiKey, moderation);
+    
+    // Intentar parsear la respuesta como JSON
+    try {
+      // Si la respuesta ya es un objeto, devolverla directamente
+      if (typeof llmResponse === 'object' && llmResponse !== null) {
+        return llmResponse;
+      }
+      
+      const parsedResponse = parseJsonResponse(llmResponse);
+      return parsedResponse;
+    } catch (parseError) {
+      console.error("Error al parsear la respuesta del LLM:", parseError);
+      return null;
+    }
+  } catch (error) {
+    console.error("Error al generar pregunta para la entrada:", error);
+    return null;
+  }
+}
+
+// Servicio 1: Generación de preguntas y respuestas a partir de múltiples entradas de WikiData
 app.post("/generateQuestions", async (req, res) => {
   try {
-    if (!req.body.context) {
-      return res.status(400).json({ error: "Missing context" });
-    }
-    // Lista de categorías y sus endpoints en server.js
-    const categories = [
-      { name: "paises", endpoint: "/paises" },
-      { name: "monumentos", endpoint: "/monumentos" },
-      { name: "elementos", endpoint: "/elementos" },
-      { name: "peliculas", endpoint: "/peliculas" },
-      { name: "canciones", endpoint: "/canciones" },
-      { name: "formula1", endpoint: "/formula1" },
-      { name: "pinturas", endpoint: "/pinturas" },
-    ];
-
-    // Función para seleccionar una categoría aleatoria
-    function getRandomCategory() {
-      return categories[Math.floor(Math.random() * categories.length)];
-    }
-
-    const randomCategory = getRandomCategory(); // Selecciona una categoría aleatoria
-    const apiUrl = `${WIKIDATA_SERVICE_URL}${randomCategory.endpoint}`;
-
-    // Solicitar datos al servicio de Wikidata
-    const { data } = await axios.get(apiUrl);
-    // Seleccionar una entrada aleatoria de los datos obtenidos
-    console.log("Data:", data);
-    const entry = data[Math.floor(Math.random() * data.length)];
-    let informacion = "";
-
-    if (!data || data.length === 0) {
-      return res.status(500).json({ error: "No data found from Wikidata" });
-    }
-
-    switch (randomCategory.name) {
-      case "paises":
-        informacion = `País: ${entry.countryLabel},  Su Capital: ${entry.capitalLabel}`;
-        break;
-      case "monumentos":
-        informacion = `Monumento: ${entry.monumentLabel}, Su País: ${entry.countryLabel}`;
-        break;
-      case "elementos":
-        informacion = `Elemento: ${entry.elementLabel}, Su Símbolo: ${entry.symbol}`;
-        break;
-      case "peliculas":
-        informacion = `Película: ${entry.peliculaLabel}, Su Director: ${entry.directorLabel}`;
-        break;
-      case "canciones":
-        informacion = `Canción: ${entry.songLabel}, Su Artista: ${entry.artistLabel}`;
-        break;
-      case "formula1":
-        informacion = `Campeonato de formula 1 año: ${entry.year}, Ganador: ${entry.winnerLabel}`;
-        break;
-      case "pinturas":
-        informacion = `Pintura: ${entry.paintingLabel}, Su Autor: ${entry.artistLabel}`;
-        break;
-    }
-    const context = req.body.context;
-    console.log("Informacion: ", informacion);
-    const prompt = `A partir del siguiente texto: "${informacion}", genera 4 preguntas de opción múltiple. 
-    Cada pregunta debe tener 4 respuestas, una correcta y tres incorrectas. Si tiene un codigo buscalo en wikidata.
-    Ten en cuenta que el jugador no tiene acceso al nombre del monumento, pelicula, cancion, etc. Por lo que deberas
-    mencionarlo en las preguntas:
-
-    Texto: "${context}"
-
-    Responde en formato JSON, la respuesta debe incluir UNICAMENTE el formato JSON con las preguntas y respuestas:
-    {
-      "questions": [
-        {
-          "question": "Pregunta 1",
-          "answers": [
-            { "text": "Respuesta correcta", "correct": true },
-            { "text": "Respuesta incorrecta 1", "correct": false },
-            { "text": "Respuesta incorrecta 2", "correct": false },
-            { "text": "Respuesta incorrecta 3", "correct": false }
-          ]
-        },
-        ...
-      ]
-    }
+    // Obtener parámetros de la solicitud
+    const questionCount = req.body.questionCount || 4;
+    const category = req.body.category || "variado";
+    
+    console.log(`Generando ${questionCount} preguntas, categoría: ${category}`);
+    
+    let entries = [];
+    
+    // Si es "variado", obtener entradas aleatorias
+    if (category === "variado") {
+      entries = await getMultipleRandomEntries(questionCount);
+    } 
+    // Para categorías específicas
+    else {
+      // Normalizar el nombre de la categoría
+      const normalizedCategory = category.toLowerCase()
+        .replace(/í/g, 'i')
+        .replace(/ó/g, 'o')
+        .replace(/á/g, 'a');
       
-    Responde unicamente con el JSON`;
-
-    const response = await sendQuestionToLLM(
-      prompt,
-      req.body.apiKey,
-      moderation
-    );
-    console.log("Response:", response);
-    res.json(response);
+      // Obtener entradas para la categoría específica
+      for (let i = 0; i < questionCount; i++) {
+        try {
+          const categoryData = await getWikidataForCategory(normalizedCategory);
+          if (categoryData) {
+            entries.push({
+              data: categoryData
+            });
+          }
+        } catch (error) {
+          console.error(`Error al obtener datos para categoría ${normalizedCategory}:`, error);
+        }
+      }
+    }
+    
+    if (entries.length === 0) {
+      return res.status(500).json({ 
+        error: `No se pudieron obtener datos para la categoría ${category}` 
+      });
+    }
+    
+    console.log(`Se obtuvieron ${entries.length} entradas para preguntas: `,entries);
+    
+    // Generar preguntas para las entradas
+    const questionPromises = entries.map(entry => generateQuestionForEntry(entry, req.body.apiKey));
+    const generatedQuestions = await Promise.all(questionPromises);
+    
+    // Filtrar preguntas nulas o inválidas
+    const validQuestions = generatedQuestions.filter(q => q !== null);
+    
+    if (validQuestions.length === 0) {
+      return res.status(500).json({ error: "No se pudieron generar preguntas válidas" });
+    }
+    
+    // Formatear y retornar las preguntas
+    const responseObject = {
+      questions: validQuestions.map(q => ({
+        question: q.question,
+        answers: q.answers
+      }))
+    };
+    
+    return res.json(responseObject);
   } catch (error) {
-    res.status(500).json({ error: "Failed to generate questions" });
+    console.error("Error general en /generateQuestions:", error);
+    res.status(500).json({ error: "Failed to generate questions: " + error.message });
   }
 });
 
@@ -239,8 +419,8 @@ app.post("/getHint", async (req, res) => {
     res.status(500).json({ error: "Failed to generate hint" });
   }
 });
-// Servicio 2: Generación de pista con query
 
+// Servicio 2: Generación de pista con query
 app.post("/getHintWithQuery", async (req, res) => {
   try {
     const { question, answers, userQuery } = req.body;

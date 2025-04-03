@@ -12,17 +12,25 @@ const historySchema = new mongoose.Schema({
     correctQuestions: {
         type: Number,
         required: true,
-      },
+    },
     recordedAt: {
       type: Date,
       default: Date.now, 
     },
     gameId: {
-        type: Number,
+        type: String,
         required: true,
-      }
+    },
+    category: {
+        type: String,
+        required: false, 
+    },
+    timeTaken: {
+        type: Number,
+        required: false, 
+    }
 });
 
-const History = mongoose.model('History', historySchema);
-
-module.exports = History
+module.exports = (mongoose) => {
+  return mongoose.model('History', historySchema, 'usergames');
+};
