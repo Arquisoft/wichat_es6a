@@ -6,8 +6,6 @@ const AllQuestionsWindow = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const apiEndpoint = "http://localhost:8000"; // Asegúrate de que este puerto es el correcto
-
   useEffect(() => {
     const fetchQuestions = async () => {
       try {

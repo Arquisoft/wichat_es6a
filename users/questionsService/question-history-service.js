@@ -1,14 +1,22 @@
 const express = require("express");
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 const connectDatabase = require('/usr/src/llmservice/config/database');
 connectDatabase(mongoose);
 
 const User = require("/usr/src/llmservice/models/stats-model")(mongoose);
+const port = 8005;
 
 const app = express();
 
+
 app.use(express.json());
+app.use(cors({
+    origin: "http://localhost:3000",
+    methods: "GET,POST,PUT,DELETE",
+    allowedHeaders: "Content-Type,Authorization,username"
+  }));
 
 /**  Questions by user...
 app.get("/user/questions", async (req, res) => {
@@ -42,6 +50,7 @@ app.get("/user/questions", async (req, res) => {
 });
 */
 
+/**
 app.get("/questions", async (req, res) => {
     try {
         console.log("Accessing /questions endpoint...");
@@ -66,9 +75,21 @@ app.get("/questions", async (req, res) => {
         res.status(500).json({ error: "Error fetching questions" });
     }
 });
+ */
 
+// Nuevo endpoint de prueba sin acceso a datos
+app.get("/test", (req, res) => {
+    try {
+        console.log("Accessing /test endpoint...");
 
-const port = 8005;
+        // Solo responde con un mensaje de prueba
+        res.json({ message: "This is a test endpoint" });
+    } catch (error) {
+        console.error("Error in /test endpoint:", error);
+        res.status(500).json({ error: "Error in test endpoint" });
+    }
+});
+
 const server = app.listen(port, () => {
   console.log(`Questions Service listening at http://localhost:${port}`);
 });

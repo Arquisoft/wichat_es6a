@@ -1,7 +1,7 @@
 {
-  "name": "userservice",
+  "name": "questionsservice",
   "version": "1.0.0",
-  "description": "User service, in charge of handling users in the application",
+  "description": "Questions service, acts as a repository for all the qeustions",
   "main": "service.js",
   "scripts": {
     "start": "node question-history-service.js"
@@ -19,7 +19,8 @@
   "dependencies": {
     "bcrypt": "^5.1.1",
     "express": "^4.21.2",
-    "mongoose": "^8.9.3"
+    "mongoose": "^8.9.3",
+    "cors": "^2.8.5"
   },
   "devDependencies": {
     "jest": "^29.7.0",
