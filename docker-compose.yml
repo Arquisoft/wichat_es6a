@@ -83,6 +83,9 @@ services:
       context: ./webapp
       args:
         LLM_API_KEY: ${LLM_API_KEY}
+        REACT_APP_API_GATEWAY: http://4.210.227.40:8000
+        REACT_APP_LLM: http://4.210.227.40:8003
+        REACT_APP_HISTORY: http://4.210.227.40:8010
     depends_on:
       - gatewayservice
     ports:

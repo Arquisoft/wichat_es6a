@@ -14,12 +14,15 @@ const Home = () => {
   const [error, setError] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
 
+  
   const apiEndpoint = process.env.REACT_APP_LLM;
   const apiKey = process.env.LLM_API_KEY;
 
   useEffect(() => {
     const fetchWelcomeMessage = async () => {
       try {
+        console.log("REACT_APP_LLM:", process.env.REACT_APP_LLM);
+
         const question = `Please, generate a greeting message for a student called ${username} that is a student of the Software Architecture course in the University of Oviedo. Be nice and polite. Two to three sentences max.`;
         const response = await axios.post(`${apiEndpoint}/ask`, {
           question,

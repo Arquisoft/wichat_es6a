@@ -26,8 +26,7 @@ export function GameWindow() {
   const [generatedImagesMap, setGeneratedImagesMap] = useState(new Map());
   const isInitializedRef = useRef(false);
   const chatCluesRef = useRef(null);
-  const apiEndpoint =
-    process.env.REACT_APP_API_ENDPOINT;
+  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT;
   const apiKey = process.env.GEMINI_API_KEY;
 
   // --- Efecto de Inicialización del Juego y Generación de Imágenes ---
@@ -39,6 +38,7 @@ export function GameWindow() {
       console.log("[init] Initializing game...");
 
       try {
+        console.log("🛠️ API endpoint en tiempo de ejecución:", apiEndpoint);
         await gameRef.current.init(category);
         console.log(
           `[init] Game initialized. ${gameRef.current.questions.length} questions loaded.`
