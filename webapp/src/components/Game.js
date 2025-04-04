@@ -148,13 +148,23 @@ class Game {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+
+
+          gameId: `gm${Date.now().toString(36).slice(-3)}${Math.random().toString(36).substr(2, 3)}`,
+
           username: username,
+
           score: this.score,
+
           correctQuestions: this.correctAnswers,
+
+
           category: this.category?.name || "General",
-          timeTaken: this.totalTimeTaken,
-          totalQuestions: this.questions.length,
-          maxStreak: this.maxConsecutiveCorrectAnswers,
+
+
+          timeTaken: this.totalTimeTaken
+
+
         }),
       });
 
