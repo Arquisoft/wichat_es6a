@@ -13,7 +13,7 @@ const ChatClues = forwardRef(({ question, answers }, ref) => {
   const [input, setInput] = useState("");
   const scrollRef = useRef(null);
   const apiEndpoint =
-    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
+    process.env.REACT_APP_API_ENDPOINT;
   const apiKey = process.env.LLM_API_KEY;
 
   // Scroll to bottom on new message

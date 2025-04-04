@@ -14,7 +14,7 @@ const Home = () => {
   const [error, setError] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
 
-  const apiEndpoint = "http://localhost:8003";
+  const apiEndpoint = process.env.REACT_APP_LLM;
   const apiKey = process.env.LLM_API_KEY;
 
   useEffect(() => {

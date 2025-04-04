@@ -27,7 +27,7 @@ export function GameWindow() {
   const isInitializedRef = useRef(false);
   const chatCluesRef = useRef(null);
   const apiEndpoint =
-    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8003";
+    process.env.REACT_APP_API_ENDPOINT;
   const apiKey = process.env.GEMINI_API_KEY;
 
   // --- Efecto de Inicialización del Juego y Generación de Imágenes ---

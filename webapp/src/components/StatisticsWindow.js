@@ -40,6 +40,8 @@ const StatisticsWindow = () => {
     top: Math.random() * 100, // Posición inicial aleatoria (0% a 100%)
   }));
 
+  const apiEndpoint = process.env.REACT_APP_HISTORY;
+
   const fetchStats = () => {
     setLoading(true);
     setError(null);
@@ -51,7 +53,7 @@ const StatisticsWindow = () => {
       return;
     }
 
-    fetch("http://localhost:8010/stats", {
+    fetch(`${apiEndpoint}/stats`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

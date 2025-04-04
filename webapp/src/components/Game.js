@@ -12,7 +12,6 @@ class Question {
   }
 }
 
-// Clase principal del juego
 class Game {
   constructor(navigate) {
     this.questions = [];
@@ -26,6 +25,10 @@ class Game {
     this.startTime = null;
     this.endTime = null;
     this.totalTimeTaken = 0;
+
+    // ✅ Variables de entorno
+    this.llmServiceUrl = process.env.REACT_APP_LLM;
+    this.historyServiceUrl = process.env.REACT_APP_HISTORY;
   }
 
   async init(category) {
@@ -40,7 +43,7 @@ class Game {
 
     try {
       const categoryName = category ? category.name.toLowerCase() : "variado";
-      const response = await fetch("http://localhost:8003/generateQuestions", {
+      const response = await fetch(`${this.llmServiceUrl}/generateQuestions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -122,7 +125,6 @@ class Game {
     }
   }
 
-  // Termina el juego, calcula tiempo y guarda resultados
   async endGame() {
     this.endTime = Date.now();
     if (!this.startTime) {
@@ -142,7 +144,7 @@ class Game {
       const username = localStorage.getItem("username");
       if (!username) throw new Error("No username found in localStorage");
 
-      const response = await fetch("http://localhost:8010/addGame", {
+      const response = await fetch(`${this.historyServiceUrl}/addGame`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -167,7 +169,6 @@ class Game {
       console.error("Error saving game:", error);
     }
 
-    // Navegar a la pantalla de fin de juego
     if (this.navigate) {
       this.navigate("/endGame", {
         state: {
@@ -184,7 +185,6 @@ class Game {
     }
   }
 
-  // Devuelve el texto de la pregunta actual
   getCurrentQuestionText() {
     if (this.questionIndex < this.questions.length) {
       return this.questions[this.questionIndex].questionText;
@@ -192,12 +192,10 @@ class Game {
     return "Fin del juego";
   }
 
-  // Devuelve la racha actual
   getCurrentStreak() {
     return this.consecutiveCorrectAnswers;
   }
 
-  // Devuelve el texto de una respuesta específica
   getCurrentQuestionAnswer(index) {
     if (this.questionIndex < this.questions.length) {
       return this.questions[this.questionIndex].answers[index]?.text;
@@ -205,14 +203,11 @@ class Game {
     return undefined;
   }
 
-  // Devuelve la puntuación actual
   getCurrentPoints() {
     return this.score;
   }
 
-  // Procesa la respuesta del jugador o el timeout
   answerQuestion(index, isTimeout = false) {
-    // Verificar si el juego ya terminó o la pregunta no existe
     if (this.questionIndex >= this.questions.length) {
       console.warn("answerQuestion called after game should have ended.");
       return;
@@ -220,16 +215,14 @@ class Game {
 
     const currentQ = this.questions[this.questionIndex];
 
-    // Si no es timeout, verificar la respuesta seleccionada
     if (!isTimeout) {
       if (index >= 0 && index < currentQ.answers.length) {
         if (currentQ.answers[index].isCorrect) {
           console.log("Respuesta Correcta!");
           this.correctAnswers++;
           this.consecutiveCorrectAnswers++;
-          this.score += 100; // Puntos base
-          this.score += this.consecutiveCorrectAnswers * 20; // Bonus por racha
-          // Actualizar racha máxima
+          this.score += 100;
+          this.score += this.consecutiveCorrectAnswers * 20;
           if (
             this.consecutiveCorrectAnswers > this.maxConsecutiveCorrectAnswers
           ) {
@@ -237,49 +230,40 @@ class Game {
           }
         } else {
           console.log("Respuesta Incorrecta.");
-          this.consecutiveCorrectAnswers = 0; // Romper racha
+          this.consecutiveCorrectAnswers = 0;
         }
       } else {
         console.error(
           `Índice de respuesta inválido (${index}) para la pregunta actual.`
         );
-        this.consecutiveCorrectAnswers = 0; // Considerar incorrecta si el índice es inválido
+        this.consecutiveCorrectAnswers = 0;
       }
     } else {
-      // Si es timeout, simplemente romper la racha
       console.log("Timeout!");
       this.consecutiveCorrectAnswers = 0;
     }
 
-    // Avanzar a la siguiente pregunta
     this.questionIndex++;
 
-    // Comprobar si el juego ha terminado después de avanzar
     if (this.questionIndex >= this.questions.length) {
       console.log("Última pregunta respondida. Finalizando juego...");
-      this.endGame(); // Llamar a endGame si ya no hay más preguntas
+      this.endGame();
     }
   }
 
-  // Devuelve el objeto de la pregunta actual
   getCurrentQuestion() {
-    // Devuelve la pregunta actual o undefined si el índice está fuera de rango
     return this.questions[this.questionIndex];
   }
 
-  // Parsea las preguntas desde el string JSON
   parseQuestions(inputString) {
     try {
-      // Limpieza básica inicial (puede no ser necesaria si el backend devuelve JSON válido)
       const cleanedString = inputString
-        .replace(/^`+json/, "") // Quita ```json al inicio
-        .replace(/`+$/, "") // Quita ``` al final
+        .replace(/^`+json/, "")
+        .replace(/`+$/, "")
         .trim();
 
-      // Intentar parsear directamente como JSON
       const data = JSON.parse(cleanedString);
 
-      // Validar la estructura esperada { questions: [...] }
       if (!data || !Array.isArray(data.questions)) {
         console.error(
           "Parsed data does not contain a 'questions' array:",
@@ -290,20 +274,18 @@ class Game {
         );
       }
 
-      // Mapear a las clases Question y Answer
       return data.questions
         .map((qData) => {
           if (!qData.question || !Array.isArray(qData.answers)) {
             console.warn("Skipping invalid question structure:", qData);
-            return null; // O manejar el error de otra forma
+            return null;
           }
           const answers = qData.answers.map((aData) => {
-            // Asegurarse que 'isCorrect' sea booleano
             const isCorrect =
               typeof aData.isCorrect === "boolean"
                 ? aData.isCorrect
                 : String(aData.isCorrect).toLowerCase() === "true";
-            return new Answer(aData.text || "", isCorrect); // Usar "" si text falta
+            return new Answer(aData.text || "", isCorrect);
           });
           return new Question(qData.question, answers);
         })
