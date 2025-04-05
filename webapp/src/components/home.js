@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Snackbar } from "@mui/material";
+import { Box, Typography, Snackbar, Button, Paper } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import StatisticsWindow from "./StatisticsWindow";
@@ -38,52 +38,111 @@ const Home = () => {
     <Box
       sx={{
         minHeight: "100vh",
-        backgroundImage: 'url("/fondoHome.png")',
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
+        backgroundColor: "#EEF7FF",
+        color: "#4D869C",
       }}
     >
-      <Box sx={{ textAlign: "center", paddingTop: 4 }}>
-        <Typography variant="h5">{welcomeMessage}</Typography>
 
-        {showStatistics && <StatisticsWindow />}
-        {selectedCategory && <GameWindow category={selectedCategory} />}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "80vh",
+          gap: 4,
+          px: 4,
+          flexWrap: "wrap",
+        }}
+      >
 
-        {!showStatistics && !selectedCategory && (
+        <Box sx={{ position: "relative", width: 600, height: 550 }}>
           <Box
             sx={{
+              width: 600,
+              height: 600,
               display: "flex",
-              flexDirection: "column",
               alignItems: "center",
-              padding: 3,
-              border: "1px solid #e0e0e0",
-              borderRadius: 8,
-              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-              backgroundColor: "#f9f9f9",
-              marginTop: 3,
+              justifyContent: "center",
             }}
           >
             <Box
               component="img"
               src="/WichatAmigos.png"
-              alt="Game Description"
-              sx={{ maxWidth: "100%", height: "auto", marginBottom: 2 }}
+              alt="Game"
+              sx={{
+                width: "100%",
+                height: "100%",
+                borderRadius: "16px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+              }}
             />
-            <Typography
-              variant="body1"
-              sx={{ textAlign: "justify", fontSize: "1rem" }}
-            >
-              Wichat es un juego digital de trivia diseñado para poner a prueba
-              tus conocimientos y habilidades de pensamiento rápido. Reúne a tus
-              amigos y familiares para disfrutar de horas de diversión y
-              aprendizaje. Con una amplia variedad de preguntas en diversas
-              categorías, cada partida es una nueva oportunidad para descubrir
-              datos interesantes y curiosidades. ¡Prepárate para desafiar tus
-              límites y convertirte en el campeón de Wichat!
-            </Typography>
           </Box>
-        )}
+        </Box>
+
+        <Box
+          elevation={0}
+          sx={{
+            width: 500,
+            height: 600,
+            p: 3,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-start",
+            color: "#000000",
+            position: "relative",
+          }}
+        >
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: "bold",
+              mb: 1,
+              textAlign: "center",
+              color: "#000000",
+            }}
+          >
+            Bienvenida
+          </Typography>
+
+          <Typography
+            variant="body1"
+            sx={{
+              fontSize: "1.2rem",
+              textAlign: "justify",
+              overflowY: "auto",
+              maxHeight: "500px",
+            }}
+          >
+            {welcomeMessage}
+          </Typography>
+
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => navigate("/game")}
+            sx={{
+              position: "absolute",
+              bottom: 32,        
+              left: "50%",
+              transform: "translateX(-50%)",
+              px: 5,
+              py: 1.5,
+              fontSize: "1.1rem",
+              borderRadius: "12px",
+              backgroundColor: "#1E90FF",
+              color: "#fff",
+              fontFamily: "Poppins, sans-serif",
+              boxShadow: "0px 4px 12px rgba(0,0,0,0.2)",
+              '&:hover': {
+                backgroundColor: "#3a6d81",
+              },
+            }}
+          >
+            🎮 Empezar a Jugar
+          </Button>
+        </Box>
+
+
       </Box>
 
       {error && (

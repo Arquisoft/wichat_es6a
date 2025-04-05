@@ -12,6 +12,7 @@ class Question {
   }
 }
 
+// Clase principal del juego
 class Game {
   constructor(navigate) {
     this.questions = [];
@@ -21,71 +22,74 @@ class Game {
     this.consecutiveCorrectAnswers = 0;
     this.correctAnswers = 0;
     this.maxConsecutiveCorrectAnswers = 0;
-    this.timer = null;
-    this.timeRemaining = 30;
     this.category = "";
-    this.startTime = null; // Almacena el tiempo de inicio
-    this.endTime = null;   // Almacena el tiempo de finalización
-    this.totalTimeTaken = 0; // El tiempo total transcurrido en segundos
+    this.startTime = null;
+    this.endTime = null;
+    this.totalTimeTaken = 0;
   }
 
   async init(category) {
     console.log("Inicializando juego con categoría:", category);
     this.category = category;
+    this.startTime = Date.now();
+    this.questionIndex = 0;
+    this.score = 0;
+    this.correctAnswers = 0;
+    this.consecutiveCorrectAnswers = 0;
+    this.maxConsecutiveCorrectAnswers = 0;
+
     try {
-      // Preparar el endpoint y el nombre de la categoría
       const categoryName = category ? category.name.toLowerCase() : "variado";
-      
       const response = await fetch("http://localhost:8003/generateQuestions", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           category: categoryName,
-          questionCount: 4
+          questionCount: 4,
         }),
       });
-  
-      console.log("Response status:", response.status);
+
+      console.log("Response status from /generateQuestions:", response.status);
       if (!response.ok) {
         throw new Error(
           `Failed to fetch questions: ${response.status} ${response.statusText}`
         );
       }
-  
-      const textData = await response.text();
-      console.log("Response text:", textData);
-      
-      const data = JSON.parse(textData);
-      var stringData = JSON.stringify(data);
-      stringData = stringData
-        .replace(/^`jso/, "")
-        .replace(/`$/, "")
-        .replace(/\\n|\\/g, "")
-        .replace(/\\"/g, '"');
-  
-      console.log("Processed data:", stringData);
-  
-      this.questions = this.parseQuestions(stringData);
-  
-      // Si no hay preguntas, cargar las de prueba
+
+      const data = await response.json();
+      console.log("Parsed questions data:", data);
+
+      if (data && Array.isArray(data.questions)) {
+        this.questions = data.questions.map((qData) => {
+          const answers = qData.answers.map(
+            (aData) => new Answer(aData.text, aData.isCorrect)
+          );
+          return new Question(qData.question, answers);
+        });
+      } else {
+        console.error(
+          "Formato inesperado recibido de /generateQuestions:",
+          data
+        );
+        throw new Error("Formato de preguntas inesperado.");
+      }
+
       if (!this.questions || this.questions.length === 0) {
-        console.warn("No se obtuvieron preguntas del servidor, cargando preguntas de prueba");
+        console.warn(
+          "No se obtuvieron/parsearon preguntas del servidor, cargando preguntas de prueba"
+        );
         await this.TestingInit();
       }
-  
+
       console.log("Preguntas guardadas en el objeto Game:", this.questions);
-      this.startTime = Date.now(); 
     } catch (error) {
-      console.error("Error fetching questions:", error.message);
+      console.error("Error fetching or parsing questions:", error.message);
       await this.TestingInit();
     }
   }
 
   async TestingInit() {
     console.log("Modo de prueba activado: Cargando preguntas predefinidas");
-
     this.questions = [
       new Question("¿Cuál es la capital de Francia?", [
         new Answer("Madrid", false),
@@ -112,48 +116,62 @@ class Game {
         new Answer("Ártico", false),
       ]),
     ];
-
     console.log("Preguntas de prueba cargadas:", this.questions);
+    if (!this.startTime) {
+      this.startTime = Date.now();
+    }
   }
 
-  // Método para terminar el juego y calcular el tiempo total
+  // Termina el juego, calcula tiempo y guarda resultados
   async endGame() {
-    this.endTime = Date.now(); // Guarda el tiempo de finalización
-
-    // Asegúrate de que startTime esté inicializado
+    this.endTime = Date.now();
     if (!this.startTime) {
-      throw new Error("El tiempo de inicio no está registrado.");
+      console.error(
+        "Error: El tiempo de inicio no está registrado para calcular el total."
+      );
+      this.totalTimeTaken = 0;
+    } else {
+      this.totalTimeTaken = Math.floor((this.endTime - this.startTime) / 1000);
     }
+    console.log(
+      "Tiempo total de la partida (en segundos):",
+      this.totalTimeTaken
+    );
 
-    // Calcular el tiempo total transcurrido en segundos
-    this.totalTimeTaken = Math.floor((this.endTime - this.startTime) / 1000); // En segundos
-    console.log("Tiempo total de la partida (en segundos):", this.totalTimeTaken);
-
-    // Guardar la partida en el backend
     try {
       const username = localStorage.getItem("username");
-      if (!username) throw new Error("No username found");
+      if (!username) throw new Error("No username found in localStorage");
 
       const response = await fetch("http://localhost:8010/addGame", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "username": username
         },
         body: JSON.stringify({
+
+
           gameId: `gm${Date.now().toString(36).slice(-3)}${Math.random().toString(36).substr(2, 3)}`,
+
           username: username,
+
           score: this.score,
+
           correctQuestions: this.correctAnswers,
+
+
           category: this.category?.name || "General",
+
+
           timeTaken: this.totalTimeTaken
-        })
+
+
+        }),
       });
 
       if (!response.ok) {
-        throw new Error(`Error saving game: ${response.status}`);
+        const errorData = await response.text();
+        throw new Error(`Error saving game: ${response.status}. ${errorData}`);
       }
-
       console.log("Game saved successfully");
     } catch (error) {
       console.error("Error saving game:", error);
@@ -168,108 +186,147 @@ class Game {
           totalQuestions: this.questions.length || 0,
           streak: this.maxConsecutiveCorrectAnswers || 0,
           timeTaken: this.totalTimeTaken,
-          category: this.category?.name || "General"
+          category: this.category?.name || "General",
         },
       });
+    } else {
+      console.warn("Navigate function not available in Game instance.");
     }
   }
 
+  // Devuelve el texto de la pregunta actual
   getCurrentQuestionText() {
-    return this.questions[this.questionIndex].questionText;
+    if (this.questionIndex < this.questions.length) {
+      return this.questions[this.questionIndex].questionText;
+    }
+    return "Fin del juego";
   }
 
+  // Devuelve la racha actual
   getCurrentStreak() {
     return this.consecutiveCorrectAnswers;
   }
 
+  // Devuelve el texto de una respuesta específica
   getCurrentQuestionAnswer(index) {
-    return this.questions[this.questionIndex].answers[index]?.text;
+    if (this.questionIndex < this.questions.length) {
+      return this.questions[this.questionIndex].answers[index]?.text;
+    }
+    return undefined;
   }
 
+  // Devuelve la puntuación actual
   getCurrentPoints() {
     return this.score;
   }
 
+  // Procesa la respuesta del jugador o el timeout
   answerQuestion(index, isTimeout = false) {
-    if (
-      this.questionIndex < this.questions.length &&
-      this.questions[this.questionIndex].answers[index]
-    ) {
-      if (!isTimeout) {
-        if (this.questions[this.questionIndex].answers[index].isCorrect) {
-          this.correctAnswers++;
-          this.consecutiveCorrectAnswers++;
-          this.score += 100;
-          this.score += this.consecutiveCorrectAnswers * 20;
-        } else {
-          this.consecutiveCorrectAnswers = 0;
-        }
-        if (
-          this.consecutiveCorrectAnswers > this.maxConsecutiveCorrectAnswers
-        ) {
-          this.maxConsecutiveCorrectAnswers = this.consecutiveCorrectAnswers;
-        }
-      } else {
-        this.consecutiveCorrectAnswers = 0;
-      }
-      this.questionIndex++;
+    // Verificar si el juego ya terminó o la pregunta no existe
+    if (this.questionIndex >= this.questions.length) {
+      console.warn("answerQuestion called after game should have ended.");
+      return;
     }
 
+    const currentQ = this.questions[this.questionIndex];
+
+    // Si no es timeout, verificar la respuesta seleccionada
+    if (!isTimeout) {
+      if (index >= 0 && index < currentQ.answers.length) {
+        if (currentQ.answers[index].isCorrect) {
+          console.log("Respuesta Correcta!");
+          this.correctAnswers++;
+          this.consecutiveCorrectAnswers++;
+          this.score += 100; // Puntos base
+          this.score += this.consecutiveCorrectAnswers * 20; // Bonus por racha
+          // Actualizar racha máxima
+          if (
+            this.consecutiveCorrectAnswers > this.maxConsecutiveCorrectAnswers
+          ) {
+            this.maxConsecutiveCorrectAnswers = this.consecutiveCorrectAnswers;
+          }
+        } else {
+          console.log("Respuesta Incorrecta.");
+          this.consecutiveCorrectAnswers = 0; // Romper racha
+        }
+      } else {
+        console.error(
+          `Índice de respuesta inválido (${index}) para la pregunta actual.`
+        );
+        this.consecutiveCorrectAnswers = 0; // Considerar incorrecta si el índice es inválido
+      }
+    } else {
+      // Si es timeout, simplemente romper la racha
+      console.log("Timeout!");
+      this.consecutiveCorrectAnswers = 0;
+    }
+
+    // Avanzar a la siguiente pregunta
+    this.questionIndex++;
+
+    // Comprobar si el juego ha terminado después de avanzar
     if (this.questionIndex >= this.questions.length) {
-      this.endGame();
+      console.log("Última pregunta respondida. Finalizando juego...");
+      this.endGame(); // Llamar a endGame si ya no hay más preguntas
     }
   }
 
+  // Devuelve el objeto de la pregunta actual
   getCurrentQuestion() {
+    // Devuelve la pregunta actual o undefined si el índice está fuera de rango
     return this.questions[this.questionIndex];
   }
 
+  // Parsea las preguntas desde el string JSON
   parseQuestions(inputString) {
-    const cleanedString = inputString
-      .replace(/^`json/, "")
-      .replace(/`$/, "")
-      .trim();
+    try {
+      // Limpieza básica inicial (puede no ser necesaria si el backend devuelve JSON válido)
+      const cleanedString = inputString
+        .replace(/^`+json/, "") // Quita ```json al inicio
+        .replace(/`+$/, "") // Quita ``` al final
+        .trim();
 
-    const questionBlocks = cleanedString.match(
-      /"question":\s*"([^"]+)",\s*"answers":\s*\[(.*?)\]/gs
-    );
+      // Intentar parsear directamente como JSON
+      const data = JSON.parse(cleanedString);
 
-    if (!questionBlocks) {
-      throw new Error("No se encontraron preguntas en el texto.");
-    }
-
-    const questions = questionBlocks.map((block) => {
-      const questionMatch = block.match(/"question":\s*"([^"]+)"/);
-      const questionText = questionMatch ? questionMatch[1] : "";
-
-      const answersMatch = block.match(/"answers":\s*\[(.*?)\]/);
-      const answersText = answersMatch ? answersMatch[1] : "";
-
-      const answerObjects = [
-        ...answersText.matchAll(
-          /\{[^}]*"text":\s*"([^"]+)",\s*"correct":\s*(true|false)[^}]*\}/g
-        ),
-      ].map((match) => new Answer(match[1], match[2] === "true"));
-
-      return new Question(questionText, answerObjects);
-    });
-
-    return questions;
-  }
-
-  startTimer() {
-    this.timeRemaining = 30;
-    this.timer = setInterval(() => {
-      this.timeRemaining--;
-      if (this.timeRemaining <= 0) {
-        clearInterval(this.timer);
+      // Validar la estructura esperada { questions: [...] }
+      if (!data || !Array.isArray(data.questions)) {
+        console.error(
+          "Parsed data does not contain a 'questions' array:",
+          data
+        );
+        throw new Error(
+          "Formato de datos inválido: falta el array 'questions'."
+        );
       }
-    }, 1000);
-  }
 
-  resetTimer() {
-    clearInterval(this.timer);
-    this.startTimer();
+      // Mapear a las clases Question y Answer
+      return data.questions
+        .map((qData) => {
+          if (!qData.question || !Array.isArray(qData.answers)) {
+            console.warn("Skipping invalid question structure:", qData);
+            return null; // O manejar el error de otra forma
+          }
+          const answers = qData.answers.map((aData) => {
+            // Asegurarse que 'isCorrect' sea booleano
+            const isCorrect =
+              typeof aData.isCorrect === "boolean"
+                ? aData.isCorrect
+                : String(aData.isCorrect).toLowerCase() === "true";
+            return new Answer(aData.text || "", isCorrect); // Usar "" si text falta
+          });
+          return new Question(qData.question, answers);
+        })
+        .filter((q) => q !== null);
+    } catch (error) {
+      console.error(
+        "Error parsing questions JSON:",
+        error,
+        "Input string:",
+        inputString
+      );
+      return [];
+    }
   }
 }
 
