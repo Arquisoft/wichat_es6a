@@ -56,6 +56,23 @@ services:
     networks:
       - mynetwork
 
+  questionsservice:
+    container_name: questionsservice-wichat_es6a
+    image: ghcr.io/arquisoft/wichat_es6a/questionsservice:latest
+    profiles: ["dev", "prod"]
+    build: ./users/questionsservice
+    depends_on:
+      - mongodb
+      - llmservice
+    ports:
+      - "8005:8005"
+    networks:
+      - mynetwork
+    environment:
+      MONGODB_URI: mongodb://mongodb-wichat_es6a:27017/wichatdb
+    volumes:
+      - ./llmservice:/usr/src/llmservice 
+
   gatewayservice:
     container_name: gatewayservice-wichat_es6a
     image: ghcr.io/arquisoft/wichat_es6a/gatewayservice:latest
