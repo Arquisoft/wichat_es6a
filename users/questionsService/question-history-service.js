@@ -5,7 +5,7 @@ const cors = require('cors');
 const connectDatabase = require('/usr/src/llmservice/config/database');
 connectDatabase(mongoose);
 
-const User = require("/usr/src/llmservice/models/stats-model")(mongoose);
+const UserGames = require("/usr/src/llmservice/models/stats-model")(mongoose);
 const port = 8005;
 
 const app = express();
@@ -50,7 +50,6 @@ app.get("/user/questions", async (req, res) => {
 });
 */
 
-/**
 app.get("/questions", async (req, res) => {
     try {
         console.log("Accessing /questions endpoint...");
@@ -73,20 +72,6 @@ app.get("/questions", async (req, res) => {
     } catch (error) {
         console.error("Error fetching questions:", error);
         res.status(500).json({ error: "Error fetching questions" });
-    }
-});
- */
-
-// Nuevo endpoint de prueba sin acceso a datos
-app.get("/test", (req, res) => {
-    try {
-        console.log("Accessing /test endpoint...");
-
-        // Solo responde con un mensaje de prueba
-        res.json({ message: "This is a test endpoint" });
-    } catch (error) {
-        console.error("Error in /test endpoint:", error);
-        res.status(500).json({ error: "Error in test endpoint" });
     }
 });
 
