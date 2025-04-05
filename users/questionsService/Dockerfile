@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 8005
 
 # Define the command to run your app
-CMD ["node", "question-history-service.js"]
+CMD ["node", "server.js"]

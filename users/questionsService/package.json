@@ -1,10 +1,11 @@
 {
   "name": "questionsservice",
   "version": "1.0.0",
-  "description": "Questions service, acts as a repository for all the qeustions",
-  "main": "service.js",
+  "description": "Questions service, acts as a repository for all the questions",
+  "main": "questions-history-service.js",
   "scripts": {
-    "start": "node question-history-service.js"
+    "start": "node server.js",
+    "test": "cross-env NODE_ENV=test jest"
   },
   "repository": {
     "type": "git",
@@ -18,13 +19,14 @@
   "homepage": "https://github.com/arquisoft/wichat_es6a#readme",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "express": "^4.21.2",
-    "mongoose": "^8.9.3",
-    "cors": "^2.8.5"
+    "mongoose": "^8.9.3"
   },
   "devDependencies": {
     "jest": "^29.7.0",
     "mongodb-memory-server": "^10.1.3",
-    "supertest": "^7.0.0"
+    "supertest": "^7.1.0"
   }
 }
