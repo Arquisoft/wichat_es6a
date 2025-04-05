@@ -1,17 +1,47 @@
-import React from "react";
-import { AppBar, Toolbar, IconButton, Typography, Button, Avatar, Box } from "@mui/material";
+import React, { useState } from "react";
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  Button,
+  Avatar,
+  Box,
+  Menu,
+  MenuItem,
+} from "@mui/material";
 import { Home as HomeIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const username = localStorage.getItem("username");
-  const profilePic = "webapp/public/profileImg.jpg"; // Static path to profile image
+  const profilePic = "./profileImg.png"; 
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("username");
+    handleMenuClose();
+    navigate("/");
+  };
+
+  const handleSettings = () => {
+    handleMenuClose();
+    navigate("/edit-profile"); // Puedes cambiar la ruta según cómo lo tengas
+  };
 
   return (
-
     <AppBar position="static" sx={{ backgroundColor: "#1E90FF" }}>
-
       <Toolbar>
         <IconButton edge="start" color="inherit" onClick={() => navigate("/")}>
           <HomeIcon />
@@ -23,29 +53,39 @@ const Navbar = () => {
         <Button color="inherit" onClick={() => navigate("/game-options")}>Jugar</Button>
         <Button color="inherit" onClick={() => navigate("/statistics")}>Stats</Button>
         <Button color="inherit" onClick={() => navigate("/ranking")}>Ranking</Button>
-        <Button color="inherit" onClick={() => { navigate("/"); localStorage.removeItem("username"); }}>
-          Logout
-        </Button>
-        
-        {username && (
-  <Box 
-    sx={{
-      display: "flex", 
-      alignItems: "center", 
-      backgroundColor: "#ffffff",  
-      color: "#000000",  
-      padding: "4px 10px", 
-      borderRadius: "20px", 
-      marginLeft: 2
-    }}
-  >
-    <Typography variant="body1" sx={{ fontWeight: "bold", marginRight: 2 }}>
-      {username}
-    </Typography>
-    <Avatar src={profilePic} alt={username} sx={{ width: 32, height: 32 }} />
-  </Box>
-)}
 
+        {username && (
+          <Box
+            onClick={handleMenuOpen}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              backgroundColor: "#ffffff",
+              color: "#000000",
+              padding: "4px 10px",
+              borderRadius: "20px",
+              marginLeft: 2,
+              cursor: "pointer"
+            }}
+          >
+            <Typography variant="body1" sx={{ fontWeight: "bold", marginRight: 2 }}>
+              {username}
+            </Typography>
+            <Avatar src={profilePic} alt={username} sx={{ width: 32, height: 32 }} />
+          </Box>
+        )}
+
+        {/* Dropdown Menu */}
+        <Menu
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleMenuClose}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        >
+          <MenuItem onClick={handleSettings}>Configuración</MenuItem>
+          <MenuItem onClick={handleLogout}>Logout</MenuItem>
+        </Menu>
       </Toolbar>
     </AppBar>
   );
