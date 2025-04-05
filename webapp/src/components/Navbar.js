@@ -37,7 +37,7 @@ const Navbar = () => {
 
   const handleSettings = () => {
     handleMenuClose();
-    navigate("/edit-profile"); // Puedes cambiar la ruta según cómo lo tengas
+    navigate("/editProfile"); 
   };
 
   return (
