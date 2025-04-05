@@ -13,20 +13,19 @@ const EditProfile = () => {
   const [image, setImage] = useState(null);
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
-  const [userId, setUserId] = useState(null);
-
   const baseURL = " http://localhost:8001/";
+
+  const user_Id = localStorage.getItem("_id");
 
   // Cargar los datos iniciales de la API
   useEffect(() => {
-    axios.get(baseURL + "user/profile", {
+    axios.get(baseURL + "user/" + user_Id, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } 
     })
       .then(response => {
         const { username, profilePic, _id } = response.data;
         setNewUsername(username);
         setProfilePic(profilePic || "/default-profile-img.jpg");
-        setUserId(_id); 
       })
       .catch(error => {
         console.error("Error al cargar los datos del perfil:", error);
@@ -56,7 +55,7 @@ const EditProfile = () => {
       return;
     }
 
-    axios.put(baseURL + `user/${userId}/username`, { username: newUsername }, {
+    axios.put(baseURL + 'user/+'+user_Id+'/username', { username: newUsername }, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
     })
       .then(() => {
@@ -84,7 +83,7 @@ const EditProfile = () => {
     })
       .then(response => {
         if (response.data.valid) {
-          axios.put(`/api/user/${userId}/password`, { currentPassword, newPassword, confirmPassword: repeatPassword }, {
+          axios.put('/api/user/'+user_Id+'/password', { currentPassword, newPassword, confirmPassword: repeatPassword }, {
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
           })
             .then(() => {
@@ -112,7 +111,7 @@ const EditProfile = () => {
     const formData = new FormData();
     formData.append("profilePic", image);
 
-    axios.post(`/api/user/${userId}/profile-pic`, formData, {
+    axios.post('/api/user/'+user_Id+'/profile-pic', formData, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -128,7 +127,7 @@ const EditProfile = () => {
   };
 
   const handleDeleteAccount = () => {
-    axios.delete(baseURL + `user/${userId}`, {
+    axios.delete(baseURL + 'user/'+user_Id, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
     })
       .then(() => {

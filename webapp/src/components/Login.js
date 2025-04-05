@@ -26,8 +26,12 @@ const Login = () => {
         password,
       });
 
+      console.log(response.data); 
+
       // Almacenar el username en localStorage después de un login exitoso
       localStorage.setItem("username", username);  // Guardar el username
+      localStorage.setItem("_id", response.data.userId);
+      localStorage.setItem("token", response.data.token); //Guarda el token de identificacion
 
       setOpenSnackbar(true);
 

@@ -9,6 +9,10 @@ module.exports = (mongoose) => {
       type: String,
       required: true,
     },
+    profilePic: {
+      type: Buffer,  // Almacenamos la imagen en formato binario
+      default: null, // Si no se proporciona una imagen, sera nula
+    },
     createdAt: {
       type: Date,
       default: Date.now, 
