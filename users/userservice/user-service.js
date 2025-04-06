@@ -189,39 +189,32 @@ app.get('/user/:id/profile-pic', async (req, res) => {
 // 🗑️ Eliminar imagen de perfil
 app.delete('/user/:id/profile-pic', async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
+    const userId = req.params.id;
+    
+    // Construir la ruta de la imagen de perfil de acuerdo al ID
+    const imagePath = path.join(__dirname, 'uploads', 'profile_pics', `${userId}.png`);
 
-    // Si no hay imagen de perfil, respondemos con un mensaje adecuado
-    if (!user.profilePic) {
-      return res.status(400).json({ error: 'No profile picture to delete' });
-    }
-
-    const imagePath = `.${user.profilePic}`; // Obtener la ruta completa del archivo
-
-    // Eliminar el archivo de la imagen de perfil en el sistema de archivos
-    fs.unlink(imagePath, (err) => {
+    // Verificar si el archivo existe
+    fs.access(imagePath, fs.constants.F_OK, (err) => {
       if (err) {
-        return res.status(500).json({ error: 'Failed to delete the image' });
+        return res.status(400).json({ error: 'No profile picture to delete' });
       }
 
-      // Eliminar la URL de la imagen en el perfil del usuario
-      user.profilePic = null;
-      user.save()
-        .then(() => {
-          res.status(200).json({ message: 'Profile picture deleted successfully' });
-        })
-        .catch((err) => {
-          res.status(500).json({ error: 'Failed to update user profile' });
-        });
-    });
+      // Eliminar el archivo de la imagen de perfil en el sistema de archivos
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          return res.status(500).json({ error: 'Failed to delete the image' });
+        }
 
+        // En este caso, como no estamos guardando la URL en la base de datos, no es necesario actualizar nada en la base de datos
+        res.status(200).json({ message: 'Profile picture deleted successfully' });
+      });
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 
 const server = app.listen(port, () => {

@@ -5,86 +5,92 @@ import { useNavigate } from "react-router-dom";
 
 const EditProfile = () => {
   const navigate = useNavigate();
-  const [newUsername, setNewUsername] = useState("");  // Sin valor por defecto
+  const [newUsername, setNewUsername] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
-  const [image, setImage] = useState(null);
-  const [profilePic, setProfilePic] = useState(null);  // Sin valor por defecto
+  const [image, setImage] = useState(null); // Para manejar la imagen cargada
+  const [profilePic, setProfilePic] = useState(null); // Para mostrar la imagen cargada
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
-  const [usernameError, setUsernameError] = useState(""); // Nuevo estado para errores de nombre de usuario
-  const [loading, setLoading] = useState(true);  // Estado de carga
+  const [usernameError, setUsernameError] = useState(""); 
+  const [loading, setLoading] = useState(true);  
   const baseURL = "http://localhost:8001/";
 
   const user_Id = localStorage.getItem("_id");
 
   useEffect(() => {
+    // Cargar los datos del perfil, incluyendo la imagen de perfil
     axios.get(baseURL + "user/" + user_Id, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
     })
       .then(response => {
-        const { username, _id, profilePic } = response.data;
-        setNewUsername(username);  // Cargar el nombre de usuario desde la API
-        setProfilePic(profilePic);  // Cargar la imagen de perfil desde la API
-        setLoading(false);  // Cambiar el estado de carga cuando los datos se obtienen
+        const { username } = response.data;
+        setNewUsername(username);  // Cargar el nombre de usuario
+        setLoading(false);  // Terminar la carga
       })
       .catch(error => {
         console.error("Error al cargar los datos del perfil:", error);
-        setLoading(false);  // Asegurarse de que el estado de carga cambie incluso si hay un error
+        setLoading(false);
+      });
+
+    // Obtener la imagen de perfil directamente
+    axios.get(baseURL + `user/${user_Id}/profile-pic`, {
+      responseType: 'blob',  // Indicar que esperamos una respuesta binaria
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+    })
+      .then(response => {
+        const imageUrl = URL.createObjectURL(response.data);  // Convertir la respuesta binaria a una URL
+        setProfilePic(imageUrl);  // Guardar la URL de la imagen en el estado
+      })
+      .catch(error => {
+        console.error("Error al cargar la imagen de perfil:", error);
       });
   }, []);
 
-  const handleImageChange = (event) => {
+  const handleImageChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
-      setImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePic(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+      const formData = new FormData();
+      formData.append("profilePic", file); // Enviar el archivo bajo el nombre 'profilePic'
+  
+      try {
+        // Subir la imagen usando el endpoint adecuado
+        await axios.post(baseURL + `user/${user_Id}/profile-pic`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
 
-  const handleSaveImage = () => {
-    if (!image) {
-      alert("No has seleccionado ninguna imagen.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("profilePic", image);
-
-    axios.post(baseURL + 'user/' + user_Id + '/profile-pic', formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${localStorage.getItem("token")}` 
+        // Obtener y mostrar la nueva imagen de perfil
+        const imageUrl = URL.createObjectURL(file);  // Convertir el archivo cargado en una URL
+        setProfilePic(imageUrl);  // Actualizar la imagen de perfil en el estado
+        setImage(file);  // Guardar el archivo de imagen en el estado
+      } catch (error) {
+        console.error("Error al cargar la imagen:", error);
       }
-    })
-      .then(() => {
-        setPasswordSuccess("Imagen de perfil actualizada con éxito.");
-        window.location.reload();
-      })
-      .catch(error => {
-        console.error("Error al guardar la imagen de perfil:", error);
-      });
+    }
   };
+  
 
-  const handleDeleteImage = () => {
-    axios.delete(baseURL + 'user/' + user_Id + '/profile-pic', {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-    })
-      .then(() => {
-        setProfilePic(null);  // Quitar la imagen de perfil
-        setImage(null);
-        setPasswordSuccess("Imagen eliminada con éxito.");
-        window.location.reload();
-      })
-      .catch(error => {
-        console.error("Error al eliminar la imagen de perfil:", error);
+  const handleDeleteImage = async () => {
+    try {
+      // Llamar al endpoint para eliminar la imagen de perfil
+      await axios.delete(baseURL + `user/${user_Id}/profile-pic`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
+  
+      // Limpiar la imagen en el estado y el localStorage
+      setImage(null);
+      setProfilePic(null);
+      localStorage.removeItem("profilePic");
+      window.location.reload()
+    } catch (error) {
+      console.error("Error al eliminar la imagen:", error);
+    }
   };
+  
 
   const handleSaveUsername = () => {
     if (!newUsername) {
@@ -103,9 +109,8 @@ const EditProfile = () => {
       })
       .catch(error => {
         console.error("Error al guardar el nombre de usuario:", error);
-        
         if (error.response && error.response.data && error.response.data.error) {
-          setUsernameError(error.response.data.error); // Mostrar el error exacto que devuelve el servidor
+          setUsernameError(error.response.data.error); 
         } else {
           setUsernameError("Ocurrió un error inesperado al cambiar el nombre de usuario.");
         }
@@ -113,13 +118,11 @@ const EditProfile = () => {
   };
 
   const handleSavePassword = () => {
-    // Validar que las contraseñas coincidan
     if (newPassword !== repeatPassword) {
       setPasswordError("Las nuevas contraseñas no coinciden.");
       return;
     }
 
-    // Validar que la contraseña actual esté escrita
     if (!currentPassword) {
       setPasswordError("Por favor, ingresa tu contraseña actual.");
       return;
@@ -148,14 +151,13 @@ const EditProfile = () => {
     })
       .then(() => {
         localStorage.removeItem("token");
-        navigate("/");
+        navigate("/");  // Redirigir a la página de inicio
       })
       .catch(error => {
         console.error("Error al eliminar el perfil:", error);
       });
   };
 
-  // Si está cargando, mostrar un mensaje de carga
   if (loading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", paddingTop: 20 }}>
@@ -177,27 +179,35 @@ const EditProfile = () => {
             Cambiar Imagen de Perfil
           </Typography>
 
+          {/* Mostrar avatar de la imagen cargada */}
           <Button onClick={() => document.getElementById("profile-pic-input").click()} sx={{ marginBottom: 2 }}>
-            <Avatar alt={newUsername} src={profilePic || "/default-profile-img.jpg"} sx={{ width: 100, height: 100 }} />
+            <Avatar 
+              alt={newUsername} 
+              src={profilePic ? profilePic : "/default-profile-img.jpg"} // Si hay imagen cargada, mostrarla
+              sx={{ width: 100, height: 100 }} 
+            />
           </Button>
 
-          <input type="file" accept="image/*" style={{ display: "none" }} id="profile-pic-input" onChange={handleImageChange} />
+          <input 
+            type="file" 
+            accept="image/*" 
+            style={{ display: "none" }} 
+            id="profile-pic-input" 
+            onChange={handleImageChange} 
+          />
 
-          {image && (
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-              <Button variant="outlined" color="error" onClick={handleDeleteImage} sx={{ marginTop: 2, width: '48%' }}>
+          {/* Mostrar el botón de eliminar si hay imagen cargada */}
+          {profilePic && (
+            <Box sx={{ marginTop: 2, display: 'flex', justifyContent: 'center', width: '100%' }}>
+              <Button 
+                variant="outlined" 
+                color="error" 
+                onClick={handleDeleteImage} 
+                sx={{ width: '50%' }}
+              >
                 Eliminar imagen
               </Button>
-              <Button variant="contained" color="primary" onClick={handleSaveImage} sx={{ marginTop: 2, width: '48%' }}>
-                Guardar imagen
-              </Button>
             </Box>
-          )}
-
-          {!image && profilePic && (
-            <Button variant="outlined" color="error" onClick={handleDeleteImage} sx={{ marginTop: 2 }}>
-              Eliminar imagen
-            </Button>
           )}
         </Box>
 
@@ -214,7 +224,7 @@ const EditProfile = () => {
             onChange={(e) => setNewUsername(e.target.value)}
             sx={{ marginBottom: 2 }}
           />
-          {usernameError && <Alert severity="error">{usernameError}</Alert>} {/* Mostrar el error de nombre de usuario */}
+          {usernameError && <Alert severity="error">{usernameError}</Alert>}
           <Button variant="contained" color="primary" fullWidth onClick={handleSaveUsername}>
             Cambiar Nombre de Usuario
           </Button>
