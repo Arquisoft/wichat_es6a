@@ -67,6 +67,7 @@ const EditProfile = () => {
         const imageUrl = URL.createObjectURL(file);  // Convertir el archivo cargado en una URL
         setProfilePic(imageUrl);  // Actualizar la imagen de perfil en el estado
         setImage(file);  // Guardar el archivo de imagen en el estado
+        window.location.reload()
       } catch (error) {
         console.error("Error al cargar la imagen:", error);
       }
