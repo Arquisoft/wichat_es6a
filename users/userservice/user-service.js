@@ -116,20 +116,20 @@ app.delete('/user/:id/profile-pic', (req, res) => {
 app.put('/user/:id/username', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user) return res.status(404).json({ error: 'No estas registrado, inicia sesión' });
 
     if (!req.body.username) {
-      return res.status(400).json({ error: 'New username is required' });
+      return res.status(400).json({ error: 'El nuevo nombre de usuario es obligatorio' });
     }
 
     const existingUser = await User.findOne({ username: req.body.username });
     if (existingUser) {
-      return res.status(400).json({ error: 'Username already exists' });
+      return res.status(400).json({ error: 'Este nombre de usuario ya esta en uso' });
     }
 
     user.username = req.body.username;
     await user.save();
-    res.status(200).json({ message: 'Username updated successfully' });
+    res.status(200).json({ message: 'Username actualizado correctamente' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

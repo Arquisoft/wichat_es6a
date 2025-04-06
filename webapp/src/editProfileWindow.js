@@ -5,14 +5,16 @@ import { useNavigate } from "react-router-dom";
 
 const EditProfile = () => {
   const navigate = useNavigate();
-  const [newUsername, setNewUsername] = useState("");
+  const [newUsername, setNewUsername] = useState("");  // Sin valor por defecto
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const [image, setImage] = useState(null);
-  const [profilePic, setProfilePic] = useState("/default-profile-img.jpg");
+  const [profilePic, setProfilePic] = useState(null);  // Sin valor por defecto
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
+  const [usernameError, setUsernameError] = useState(""); // Nuevo estado para errores de nombre de usuario
+  const [loading, setLoading] = useState(true);  // Estado de carga
   const baseURL = "http://localhost:8001/";
 
   const user_Id = localStorage.getItem("_id");
@@ -23,11 +25,13 @@ const EditProfile = () => {
     })
       .then(response => {
         const { username, _id, profilePic } = response.data;
-        setNewUsername(username);
-        setProfilePic(profilePic || "/default-profile-img.jpg"); // Set the profile pic if exists
+        setNewUsername(username);  // Cargar el nombre de usuario desde la API
+        setProfilePic(profilePic);  // Cargar la imagen de perfil desde la API
+        setLoading(false);  // Cambiar el estado de carga cuando los datos se obtienen
       })
       .catch(error => {
         console.error("Error al cargar los datos del perfil:", error);
+        setLoading(false);  // Asegurarse de que el estado de carga cambie incluso si hay un error
       });
   }, []);
 
@@ -55,7 +59,7 @@ const EditProfile = () => {
     axios.post(baseURL + 'user/' + user_Id + '/profile-pic', formData, {
       headers: {
         "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${localStorage.getItem("token")}`
+        Authorization: `Bearer ${localStorage.getItem("token")}` 
       }
     })
       .then(() => {
@@ -72,7 +76,7 @@ const EditProfile = () => {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
     })
       .then(() => {
-        setProfilePic("/default-profile-img.jpg");
+        setProfilePic(null);  // Quitar la imagen de perfil
         setImage(null);
         setPasswordSuccess("Imagen eliminada con éxito.");
         window.location.reload();
@@ -84,7 +88,7 @@ const EditProfile = () => {
 
   const handleSaveUsername = () => {
     if (!newUsername) {
-      alert("El nombre de usuario no puede estar vacío");
+      setUsernameError("El nombre de usuario no puede estar vacío.");
       return;
     }
 
@@ -92,13 +96,19 @@ const EditProfile = () => {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
     })
       .then(() => {
-        setPasswordError("");
+        setUsernameError(""); // Limpiar error si la solicitud es exitosa
         setPasswordSuccess("Nombre de usuario actualizado con éxito.");
         localStorage.setItem("username", newUsername);
         window.location.reload();
       })
       .catch(error => {
         console.error("Error al guardar el nombre de usuario:", error);
+        
+        if (error.response && error.response.data && error.response.data.error) {
+          setUsernameError(error.response.data.error); // Mostrar el error exacto que devuelve el servidor
+        } else {
+          setUsernameError("Ocurrió un error inesperado al cambiar el nombre de usuario.");
+        }
       });
   };
 
@@ -108,30 +118,29 @@ const EditProfile = () => {
       setPasswordError("Las nuevas contraseñas no coinciden.");
       return;
     }
-  
+
     // Validar que la contraseña actual esté escrita
     if (!currentPassword) {
       setPasswordError("Por favor, ingresa tu contraseña actual.");
       return;
     }
-  
-        axios.put(baseURL + 'user/' + user_Id + '/password', {
-          currentPassword,
-          newPassword,
-          confirmPassword: repeatPassword
-        }, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-        })
-        .then(() => {
-          setPasswordError("");  // Limpiar posibles errores
-          setPasswordSuccess("Contraseña actualizada con éxito.");
-        })
-        .catch(error => {
-          console.error("Error al guardar la contraseña:", error);
-          setPasswordError("Ocurrió un error al cambiar la contraseña.");
-        });
+
+    axios.put(baseURL + 'user/' + user_Id + '/password', {
+      currentPassword,
+      newPassword,
+      confirmPassword: repeatPassword
+    }, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+    })
+    .then(() => {
+      setPasswordError("");  // Limpiar posibles errores
+      setPasswordSuccess("Contraseña actualizada con éxito.");
+    })
+    .catch(error => {
+      console.error("Error al guardar la contraseña:", error);
+      setPasswordError("Ocurrió un error al cambiar la contraseña.");
+    });
   };
-  
 
   const handleDeleteAccount = () => {
     axios.delete(baseURL + 'user/' + user_Id, {
@@ -145,6 +154,15 @@ const EditProfile = () => {
         console.error("Error al eliminar el perfil:", error);
       });
   };
+
+  // Si está cargando, mostrar un mensaje de carga
+  if (loading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", paddingTop: 20 }}>
+        <Typography variant="h6">Cargando...</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", paddingTop: 20 }}>
@@ -160,7 +178,7 @@ const EditProfile = () => {
           </Typography>
 
           <Button onClick={() => document.getElementById("profile-pic-input").click()} sx={{ marginBottom: 2 }}>
-            <Avatar alt={newUsername} src={profilePic} sx={{ width: 100, height: 100 }} />
+            <Avatar alt={newUsername} src={profilePic || "/default-profile-img.jpg"} sx={{ width: 100, height: 100 }} />
           </Button>
 
           <input type="file" accept="image/*" style={{ display: "none" }} id="profile-pic-input" onChange={handleImageChange} />
@@ -176,7 +194,7 @@ const EditProfile = () => {
             </Box>
           )}
 
-          {!image && profilePic !== "/default-profile-img.jpg" && (
+          {!image && profilePic && (
             <Button variant="outlined" color="error" onClick={handleDeleteImage} sx={{ marginTop: 2 }}>
               Eliminar imagen
             </Button>
@@ -196,6 +214,7 @@ const EditProfile = () => {
             onChange={(e) => setNewUsername(e.target.value)}
             sx={{ marginBottom: 2 }}
           />
+          {usernameError && <Alert severity="error">{usernameError}</Alert>} {/* Mostrar el error de nombre de usuario */}
           <Button variant="contained" color="primary" fullWidth onClick={handleSaveUsername}>
             Cambiar Nombre de Usuario
           </Button>
