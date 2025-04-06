@@ -1,12 +1,11 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const cors = require('cors');
 
-// Conectar a la base de datos MongoDB
 const connectDatabase = require('/usr/src/llmservice/config/database');
 connectDatabase(mongoose);
 
@@ -15,6 +14,26 @@ const User = require("/usr/src/llmservice/models/user-model")(mongoose);
 const app = express();
 const port = 8001;
 
+// Crear un directorio para almacenar las imágenes de perfil
+const uploadDir = './uploads/profile_pics';
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Configuración de Multer para la carga de imágenes
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir);  // Guardar imágenes en la carpeta 'uploads/profile_pics'
+  },
+  filename: function (req, file, cb) {
+    const userId = req.params.id;  // Usar el ID del usuario como nombre del archivo
+    const fileExtension = path.extname(file.originalname);  // Obtener la extensión del archivo (jpg, png, etc.)
+    cb(null, `${userId}${fileExtension}`);  // El nombre del archivo será el ID del usuario
+  }
+});
+
+const upload = multer({ storage: storage });
+
 app.use(cors({
   origin: 'http://localhost:3000',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -22,24 +41,6 @@ app.use(cors({
 }));
 
 app.use(express.json());
-
-// 📁 Carpeta para imágenes de perfil
-const imageFolder = path.join(__dirname, 'profileImg');
-if (!fs.existsSync(imageFolder)) {
-  fs.mkdirSync(imageFolder);
-}
-
-// ⚙️ Configuración de Multer
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, imageFolder),
-  filename: (req, file, cb) => {
-    const userId = req.params.id;
-    const filePath = path.join(imageFolder, `${userId}.png`);
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-    cb(null, `${userId}.png`);
-  }
-});
-const upload = multer({ storage });
 
 // ✅ Validación de campos requeridos
 function validateRequiredFields(req, requiredFields) {
@@ -86,37 +87,11 @@ app.get('/user/:id', async (req, res) => {
   }
 });
 
-// 📤 Subir imagen de perfil
-app.post('/user/:id/profile-pic', upload.single('profilePic'), (req, res) => {
-  res.status(200).json({ message: 'Imagen de perfil actualizada' });
-});
-
-// 🖼 Obtener imagen de perfil
-app.get('/user/:id/profile-pic', (req, res) => {
-  const filePath = path.join(imageFolder, `${req.params.id}.png`);
-  if (fs.existsSync(filePath)) {
-    res.sendFile(filePath);
-  } else {
-    res.status(404).json({ error: 'Imagen no encontrada' });
-  }
-});
-
-// 🗑 Eliminar imagen de perfil
-app.delete('/user/:id/profile-pic', (req, res) => {
-  const filePath = path.join(imageFolder, `${req.params.id}.png`);
-  if (fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath);
-    res.status(200).json({ message: 'Imagen eliminada correctamente' });
-  } else {
-    res.status(404).json({ error: 'Imagen no existe' });
-  }
-});
-
 // ✏️ Cambiar nombre de usuario
 app.put('/user/:id/username', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ error: 'No estas registrado, inicia sesión' });
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
     if (!req.body.username) {
       return res.status(400).json({ error: 'El nuevo nombre de usuario es obligatorio' });
@@ -164,6 +139,90 @@ app.put('/user/:id/password', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// 📸 Subir imagen de perfil
+app.post('/user/:id/profile-pic', upload.single('profilePic'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Guardar la URL de la imagen en el perfil del usuario
+    user.profilePic = `/uploads/profile_pics/${req.file.filename}`;
+    await user.save();
+
+    res.status(200).json({
+      message: 'Profile picture uploaded successfully',
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 📸 Obtener imagen de perfil
+app.get('/user/:id/profile-pic', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const imagePath = path.join(__dirname, 'uploads', 'profile_pics', `${userId}.png`);  // Ruta completa a la imagen
+
+    // Verificar si el archivo existe
+    fs.access(imagePath, fs.constants.F_OK, (err) => {
+      if (err) {
+        return res.status(404).json({ error: 'Profile picture not found' });
+      }
+
+      // Si el archivo existe, devolverlo como un archivo binario
+      res.sendFile(imagePath);
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+// 🗑️ Eliminar imagen de perfil
+app.delete('/user/:id/profile-pic', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Si no hay imagen de perfil, respondemos con un mensaje adecuado
+    if (!user.profilePic) {
+      return res.status(400).json({ error: 'No profile picture to delete' });
+    }
+
+    const imagePath = `.${user.profilePic}`; // Obtener la ruta completa del archivo
+
+    // Eliminar el archivo de la imagen de perfil en el sistema de archivos
+    fs.unlink(imagePath, (err) => {
+      if (err) {
+        return res.status(500).json({ error: 'Failed to delete the image' });
+      }
+
+      // Eliminar la URL de la imagen en el perfil del usuario
+      user.profilePic = null;
+      user.save()
+        .then(() => {
+          res.status(200).json({ message: 'Profile picture deleted successfully' });
+        })
+        .catch((err) => {
+          res.status(500).json({ error: 'Failed to update user profile' });
+        });
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 const server = app.listen(port, () => {
   console.log(`User Service listening at http://localhost:${port}`);
