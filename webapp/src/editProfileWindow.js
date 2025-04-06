@@ -9,23 +9,22 @@ const EditProfile = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
-  const [profilePic, setProfilePic] = useState("/default-profile-img.jpg");
   const [image, setImage] = useState(null);
+  const [profilePic, setProfilePic] = useState("/default-profile-img.jpg");
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
-  const baseURL = " http://localhost:8001/";
+  const baseURL = "http://localhost:8001/";
 
   const user_Id = localStorage.getItem("_id");
 
-  // Cargar los datos iniciales de la API
   useEffect(() => {
     axios.get(baseURL + "user/" + user_Id, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } 
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
     })
       .then(response => {
-        const { username, profilePic, _id } = response.data;
+        const { username, _id, profilePic } = response.data;
         setNewUsername(username);
-        setProfilePic(profilePic || "/default-profile-img.jpg");
+        setProfilePic(profilePic || "/default-profile-img.jpg"); // Set the profile pic if exists
       })
       .catch(error => {
         console.error("Error al cargar los datos del perfil:", error);
@@ -44,64 +43,6 @@ const EditProfile = () => {
     }
   };
 
-  const handleDeleteImage = () => {
-    setProfilePic("/default-profile-img.jpg");
-    setImage(null);
-  };
-
-  const handleSaveUsername = () => {
-    if (!newUsername) {
-      alert("El nombre de usuario no puede estar vacío");
-      return;
-    }
-
-    axios.put(baseURL + 'user/+'+user_Id+'/username', { username: newUsername }, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-    })
-      .then(() => {
-        setPasswordError(""); 
-        setPasswordSuccess("Nombre de usuario actualizado con éxito.");
-      })
-      .catch(error => {
-        console.error("Error al guardar el nombre de usuario:", error);
-      });
-  };
-
-  const handleSavePassword = () => {
-    if (newPassword && newPassword !== repeatPassword) {
-      setPasswordError("Las nuevas contraseñas no coinciden.");
-      return;
-    }
-
-    if (!currentPassword) {
-      setPasswordError("Por favor, ingresa tu contraseña actual.");
-      return;
-    }
-
-    axios.post(baseURL + "user/validate-password", { currentPassword }, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-    })
-      .then(response => {
-        if (response.data.valid) {
-          axios.put('/api/user/'+user_Id+'/password', { currentPassword, newPassword, confirmPassword: repeatPassword }, {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-          })
-            .then(() => {
-              setPasswordError(""); 
-              setPasswordSuccess("Contraseña actualizada con éxito.");
-            })
-            .catch(error => {
-              console.error("Error al guardar la contraseña:", error);
-            });
-        } else {
-          setPasswordError("La contraseña actual es incorrecta.");
-        }
-      })
-      .catch(error => {
-        console.error("Error al validar la contraseña:", error);
-      });
-  };
-
   const handleSaveImage = () => {
     if (!image) {
       alert("No has seleccionado ninguna imagen.");
@@ -111,7 +52,7 @@ const EditProfile = () => {
     const formData = new FormData();
     formData.append("profilePic", image);
 
-    axios.post('/api/user/'+user_Id+'/profile-pic', formData, {
+    axios.post(baseURL + 'user/' + user_Id + '/profile-pic', formData, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -119,20 +60,86 @@ const EditProfile = () => {
     })
       .then(() => {
         setPasswordSuccess("Imagen de perfil actualizada con éxito.");
-        setImage(null); 
+        window.location.reload();
       })
       .catch(error => {
         console.error("Error al guardar la imagen de perfil:", error);
       });
   };
 
+  const handleDeleteImage = () => {
+    axios.delete(baseURL + 'user/' + user_Id + '/profile-pic', {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+    })
+      .then(() => {
+        setProfilePic("/default-profile-img.jpg");
+        setImage(null);
+        setPasswordSuccess("Imagen eliminada con éxito.");
+        window.location.reload();
+      })
+      .catch(error => {
+        console.error("Error al eliminar la imagen de perfil:", error);
+      });
+  };
+
+  const handleSaveUsername = () => {
+    if (!newUsername) {
+      alert("El nombre de usuario no puede estar vacío");
+      return;
+    }
+
+    axios.put(baseURL + 'user/' + user_Id + '/username', { username: newUsername }, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+    })
+      .then(() => {
+        setPasswordError("");
+        setPasswordSuccess("Nombre de usuario actualizado con éxito.");
+        localStorage.setItem("username", newUsername);
+        window.location.reload();
+      })
+      .catch(error => {
+        console.error("Error al guardar el nombre de usuario:", error);
+      });
+  };
+
+  const handleSavePassword = () => {
+    // Validar que las contraseñas coincidan
+    if (newPassword !== repeatPassword) {
+      setPasswordError("Las nuevas contraseñas no coinciden.");
+      return;
+    }
+  
+    // Validar que la contraseña actual esté escrita
+    if (!currentPassword) {
+      setPasswordError("Por favor, ingresa tu contraseña actual.");
+      return;
+    }
+  
+        axios.put(baseURL + 'user/' + user_Id + '/password', {
+          currentPassword,
+          newPassword,
+          confirmPassword: repeatPassword
+        }, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+        })
+        .then(() => {
+          setPasswordError("");  // Limpiar posibles errores
+          setPasswordSuccess("Contraseña actualizada con éxito.");
+        })
+        .catch(error => {
+          console.error("Error al guardar la contraseña:", error);
+          setPasswordError("Ocurrió un error al cambiar la contraseña.");
+        });
+  };
+  
+
   const handleDeleteAccount = () => {
-    axios.delete(baseURL + 'user/'+user_Id, {
+    axios.delete(baseURL + 'user/' + user_Id, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
     })
       .then(() => {
         localStorage.removeItem("token");
-        navigate("/"); 
+        navigate("/");
       })
       .catch(error => {
         console.error("Error al eliminar el perfil:", error);
@@ -140,51 +147,43 @@ const EditProfile = () => {
   };
 
   return (
-    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", paddingTop: 40 }}>
+    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", paddingTop: 20 }}>
       <Paper sx={{ padding: 4, maxWidth: 800, width: "100%" }}>
         <Typography variant="h5" gutterBottom>
           Editar Perfil
         </Typography>
 
         {/* Sección de Cambio de Imagen de Perfil */}
-<Box sx={{ marginBottom: 4, padding: 2, border: "1px solid #ddd", borderRadius: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', height: 250 }}>
-  <Typography variant="h6" gutterBottom>
-    Cambiar Imagen de Perfil
-  </Typography>
-  
-  {/* Imagen como botón */}
-  <Button onClick={() => document.getElementById("profile-pic-input").click()} sx={{ marginBottom: 2 }}>
-    <Avatar alt={newUsername} src={profilePic} sx={{ width: 100, height: 100 }} />
-  </Button>
+        <Box sx={{ marginBottom: 4, padding: 2, border: "1px solid #ddd", borderRadius: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', height: 250 }}>
+          <Typography variant="h6" gutterBottom>
+            Cambiar Imagen de Perfil
+          </Typography>
 
-  {/* Campo para seleccionar la nueva imagen */}
-  <input type="file" accept="image/*" style={{ display: "none" }} id="profile-pic-input" onChange={handleImageChange} />
-  
-  {/* Contenedor con flex para alinear los botones */}
-  {image && (
-    <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-      {/* Botón para eliminar imagen a la izquierda */}
-      <Button variant="outlined" color="error" onClick={handleDeleteImage} sx={{ marginTop: 2, width: '48%' }}>
-        Eliminar imagen
-      </Button>
-      
-      {/* Botón para guardar imagen a la derecha */}
-      <Button variant="contained" color="primary" onClick={handleSaveImage} sx={{ marginTop: 2, width: '48%' }}>
-        Guardar imagen
-      </Button>
-    </Box>
-  )}
+          <Button onClick={() => document.getElementById("profile-pic-input").click()} sx={{ marginBottom: 2 }}>
+            <Avatar alt={newUsername} src={profilePic} sx={{ width: 100, height: 100 }} />
+          </Button>
 
-  {/* Botón para eliminar imagen si no se ha seleccionado una nueva */}
-  {profilePic !== "/default-profile-img.jpg" && !image && (
-    <Button variant="outlined" color="error" onClick={handleDeleteImage} sx={{ marginTop: 2 }}>
-      Eliminar imagen
-    </Button>
-  )}
-</Box>
+          <input type="file" accept="image/*" style={{ display: "none" }} id="profile-pic-input" onChange={handleImageChange} />
 
+          {image && (
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+              <Button variant="outlined" color="error" onClick={handleDeleteImage} sx={{ marginTop: 2, width: '48%' }}>
+                Eliminar imagen
+              </Button>
+              <Button variant="contained" color="primary" onClick={handleSaveImage} sx={{ marginTop: 2, width: '48%' }}>
+                Guardar imagen
+              </Button>
+            </Box>
+          )}
 
-        {/* Sección de Cambio de Nombre de Usuario */}
+          {!image && profilePic !== "/default-profile-img.jpg" && (
+            <Button variant="outlined" color="error" onClick={handleDeleteImage} sx={{ marginTop: 2 }}>
+              Eliminar imagen
+            </Button>
+          )}
+        </Box>
+
+        {/* Nombre de Usuario */}
         <Box sx={{ marginBottom: 4, padding: 2, border: "1px solid #ddd", borderRadius: 2 }}>
           <Typography variant="h6" gutterBottom>
             Cambiar Nombre de Usuario
@@ -202,7 +201,7 @@ const EditProfile = () => {
           </Button>
         </Box>
 
-        {/* Sección de Cambio de Contraseña */}
+        {/* Contraseña */}
         <Box sx={{ padding: 2, border: "1px solid #ddd", borderRadius: 2 }}>
           <Typography variant="h6" gutterBottom>
             Cambiar Contraseña
@@ -241,7 +240,7 @@ const EditProfile = () => {
           </Button>
         </Box>
 
-        {/* Botón para Eliminar Cuenta */}
+        {/* Eliminar Cuenta */}
         <Grid container spacing={2} sx={{ marginTop: 2 }}>
           <Grid item xs={12}>
             <Button variant="outlined" color="error" fullWidth onClick={handleDeleteAccount}>
