@@ -10,6 +10,7 @@ const connectDatabase = require('/usr/src/llmservice/config/database');
 connectDatabase(mongoose);
 
 const User = require("/usr/src/llmservice/models/user-model")(mongoose);
+const History = require("/usr/src/llmservice/models/history-model")(mongoose);
 
 const app = express();
 const port = 8001;
@@ -90,25 +91,39 @@ app.get('/user/:id', async (req, res) => {
 // ✏️ Cambiar nombre de usuario
 app.put('/user/:id/username', async (req, res) => {
   try {
+    // Buscar al usuario
     const user = await User.findById(req.params.id);
+    const actualUserName = user.username;
     if (!user) return res.status(404).json({ error: 'User not found' });
 
+    // Validar el nuevo nombre de usuario
     if (!req.body.username) {
       return res.status(400).json({ error: 'El nuevo nombre de usuario es obligatorio' });
     }
 
+    // Verificar si el nombre de usuario ya existe
     const existingUser = await User.findOne({ username: req.body.username });
     if (existingUser) {
-      return res.status(400).json({ error: 'Este nombre de usuario ya esta en uso' });
+      return res.status(400).json({ error: 'Este nombre de usuario ya está en uso' });
     }
 
+    // Actualizar el nombre de usuario en el perfil del usuario
     user.username = req.body.username;
     await user.save();
+
+    // Actualizar el nombre de usuario en todas las partidas del usuario
+    // Actualizar todos los registros de "History" (partidas) donde el campo "username" sea igual al antiguo nombre de usuario
+    await History.updateMany(
+      { username: actualUserName },  // Filtrar las partidas donde el nombre de usuario coincida
+      { $set: { username: req.body.username } }  // Actualizar el campo "username" a su nuevo valor
+    );
+
     res.status(200).json({ message: 'Username actualizado correctamente' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 // 🔒 Cambiar contraseña
 app.put('/user/:id/password', async (req, res) => {
