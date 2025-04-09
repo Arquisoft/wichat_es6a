@@ -14,6 +14,7 @@ import EndGame from "./components/EndGameWindow";
 import GameOptions from "./components/GameOptions";
 import Navbar from "./components/Navbar"; 
 import EditProfile from "./editProfileWindow";
+import AllQuestionsWindow from "./components/AllQuestionsWindow";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/endgame" element={<EndGame />} />{" "}
         {/* Cambié a minúsculas por convención */}
         <Route path="/ranking" element={<div>Ranking Page (TBD)</div>} />{" "}
+        <Route path="/questions" element={<AllQuestionsWindow />} />
         {/* Placeholder para Ranking */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

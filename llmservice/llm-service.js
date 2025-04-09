@@ -573,9 +573,37 @@ Formato de Respuesta OBLIGATORIO (solo el objeto JSON, sin texto adicional antes
         return null;
       }
 
-      console.log(
-        `[generateQuestionForEntry] Successfully generated and validated question for category ${entry?.data?.category}`
-      );
+      // Convertimos al formato requerido
+      const formattedQuestion = {
+        question: parsedResponse.question,
+        correctAnswer: parsedResponse.answers.find((a) => a.isCorrect).text,
+        incorrectAnswers: parsedResponse.answers
+          .filter((a) => !a.isCorrect)
+          .map((a) => a.text),
+        category: entry?.data?.category || "variado",
+      };
+
+      try {
+        const postResponse = await fetch("http://questionsservice:8005/addQuestion", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formattedQuestion),
+        });
+
+        if (!postResponse.ok) {
+          console.error(
+            "[generateQuestionForEntry] Error when sending endpoint package:",
+            await postResponse.text()
+          );
+        } else {
+          `[generateQuestionForEntry] Successfully generated and validated question for category ${entry?.data?.category}`
+        }
+      } catch (postError) {
+        console.error("[generateQuestionForEntry] Error fetching POST:", postError);
+      }
+
       return parsedResponse;
     } catch (parseOrValidationError) {
       console.error(
