@@ -40,7 +40,28 @@ class Game {
     this.correctAnswers = 0;
     this.consecutiveCorrectAnswers = 0;
     this.maxConsecutiveCorrectAnswers = 0;
+  
+    //DB Questions game
+    /*
+    try {
+      const categoryName = category ? category.name.toLowerCase() : "variado";
+      await this.loadQuestionsFromDB(categoryName, 4);
+  
+      if (!this.questions || this.questions.length === 0) {
+        console.warn(
+          "No se obtuvieron preguntas desde la base de datos, cargando preguntas de prueba"
+        );
+        await this.TestingInit();
+      }
+  
+      console.log("Preguntas cargadas para el juego:", this.questions);
+    } catch (error) {
+      console.error("Error cargando preguntas desde DB:", error.message);
+      await this.TestingInit();
+    }
+    */
 
+    // Generated Questions game
     try {
       const categoryName = category ? category.name.toLowerCase() : "variado";
       const response = await fetch("http://localhost:8003/generateQuestions", {
@@ -51,17 +72,17 @@ class Game {
           questionCount: 4,
         }),
       });
-
+  
       console.log("Response status from /generateQuestions:", response.status);
       if (!response.ok) {
         throw new Error(
           `Failed to fetch questions: ${response.status} ${response.statusText}`
         );
       }
-
+  
       const data = await response.json();
       console.log("Parsed questions data:", data);
-
+  
       if (data && Array.isArray(data.questions)) {
         this.questions = data.questions.map((qData) => {
           const answers = qData.answers.map(
@@ -76,20 +97,61 @@ class Game {
         );
         throw new Error("Formato de preguntas inesperado.");
       }
-
+  
       if (!this.questions || this.questions.length === 0) {
         console.warn(
           "No se obtuvieron/parsearon preguntas del servidor, cargando preguntas de prueba"
         );
         await this.TestingInit();
       }
-
+  
       console.log("Preguntas guardadas en el objeto Game:", this.questions);
     } catch (error) {
       console.error("Error fetching or parsing questions:", error.message);
       await this.TestingInit();
     }
   }
+
+  async loadQuestionsFromDB(category = "", questionCount = 4) {
+    try {
+      const isVariado = category.toLowerCase() === "variado";
+      const categoryParam = !isVariado && category
+        ? `?category=${encodeURIComponent(category)}`
+        : "";
+  
+      const response = await fetch(`http://localhost:8005/questions${categoryParam}`);
+  
+      if (!response.ok) {
+        throw new Error(`Error loading questions fromo DB: ${response.statusText}`);
+      }
+  
+      const allQuestions = await response.json();
+  
+      if (!Array.isArray(allQuestions) || allQuestions.length === 0) {
+        throw new Error("Didn't receive valid questions from db.");
+      }
+  
+      const selectedQuestions = allQuestions
+        .sort(() => Math.random() - 0.5)
+        .slice(0, questionCount);
+
+      this.questions = selectedQuestions.map((q) => {
+        const answers = [
+          new Answer(q.correctAnswer, true),
+          ...q.incorrectAnswers.map((ia) => new Answer(ia, false)),
+        ];
+  
+        const shuffledAnswers = answers.sort(() => Math.random() - 0.5);
+        return new Question(q.question, shuffledAnswers);
+      });
+  
+      console.log("Loaded questions from bd:", this.questions);
+    } catch (err) {
+      console.error("Error in loadQuestionsFromDB:", err.message);
+      await this.TestingInit(); // fallback
+    }
+  }
+  
 
   async TestingInit() {
     console.log("Modo de prueba activado: Cargando preguntas predefinidas");
