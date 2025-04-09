@@ -3,7 +3,7 @@ module.exports = (mongoose) => {
     username: {
       type: String,
       required: true,
-      unique: true
+      unique: true,
     },
     password: {
       type: String,
@@ -11,8 +11,8 @@ module.exports = (mongoose) => {
     },
     createdAt: {
       type: Date,
-      default: Date.now, 
-    }
+      default: Date.now,
+    },
   });
 
   return mongoose.model('User', userSchema);

@@ -49,7 +49,7 @@ app.post('/login',  [
       // Generate a JWT token
       const token = jwt.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '1h' });
       // Respond with the token and user information
-      res.json({ token: token, username: username, createdAt: user.createdAt });
+      res.json({ token: token, userId: user._id, username: user.username });
     } else {
       res.status(401).json({ error: 'Invalid credentials' });
     }
