@@ -615,6 +615,10 @@ Asegúrate de seguir este formato JSON EXACTAMENTE.`;
 
 // --- Endpoints Principales ---
 
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
 // Endpoint /generateQuestions
 app.post("/generateQuestions", async (req, res) => {
   console.log("[/generateQuestions] Received request.");

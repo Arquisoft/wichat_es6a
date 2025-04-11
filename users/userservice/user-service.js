@@ -52,6 +52,10 @@ function validateRequiredFields(req, requiredFields) {
   }
 }
 
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
 // 🔐 Crear usuario
 app.post('/adduser', async (req, res) => {
   try {

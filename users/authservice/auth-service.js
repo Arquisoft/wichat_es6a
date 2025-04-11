@@ -24,6 +24,10 @@ function validateRequiredFields(req, requiredFields) {
     }
 }
 
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
 // Route for user login
 app.post('/login',  [
   check('username').isLength({ min: 3 }).trim().escape(),
