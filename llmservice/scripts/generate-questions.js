@@ -1,8 +1,8 @@
 // Script pensado para usar crontab con el.
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../llmservice/.env') });
-const { generateQuestionForEntry } = require('../llmservice/llm-service');
-const { getWikidataForCategory } = require('../llmservice/llm-service');
+const { generateQuestionForEntry } = require('../llm-service');
+const { getWikidataForCategory } = require('../llm-service');
 
 // Lista de categorías
 const categories = [

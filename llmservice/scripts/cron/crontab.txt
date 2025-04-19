@@ -1,0 +1,1 @@
+0 3 * * * node /usr/src/llmservice/scripts/generate-questions.js >> /var/log/generate-questions.log 2>&1

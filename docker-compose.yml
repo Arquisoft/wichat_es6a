@@ -51,8 +51,6 @@ services:
     build: ./llmservice
     env_file:
       - ./llmservice/.env
-    volumes:
-      - ./scripts:/usr/src/scripts 
     ports:
       - "8003:8003"
     networks:
