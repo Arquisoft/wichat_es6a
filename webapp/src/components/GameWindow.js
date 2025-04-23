@@ -22,6 +22,7 @@ export function GameWindow() {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [feedbackColors, setFeedbackColors] = useState([]);
   const [hasUsedFiftyFifty, setHasUsedFiftyFifty] = useState(false);
+  const [hasUsedAskAI, setHasUsedAskAI] = useState(false);
   const [questionImage, setQuestionImage] = useState(null);
   const [isGameLoading, setIsGameLoading] = useState(true);
   const [generatedImagesMap, setGeneratedImagesMap] = useState(new Map());
@@ -164,6 +165,9 @@ export function GameWindow() {
         setCurrentQuestion(nextQ);
         setPoints(gameRef.current.getCurrentPoints());
         setStreak(gameRef.current.getCurrentStreak());
+        if (chatCluesRef.current?.disableChat) {
+          chatCluesRef.current.disableChat();
+        }
         setSelectedAnswer(null);
         setFeedbackColors([]);
         console.log("[handleAnswerClick Timeout] Game state update complete.");
@@ -233,7 +237,13 @@ export function GameWindow() {
     gameRef.current.useFiftyFifty();
   };
   
-
+  const handleAskAI = () => {
+    if (chatCluesRef.current) {
+      chatCluesRef.current.enableChat();
+      setHasUsedAskAI(true);
+    }
+  };
+  
 
 
   // --- Renderizado del Componente ---
@@ -256,6 +266,8 @@ export function GameWindow() {
       </Box>
     );
   }
+
+  
 
   return (
     <Box
@@ -414,6 +426,27 @@ export function GameWindow() {
             >
               Pista
             </Button>
+
+            <Button
+              variant="contained"
+              onClick={handleAskAI}
+              disabled={selectedAnswer !== null || hasUsedAskAI}
+              sx={{
+                mt: 1,
+                bgcolor: "#4db6ac",
+                color: "#fff",
+                "&:hover": {
+                  bgcolor: "#00897b",
+                },
+                "&:disabled": {
+                  bgcolor: "#888",
+                  color: "#eee",
+                },
+              }}
+            >
+              Pregunta IA
+            </Button>
+
 
             <Button
               variant="contained"
