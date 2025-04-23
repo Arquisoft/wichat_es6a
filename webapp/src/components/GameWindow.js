@@ -244,6 +244,7 @@ export function GameWindow() {
   const handleAskAI = () => {
     if (chatCluesRef.current) {
       chatCluesRef.current.enableChat();
+      gameRef.current.useAskAI();
       setHasUsedAskAI(true);
     }
   };
