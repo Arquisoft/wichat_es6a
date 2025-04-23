@@ -203,7 +203,7 @@ export function GameWindow() {
       });
       const hintMessage = `IA: ${response.data.hint}`;
       if (chatCluesRef.current) chatCluesRef.current.addMessage(hintMessage);
-
+      gameRef.current.useHint();
       setHasUsedHint(true);
 
     } catch (error) {

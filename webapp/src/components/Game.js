@@ -28,6 +28,8 @@ class Game {
     this.totalTimeTaken = 0;
 
     this.usedFiftyFiftyOn = new Set();
+    this.usedHintOn = new Set();
+
 
   }
 
@@ -235,6 +237,9 @@ class Game {
           if (this.usedFiftyFiftyOn.has(currentQ.questionText)) {
             basePoints = 50;
           }
+          else if (this.usedHintOn.has(currentQ.questionText)) {
+            basePoints = 60;
+          }
           this.score += basePoints;
           if(this.consecutiveCorrectAnswers > 1) {
             this.score += (this.consecutiveCorrectAnswers - 1) * 20;
@@ -336,6 +341,14 @@ class Game {
     }
   }
   
+  useHint() {
+    const current = this.getCurrentQuestion();
+    if (current) {
+      this.usedHintOn.add(current.questionText);
+    }
+  }
+  
+
 }
 
 export default Game;
