@@ -931,4 +931,8 @@ const server = app.listen(port, () => {
   }
 });
 
-module.exports = server;
+module.exports = {
+  server,
+  getWikidataForCategory,
+  generateQuestionForEntry
+};
