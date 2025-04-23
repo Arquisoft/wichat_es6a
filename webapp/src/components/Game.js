@@ -237,13 +237,13 @@ class Game {
 
           let basePoints = 100;
           if (this.usedFiftyFiftyOn.has(currentQ.questionText)) {
-            basePoints = 50;
+            basePoints = basePoints - 40;
           }
-          else if (this.usedHintOn.has(currentQ.questionText)) {
-            basePoints = 70;
+          if (this.usedHintOn.has(currentQ.questionText)) {
+            basePoints = basePoints - 15;
           }
-          else if (this.usedAskAIOn.has(currentQ.questionText)) {
-            basePoints = 60;
+          if (this.usedAskAIOn.has(currentQ.questionText)) {
+            basePoints = basePoints - 25;
           }
           this.score += basePoints;
           if(this.consecutiveCorrectAnswers > 1) {
