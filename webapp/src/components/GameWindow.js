@@ -23,6 +23,7 @@ export function GameWindow() {
   const [feedbackColors, setFeedbackColors] = useState([]);
   const [hasUsedFiftyFifty, setHasUsedFiftyFifty] = useState(false);
   const [hasUsedAskAI, setHasUsedAskAI] = useState(false);
+  const [hasUsedHint, setHasUsedHint] = useState(false);
   const [questionImage, setQuestionImage] = useState(null);
   const [isGameLoading, setIsGameLoading] = useState(true);
   const [generatedImagesMap, setGeneratedImagesMap] = useState(new Map());
@@ -202,6 +203,9 @@ export function GameWindow() {
       });
       const hintMessage = `IA: ${response.data.hint}`;
       if (chatCluesRef.current) chatCluesRef.current.addMessage(hintMessage);
+
+      setHasUsedHint(true);
+
     } catch (error) {
       let errorMessage = "IA: Error al obtener la pista.";
       if (error.response)
@@ -422,8 +426,8 @@ export function GameWindow() {
               variant="contained"
               color="secondary"
               onClick={handleGetHint}
-              disabled={selectedAnswer !== null}
-            >
+              disabled={selectedAnswer !== null || hasUsedHint}
+              >
               Pista
             </Button>
 
