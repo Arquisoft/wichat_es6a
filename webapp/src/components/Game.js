@@ -233,7 +233,7 @@ class Game {
 
           let basePoints = 100;
           if (this.usedFiftyFiftyOn.has(currentQ.questionText)) {
-            basePoints = 50; // en caso de haberse usado 50/50
+            basePoints = 50;
           }
           this.score += basePoints;
           if(this.consecutiveCorrectAnswers > 1) {

@@ -167,7 +167,6 @@ export function GameWindow() {
         setSelectedAnswer(null);
         setFeedbackColors([]);
         console.log("[handleAnswerClick Timeout] Game state update complete.");
-        setHasUsedFiftyFifty(false); // reset 50/50 for next question
 
       }, 1500); // 1.5 segundos
     },
