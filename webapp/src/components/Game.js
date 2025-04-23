@@ -29,6 +29,8 @@ class Game {
 
     this.usedFiftyFiftyOn = new Set();
     this.usedHintOn = new Set();
+    this.usedAskAIOn = new Set();
+
 
 
   }
@@ -238,6 +240,9 @@ class Game {
             basePoints = 50;
           }
           else if (this.usedHintOn.has(currentQ.questionText)) {
+            basePoints = 70;
+          }
+          else if (this.usedAskAIOn.has(currentQ.questionText)) {
             basePoints = 60;
           }
           this.score += basePoints;
@@ -345,6 +350,13 @@ class Game {
     const current = this.getCurrentQuestion();
     if (current) {
       this.usedHintOn.add(current.questionText);
+    }
+  }
+  
+  useAskAI() {
+    const current = this.getCurrentQuestion();
+    if (current) {
+      this.usedAskAIOn.add(current.questionText);
     }
   }
   
