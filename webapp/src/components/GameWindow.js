@@ -1,3 +1,5 @@
+// src/components/GameWindow.js
+
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
@@ -8,143 +10,155 @@ import Game from "./Game";
 import axios from "axios";
 import QuestionTimer from "./QuestionTimer";
 
+// --- Valores por defecto ---
+const defaultDifficulty = {
+  name: "Medio",
+  questionCount: 5,
+  timePerQuestion: 30,
+};
+const defaultCategory = { name: "Variado", endpoint: "/variado" };
+// --- Componente Principal ---
 export function GameWindow() {
   const navigate = useNavigate();
   const location = useLocation();
-  const category = location.state?.category || {
-    name: "Variado",
-    endpoint: "/variado",
-  };
+
+  const { category = defaultCategory, difficulty = defaultDifficulty } =
+    location.state || {};
+
+  // --- Referencias y Estado ---
   const gameRef = useRef(new Game(navigate));
-  const [currentQuestion, setCurrentQuestion] = useState(null);
+  const [currentQuestion, setCurrentQuestion] = useState(null); // Objeto Question actual
   const [points, setPoints] = useState(0);
   const [streak, setStreak] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [feedbackColors, setFeedbackColors] = useState([]);
   const [hasUsedFiftyFifty, setHasUsedFiftyFifty] = useState(false);
+
   const [hasUsedAskAI, setHasUsedAskAI] = useState(false);
   const [hasUsedHint, setHasUsedHint] = useState(false);
   const [questionImage, setQuestionImage] = useState(null);
+
+  const [questionImage, setQuestionImage] = useState(null); // URL/base64 de la imagen a mostrar
+
   const [isGameLoading, setIsGameLoading] = useState(true);
-  const [generatedImagesMap, setGeneratedImagesMap] = useState(new Map());
   const isInitializedRef = useRef(false);
   const chatCluesRef = useRef(null);
+  const [isImageActuallyLoading, setIsImageActuallyLoading] = useState(false);
+
+  // --- Configuración de Endpoints y API Key ---
   const apiEndpoint =
     process.env.REACT_APP_API_ENDPOINT || "http://localhost:8003";
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey =
+    process.env.REACT_APP_GEMINI_API_KEY || process.env.GEMINI_API_KEY; // Para pistas
 
-  // --- Efecto de Inicialización del Juego y Generación de Imágenes ---
+  // --- Efecto de Inicialización del Juego ---
   useEffect(() => {
-    const initializeGameAndImages = async () => {
-      if (isInitializedRef.current) return;
-      isInitializedRef.current = true;
+    if (isInitializedRef.current) return;
+    isInitializedRef.current = true;
+
+    const initializeGame = async () => {
       setIsGameLoading(true);
-      console.log("[init] Initializing game...");
+      console.log(
+        `[init] Initializing game with category "${category.name}" and difficulty "${difficulty.name}"...`
+      );
 
       try {
-        await gameRef.current.init(category);
+        // Inicializar la instancia de Game (obtiene preguntas Y imageUrls del llm-service)
+        await gameRef.current.init(category, difficulty.questionCount);
         console.log(
-          `[init] Game initialized. ${gameRef.current.questions.length} questions loaded.`
+          `[init] Game instance initialized. ${gameRef.current.questions.length} questions loaded.`
         );
 
-        if (gameRef.current.questions && gameRef.current.questions.length > 0) {
-          const questionsPayload = gameRef.current.questions.map((q) => ({
-            question: q.questionText,
-          }));
-
-          console.log(
-            `[init] Calling POST ${apiEndpoint}/generateImages for ${questionsPayload.length} questions...`
-          );
-          const response = await axios.post(`${apiEndpoint}/generateImages`, {
-            questions: questionsPayload,
-            apiKey: apiKey,
-          });
-
-          if (response.status === 200 && response.data.images) {
-            console.log(
-              `[init] Received ${response.data.images.length} image results from /generateImages.`
-            );
-            const imageMap = new Map();
-            response.data.images.forEach((imgData) => {
-              if (imgData && imgData.questionText && imgData.base64Image) {
-                imageMap.set(imgData.questionText, imgData.base64Image);
-              } else {
-                console.warn(
-                  `[init] Missing data or image for question: ${
-                    imgData?.questionText || "Unknown"
-                  }`
-                );
-                if (imgData && imgData.questionText) {
-                  imageMap.set(imgData.questionText, null);
-                }
-              }
-            });
-            setGeneratedImagesMap(imageMap);
-            console.log(
-              `[init] Images map created with ${imageMap.size} entries.`
-            );
-          } else {
-            console.error(
-              "[init] Error response from /generateImages:",
-              response.status,
-              response.data?.error
-            );
-          }
-        } else {
-          console.warn(
-            "[init] No questions loaded, skipping image generation."
-          );
-        }
-
+        // Establecer la primera pregunta en el estado del componente
         const firstQuestion = gameRef.current.getCurrentQuestion();
         if (firstQuestion) {
           console.log("[init] Setting first question.");
           setCurrentQuestion(firstQuestion);
           setPoints(gameRef.current.getCurrentPoints());
           setStreak(gameRef.current.getCurrentStreak());
+          setFeedbackColors([]);
+          setSelectedAnswer(null);
+          setHasUsedFiftyFifty(false);
+          // La imagen se actualizará en el siguiente efecto
         } else {
-          console.error("[init] No questions available after initialization!");
+          console.error(
+            "[init] No questions available after initialization! Ending game."
+          );
+          gameRef.current.endGame();
         }
       } catch (error) {
         console.error(
-          "[init] Critical error during game initialization or image generation:",
+          "[init] Critical error during game initialization:",
           error.response?.data || error.message || error
         );
+        try {
+          // Intenta cargar preguntas de prueba como fallback
+          await gameRef.current.TestingInit(difficulty.questionCount);
+          const firstQuestion = gameRef.current.getCurrentQuestion();
+          if (firstQuestion) setCurrentQuestion(firstQuestion);
+          else gameRef.current.endGame();
+        } catch (fallbackError) {
+          console.error(
+            "[init] Error during fallback TestingInit:",
+            fallbackError
+          );
+        }
       } finally {
         setIsGameLoading(false);
-        console.log(
-          "[init] Initialization complete. Game loading state set to false."
-        );
+        console.log("[init] Initialization complete.");
       }
     };
 
-    initializeGameAndImages();
-  }, [category]);
+    initializeGame();
+  }, [category, difficulty, navigate, apiKey]);
 
   // --- Efecto para Actualizar la Imagen Mostrada ---
   useEffect(() => {
-    if (currentQuestion && currentQuestion.questionText) {
-      const imageData = generatedImagesMap.get(currentQuestion.questionText);
-      if (imageData !== undefined) {
-        setQuestionImage(imageData);
-      } else {
-        if (generatedImagesMap.size > 0 && !isGameLoading) {
-          console.warn(
-            `[Image Effect] Image key NOT FOUND in map for: "${currentQuestion.questionText}". Setting default.`
-          );
+    const game = gameRef.current; // Acceso a la instancia de Game
+
+    if (currentQuestion) {
+      const imageUrl = currentQuestion.imageUrl;
+
+      // --- Pre-carga de la siguiente imagen ---
+      const nextIndex = game.questionIndex + 1;
+      if (nextIndex < game.questions.length) {
+        const nextImageUrl = game.questions[nextIndex].imageUrl;
+        if (nextImageUrl) {
+          // console.log("Prefetching image:", nextImageUrl);
+          const img = new Image();
+          img.src = nextImageUrl; // Inicia descarga en segundo plano (caché del navegador)
         }
-        setQuestionImage(null);
       }
+      // --------------------------------------
+
+      // --- Actualizar imagen actual y estado de carga ---
+      if (imageUrl) {
+        setIsImageActuallyLoading(true); // Indicar que vamos a empezar a cargar
+      } else {
+        setIsImageActuallyLoading(false); // No hay URL, no hay carga
+      }
+      setQuestionImage(imageUrl); // Actualizar la URL para el <img>
+      // --------------------------------------------
+
+      console.log("Datos de imagen procesados para pregunta actual:", {
+        questionText: currentQuestion.questionText,
+        imageUrl: imageUrl,
+        nextImageToPreload:
+          nextIndex < game.questions.length
+            ? game.questions[nextIndex].imageUrl
+            : "N/A",
+      });
     } else {
-      setQuestionImage(null);
+      setQuestionImage(null); // No hay pregunta actual
+      setIsImageActuallyLoading(false); // No hay carga
     }
-  }, [currentQuestion, generatedImagesMap, isGameLoading]);
+  }, [currentQuestion]);
 
   // --- Manejador de Clic en Respuesta ---
   const handleAnswerClick = useCallback(
     (index) => {
-      if (selectedAnswer !== null) return;
-      console.log(`[handleAnswerClick] Answer ${index} clicked.`);
+      if (selectedAnswer !== null || !currentQuestion) return;
+      // console.log(`[handleAnswerClick] Answer ${index} clicked.`);
 
       const correctIndex = currentQuestion.answers.findIndex(
         (ans) => ans.isCorrect
@@ -152,18 +166,18 @@ export function GameWindow() {
       setSelectedAnswer(index);
 
       const newColors = currentQuestion.answers.map((_, i) => {
-        if (i === correctIndex) return "#a5d6a7";
-        if (i === index && i !== correctIndex) return "#ef9a9a";
+        if (i === correctIndex) return "#a5d6a7"; // Verde claro
+        if (i === index && i !== correctIndex) return "#ef9a9a"; // Rojo claro
         return null;
       });
       setFeedbackColors(newColors);
 
-      // Tiempo de transición entre preguntas: 1.5 segundos
       setTimeout(() => {
-        console.log("[handleAnswerClick Timeout] Updating game state...");
-        gameRef.current.answerQuestion(index);
+        gameRef.current.answerQuestion(index); // Actualizar estado lógico
+
         const nextQ = gameRef.current.getCurrentQuestion();
-        setCurrentQuestion(nextQ);
+        setCurrentQuestion(nextQ); // Actualizar pregunta en UI
+
         setPoints(gameRef.current.getCurrentPoints());
         setStreak(gameRef.current.getCurrentStreak());
         if (chatCluesRef.current?.disableChat) {
@@ -174,31 +188,21 @@ export function GameWindow() {
         console.log("[handleAnswerClick Timeout] Game state update complete.");
 
       }, 1500); // 1.5 segundos
+
     },
     [currentQuestion, selectedAnswer]
-    
   );
 
   // --- Manejador para Obtener Pista ---
   const handleGetHint = useCallback(async () => {
-    if (
-      !currentQuestion ||
-      !currentQuestion.answers ||
-      currentQuestion.answers.length === 0
-    ) {
-      if (chatCluesRef.current)
-        chatCluesRef.current.addMessage(
-          "IA: No hay pregunta o respuestas para una pista."
-        );
-      return;
-    }
-    if (chatCluesRef.current)
-      chatCluesRef.current.addMessage("IA: Solicitando pista...");
+    if (!currentQuestion || !chatCluesRef.current) return;
+
+    chatCluesRef.current.addMessage("IA: Solicitando pista...");
 
     try {
       const response = await axios.post(`${apiEndpoint}/getHint`, {
         question: currentQuestion.questionText,
-        answers: currentQuestion.answers,
+        answers: currentQuestion.answers.map((a) => ({ text: a.text })),
         apiKey: apiKey,
       });
       const hintMessage = `IA: ${response.data.hint}`;
@@ -206,39 +210,42 @@ export function GameWindow() {
       gameRef.current.useHint();
       setHasUsedHint(true);
 
+
     } catch (error) {
       let errorMessage = "IA: Error al obtener la pista.";
       if (error.response)
-        errorMessage = `IA: Error del servidor: ${error.response.status}`;
-      else if (error.request) errorMessage = "IA: Sin respuesta del servidor.";
-      if (chatCluesRef.current) chatCluesRef.current.addMessage(errorMessage);
-      console.error("Hint error:", error);
+        errorMessage = `IA: Error del servidor (${error.response.status}) al pedir pista.`;
+      else if (error.request)
+        errorMessage = "IA: Sin respuesta del servidor al pedir pista.";
+      chatCluesRef.current.addMessage(errorMessage);
+      console.error("Hint error:", error.response?.data || error.message);
     }
   }, [currentQuestion, apiEndpoint, apiKey]);
 
+  // --- Manejador para Comodín 50/50 ---
   const handleFiftyFifty = () => {
-    if (!currentQuestion || selectedAnswer !== null) return;
-  
-    
-    const correctIndex = currentQuestion.answers.findIndex((ans) => ans.isCorrect);
-  
-    // Elimina 2 respuestas incorrectas aleatorias
+    if (!currentQuestion || selectedAnswer !== null || hasUsedFiftyFifty)
+      return;
+
+    const correctIndex = currentQuestion.answers.findIndex(
+      (ans) => ans.isCorrect
+    );
     const incorrectIndices = currentQuestion.answers
-      .map((ans, idx) => ({ ans, idx }))
-      .filter(({ ans }) => !ans.isCorrect)
-      .map(({ idx }) => idx);
-  
-    // Baraja y selecciona 2 a eliminar
-    const toRemove = incorrectIndices.sort(() => Math.random() - 0.5).slice(0, 2);
-  
+      .map((ans, idx) => (ans.isCorrect ? -1 : idx))
+      .filter((idx) => idx !== -1);
+
+    const toRemove = incorrectIndices
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 2);
+
     const newColors = currentQuestion.answers.map((_, i) => {
-      if (toRemove.includes(i)) return "#424242"; // deshabilitado gris oscuro
+      if (toRemove.includes(i)) return "#757575"; // Gris oscuro para deshabilitado
       return null;
     });
-  
+
     setFeedbackColors(newColors);
     setHasUsedFiftyFifty(true);
-    gameRef.current.useFiftyFifty();
+    gameRef.current.useFiftyFifty(); // Informar a la clase Game (para puntuación)
   };
   
   const handleAskAI = () => {
@@ -252,6 +259,8 @@ export function GameWindow() {
 
 
   // --- Renderizado del Componente ---
+
+  // Estado de Carga Inicial
   if (isGameLoading) {
     return (
       <Box
@@ -266,13 +275,12 @@ export function GameWindow() {
       >
         <CircularProgress color="primary" size={60} />
         <Typography color="white" sx={{ mt: 2, fontStyle: "italic" }}>
-          Cargando preguntas y generando imágenes...
+          Cargando preguntas...
         </Typography>
       </Box>
     );
   }
 
-  
 
   return (
     <Box
@@ -280,99 +288,123 @@ export function GameWindow() {
         bgcolor: "#121212",
         minHeight: "100vh",
         p: { xs: 1, sm: 2, md: 3 },
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
       }}
     >
-      <Typography
-        variant="h5"
-        align="center"
-        fontWeight="bold"
-        color="white"
-        sx={{ mb: { xs: 3, md: 5 }, mt: 3 }}
-      >
-        Pregunta {currentQuestion ? gameRef.current.questionIndex + 1 : 1} /{" "}
-        {gameRef.current.questions.length}
-      </Typography>
-
-      <Grid
-        container
-        justifyContent="center"
-        spacing={{ xs: 2, md: 3 }}
-        alignItems="stretch"
-      >
-        {/* Columna Izquierda: Chat/Pistas */}
-        <Grid
-          item
-          xs={12}
-          sm={6}
-          md={3}
-          sx={{ display: { xs: "none", sm: "block" } }}
+      <Box sx={{ width: "100%", maxWidth: 1200 }}>
+        {/* Cabecera: Número de Pregunta */}
+        <Typography
+          variant="h5"
+          align="center"
+          fontWeight="bold"
+          color="white"
+          sx={{ mb: { xs: 3, md: 5 }, mt: 3 }}
         >
-          <Box
+          Pregunta {currentQuestion ? gameRef.current.questionIndex + 1 : "-"} /{" "}
+          {gameRef.current.questions.length || "-"}
+        </Typography>
+        {/* Grid Principal */}
+        <Grid
+          container
+          justifyContent="center"
+          spacing={{ xs: 2, md: 4 }}
+          alignItems="stretch"
+        >
+          {/* Columna Izquierda: Chat/Pistas */}
+          <Grid
+            item
+            xs={12}
+            sm={6}
+            md={3}
             sx={{
-              width: "100%",
-              height: { sm: 300, md: 300 },
-              bgcolor: "#222",
-              borderRadius: 2,
-              p: 1,
-              display: "flex",
-            }}
-          >
-            <ChatClues
-              ref={chatCluesRef}
-              question={currentQuestion?.questionText}
-              answers={currentQuestion?.answers}
-            />
-          </Box>
-        </Grid>
-
-        {/* Columna Central: Imagen */}
-        <Grid item xs={9} sm={5} md={3}>
-          {" "}
-          <Box
-            sx={{
-              width: "100%",
-              height: 0,
-              paddingBottom: "100%",
-              position: "relative",
-              borderRadius: 4,
-              boxShadow: 6,
-              overflow: "hidden",
-              bgcolor: "#333",
+              display: { xs: "none", sm: "flex" },
+              flexDirection: "column",
             }}
           >
             <Box
               sx={{
-                position: "absolute",
-                top: 0,
-                left: 0,
+                flexGrow: 1,
+                bgcolor: "#222",
+                borderRadius: 2,
+                p: 1,
+                display: "flex",
+                minHeight: { sm: 250, md: 300 },
+              }}
+            >
+              <ChatClues ref={chatCluesRef} />
+            </Box>
+          </Grid>
+
+          {/* Columna Central: Imagen */}
+          <Grid item xs={12} sm={6} md={4}>
+            <Box
+              sx={{
                 width: "100%",
-                height: "100%",
+                height: 0,
+                paddingBottom: { xs: "75%", sm: "100%" }, // Mantiene el aspect ratio
+                position: "relative", // Necesario para posicionar spinner e imagen absoluta
+                borderRadius: 4,
+                boxShadow: 6,
+                overflow: "hidden", // Para bordes redondeados
+                bgcolor: "#333", // Fondo mientras carga o si no hay imagen
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
               }}
             >
+              {/* ---Indicador de Carga (Spinner) --- */}
+              {isImageActuallyLoading && questionImage && (
+                <CircularProgress
+                  size={40}
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    marginTop: "-20px",
+                    marginLeft: "-20px",
+                    color: "primary.light",
+                    zIndex: 1,
+                  }}
+                />
+              )}
+
               <Box
                 component="img"
                 key={
                   questionImage || `default-${currentQuestion?.questionText}`
                 }
-                src={questionImage || "/WichatAmigos.png"}
+                src={questionImage || "/WichatAmigos.png"} // Usa la imagen del estado o fallback
                 alt={`Imagen para: ${
                   currentQuestion?.questionText || "Cargando..."
                 }`}
                 sx={{
-                  display: "block",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
                   width: "100%",
                   height: "100%",
                   objectFit: "cover",
+                  display: "block",
+                  opacity: isImageActuallyLoading ? 0 : 1, // Ocultar img mientras carga
+                  transition: "opacity 0.3s ease-in-out", // Transición suave al aparecer
+                  // --------------------------------------
                 }}
+                // --- Manejadores onLoad/onError ---
+                // Se ejecutan cuando el navegador termina de cargar o falla al cargar la imagen del src
+                onLoad={() => setIsImageActuallyLoading(false)} // Imagen cargada -> ocultar spinner
                 onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = "/WichatAmigos.png";
+                  setIsImageActuallyLoading(false); // Error al cargar -> ocultar spinner
+                  console.warn(
+                    `Error loading image: ${e.target.src}. Using default.`
+                  );
+                  e.target.onerror = null; // Prevenir bucle infinito si el fallback también falla
+                  e.target.src = "/WichatAmigos.png"; // Forzar imagen por defecto
                 }}
               />
             </Box>
+
           </Box>
         </Grid>
 
@@ -457,101 +489,201 @@ export function GameWindow() {
               variant="contained"
               onClick={handleFiftyFifty}
               disabled={selectedAnswer !== null || hasUsedFiftyFifty}
+
               sx={{
-                mt: 1,
-                bgcolor: "#f06292",
-                color: "#fff",
-                "&:hover": {
-                  bgcolor: "#ec407a",
-                },
-                "&:disabled": {
-                  bgcolor: "#888",
-                  color: "#eee",
-                },
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "100%",
+                minHeight: { xs: 150, sm: 250, md: 300 },
+                gap: 2,
+                mt: { xs: 2, sm: 0 },
               }}
             >
-              50 / 50
-            </Button>
-
-
-          </Box>
-        </Grid>
-      </Grid>
-
-      {/* Sección Inferior: Texto Pregunta y Botones Respuesta */}
-      <Box sx={{ mt: { xs: 3, md: 6 }, mx: "auto", maxWidth: 650 }}>
-        <Grid
-          container
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{ mb: 2, minHeight: "3em" }}
-        >
-          <Typography
-            variant="h6"
-            color="white"
-            sx={{ textAlign: "left", flexGrow: 1, mr: 2 }}
-          >
-            {currentQuestion ? currentQuestion.questionText : "Cargando..."}
-          </Typography>
-          <Grid item display="flex" alignItems="center" sx={{ flexShrink: 0 }}>
-            <Typography variant="h6" color="#90caf9" sx={{ mr: 1 }}>
-              Pts: {points}
-            </Typography>
-            <WhatshotIcon color="error" sx={{ mr: 0.5 }} />
-            <Typography variant="h6" color="error">
-              {streak}
-            </Typography>
-          </Grid>
-        </Grid>
-
-        <Grid container spacing={2} mt={1}>
-          {currentQuestion?.answers.map((answer, index) => (
-            <Grid item xs={12} key={answer.text + index}>
+              {/* Temporizador */}
+              {currentQuestion && (
+                <QuestionTimer
+                  keyProp={`timer-${gameRef.current.questionIndex}-${difficulty.timePerQuestion}`}
+                  duration={difficulty.timePerQuestion}
+                  pauseTimer={selectedAnswer !== null}
+                  onComplete={() => {
+                    if (selectedAnswer !== null) return;
+                    console.log("[onComplete Timer] Time's up!");
+                    setSelectedAnswer(-1);
+                    const correctIndex =
+                      currentQuestion?.answers.findIndex(
+                        (ans) => ans.isCorrect
+                      ) ?? -1;
+                    const newColors =
+                      currentQuestion?.answers.map((_, i) =>
+                        i === correctIndex ? "#a5d6a7" : "#ef9a9a"
+                      ) || [];
+                    setFeedbackColors(newColors);
+                    setTimeout(() => {
+                      gameRef.current.answerQuestion(-1, true);
+                      const nextQ = gameRef.current.getCurrentQuestion();
+                      setCurrentQuestion(nextQ);
+                      setPoints(gameRef.current.getCurrentPoints());
+                      setStreak(gameRef.current.getCurrentStreak());
+                      setSelectedAnswer(null);
+                      setFeedbackColors([]);
+                      setHasUsedFiftyFifty(false);
+                    }, 1500);
+                    return { shouldRepeat: false };
+                  }}
+                />
+              )}
+              {/* Botones de Acción */}
               <Button
                 variant="contained"
-                fullWidth
-                sx={{
-                  borderRadius: 2,
-                  p: 1.5,
-                  fontSize: "1rem",
-                  bgcolor: feedbackColors[index] || "#1976d2",
-                  color: "white",
-                  border: selectedAnswer === index ? "3px solid black" : "none",
-                  transition:
-                    "background-color 0.3s, border 0.3s, transform 0.1s",
-                  "&:hover": {
-                    bgcolor: feedbackColors[index]
-                      ? feedbackColors[index]
-                      : "#1565c0",
-                    transform: selectedAnswer === null ? "scale(1.02)" : "none",
-                  },
-                  "&:active": {
-                    transform: selectedAnswer === null ? "scale(0.98)" : "none",
-                  },
-                  "&:disabled": {
-                    bgcolor: feedbackColors[index] || "#1976d2",
-                    color: "rgba(255, 255, 255, 0.7)",
-                    opacity: 0.8,
-                    transform: "none",
-                    cursor: "default",
-                  },
-                }}
-                onClick={() => handleAnswerClick(index)}
-                disabled={selectedAnswer !== null}
+                color="secondary"
+                onClick={handleGetHint}
+                disabled={selectedAnswer !== null || !currentQuestion}
               >
-                {answer.text}
+                Pista
               </Button>
-            </Grid>
-          ))}
-          {!currentQuestion && !isGameLoading && (
-            <Grid item xs={12}>
-              <Typography color="gray" align="center" sx={{ mt: 4 }}>
-                Fin del juego o no hay preguntas disponibles.
+              <Button
+                variant="contained"
+                onClick={handleFiftyFifty}
+                disabled={
+                  selectedAnswer !== null ||
+                  hasUsedFiftyFifty ||
+                  !currentQuestion
+                }
+                sx={{
+                  bgcolor: "#f06292",
+                  color: "#fff",
+                  "&:hover": { bgcolor: "#ec407a" },
+                  "&:disabled": { bgcolor: "#bdbdbd", color: "#757575" },
+                }}
+              >
+                50 / 50
+              </Button>
+            </Box>
+          </Grid>
+        </Grid>{" "}
+        {/* Fin Grid Principal */}
+        {/* Sección Inferior: Texto Pregunta y Botones Respuesta */}
+        <Box
+          sx={{
+            mt: { xs: 3, md: 5 },
+            mx: "auto",
+            maxWidth: { xs: "95%", sm: 700 },
+            width: "100%",
+          }}
+        >
+          {/* Contenedor Pregunta, Puntos, Racha */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 2,
+              minHeight: "3em",
+              borderBottom: "1px solid #444",
+              pb: 1,
+            }}
+          >
+            <Typography
+              variant="h6"
+              color="white"
+              sx={{ textAlign: "left", flexGrow: 1, mr: 2, fontWeight: "500" }}
+            >
+              {currentQuestion
+                ? currentQuestion.questionText
+                : "Cargando pregunta..."}
+            </Typography>
+            {/* Puntos y Racha */}
+            <Box sx={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+              <Typography variant="h6" color="#90caf9" sx={{ mr: 1 }}>
+                Pts: {points}
               </Typography>
-            </Grid>
-          )}
-        </Grid>
-      </Box>
+              <WhatshotIcon color="error" sx={{ mr: 0.5 }} />
+              <Typography variant="h6" color="error">
+                {streak}
+              </Typography>
+            </Box>
+          </Box>
+          {/* Grid para botones de respuesta */}
+          <Grid container spacing={2} mt={1}>
+            {currentQuestion?.answers.map((answer, index) => (
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                key={`${currentQuestion.questionText}-${index}`}
+              >
+                <Button
+                  variant="contained"
+                  fullWidth
+                  sx={{
+                    minHeight: "3.5em",
+                    borderRadius: 2,
+                    p: 1.5,
+                    fontSize: "1rem",
+                    bgcolor:
+                      feedbackColors[index] ||
+                      (selectedAnswer !== null ? "#757575" : "#1976d2"),
+                    color: "white",
+                    border:
+                      selectedAnswer === index ? "3px solid #FFF" : "none",
+                    transition:
+                      "background-color 0.3s, border 0.3s, transform 0.1s",
+                    "&:hover": {
+                      bgcolor:
+                        feedbackColors[index] ||
+                        (selectedAnswer !== null ? "#757575" : "#1565c0"),
+                      transform:
+                        selectedAnswer === null &&
+                        !feedbackColors[index]?.startsWith("#75")
+                          ? "scale(1.02)"
+                          : "none",
+                    },
+                    "&:active": {
+                      transform:
+                        selectedAnswer === null &&
+                        !feedbackColors[index]?.startsWith("#75")
+                          ? "scale(0.98)"
+                          : "none",
+                    },
+                    "&:disabled": {
+                      bgcolor: feedbackColors[index] || "#757575",
+                      color:
+                        feedbackColors[index] === "#757575"
+                          ? "#aaa"
+                          : "rgba(255, 255, 255, 0.7)",
+                      opacity: 1,
+                      cursor: "default",
+                      transform: "none",
+                      border:
+                        selectedAnswer === index ? "3px solid #AAA" : "none",
+                    },
+                  }}
+                  onClick={() => handleAnswerClick(index)}
+                  disabled={
+                    selectedAnswer !== null ||
+                    feedbackColors[index] === "#757575"
+                  }
+                >
+                  {answer.text}
+                </Button>
+              </Grid>
+            ))}
+            {/* Mensaje fin de juego / error */}
+            {!currentQuestion && !isGameLoading && (
+              <Grid item xs={12}>
+                <Typography color="gray" align="center" sx={{ mt: 4 }}>
+                  {gameRef.current.questionIndex >=
+                  gameRef.current.questions.length
+                    ? "Fin de la partida. Calculando resultados..."
+                    : "No hay preguntas disponibles."}
+                </Typography>
+              </Grid>
+            )}
+          </Grid>{" "}
+        </Box>{" "}
+      </Box>{" "}
     </Box>
   );
 }
