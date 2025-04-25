@@ -33,7 +33,13 @@ export function GameWindow() {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [feedbackColors, setFeedbackColors] = useState([]);
   const [hasUsedFiftyFifty, setHasUsedFiftyFifty] = useState(false);
+
+  const [hasUsedAskAI, setHasUsedAskAI] = useState(false);
+  const [hasUsedHint, setHasUsedHint] = useState(false);
+  const [questionImage, setQuestionImage] = useState(null);
+
   const [questionImage, setQuestionImage] = useState(null); // URL/base64 de la imagen a mostrar
+
   const [isGameLoading, setIsGameLoading] = useState(true);
   const isInitializedRef = useRef(false);
   const chatCluesRef = useRef(null);
@@ -174,11 +180,15 @@ export function GameWindow() {
 
         setPoints(gameRef.current.getCurrentPoints());
         setStreak(gameRef.current.getCurrentStreak());
-
+        if (chatCluesRef.current?.disableChat) {
+          chatCluesRef.current.disableChat();
+        }
         setSelectedAnswer(null);
         setFeedbackColors([]);
-        setHasUsedFiftyFifty(false);
-      }, 1500);
+        console.log("[handleAnswerClick Timeout] Game state update complete.");
+
+      }, 1500); // 1.5 segundos
+
     },
     [currentQuestion, selectedAnswer]
   );
@@ -196,7 +206,11 @@ export function GameWindow() {
         apiKey: apiKey,
       });
       const hintMessage = `IA: ${response.data.hint}`;
-      chatCluesRef.current.addMessage(hintMessage);
+      if (chatCluesRef.current) chatCluesRef.current.addMessage(hintMessage);
+      gameRef.current.useHint();
+      setHasUsedHint(true);
+
+
     } catch (error) {
       let errorMessage = "IA: Error al obtener la pista.";
       if (error.response)
@@ -233,6 +247,16 @@ export function GameWindow() {
     setHasUsedFiftyFifty(true);
     gameRef.current.useFiftyFifty(); // Informar a la clase Game (para puntuación)
   };
+  
+  const handleAskAI = () => {
+    if (chatCluesRef.current) {
+      chatCluesRef.current.enableChat();
+      gameRef.current.useAskAI();
+      setHasUsedAskAI(true);
+    }
+  };
+  
+
 
   // --- Renderizado del Componente ---
 
@@ -257,7 +281,7 @@ export function GameWindow() {
     );
   }
 
-  // Renderizado Principal del Juego
+
   return (
     <Box
       sx={{
@@ -380,11 +404,92 @@ export function GameWindow() {
                 }}
               />
             </Box>
-          </Grid>
 
-          {/* Columna Derecha: Timer y Botones Acción */}
-          <Grid item xs={12} sm={6} md={3}>
-            <Box
+          </Box>
+        </Grid>
+
+        {/* Columna Derecha: Timer y Botón Hint */}
+        <Grid item xs={12} sm={6} md={3}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              height: { xs: "auto", sm: 300, md: 300 },
+              gap: 3,
+              mt: { xs: 2, sm: 0 },
+            }}
+          >
+            <QuestionTimer
+              keyProp={`timer-${
+                currentQuestion?.id || gameRef.current.questionIndex
+              }`}
+              duration={30} // 30 segundos
+              pauseTimer={selectedAnswer !== null}
+              onComplete={() => {
+                if (selectedAnswer !== null) return;
+                console.log("[onComplete] Timer finished.");
+                const correctIndex =
+                  currentQuestion?.answers.findIndex((ans) => ans.isCorrect) ??
+                  -1;
+                setSelectedAnswer(-1);
+
+                const newColors =
+                  currentQuestion?.answers.map((_, i) =>
+                    i === correctIndex ? "#a5d6a7" : "#ef9a9a"
+                  ) || [];
+                setFeedbackColors(newColors);
+
+                setTimeout(() => {
+                  console.log("[onComplete Timeout] Updating game state...");
+                  gameRef.current.answerQuestion(-1, true);
+                  const nextQ = gameRef.current.getCurrentQuestion();
+                  setCurrentQuestion(nextQ);
+                  setPoints(gameRef.current.getCurrentPoints());
+                  setStreak(gameRef.current.getCurrentStreak());
+                  setSelectedAnswer(null);
+                  setFeedbackColors([]);
+                }, 1500);
+
+                return { shouldRepeat: false };
+              }}
+            />
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleGetHint}
+              disabled={selectedAnswer !== null || hasUsedHint}
+              >
+              Pista
+            </Button>
+
+            <Button
+              variant="contained"
+              onClick={handleAskAI}
+              disabled={selectedAnswer !== null || hasUsedAskAI}
+              sx={{
+                mt: 1,
+                bgcolor: "#4db6ac",
+                color: "#fff",
+                "&:hover": {
+                  bgcolor: "#00897b",
+                },
+                "&:disabled": {
+                  bgcolor: "#888",
+                  color: "#eee",
+                },
+              }}
+            >
+              Pregunta IA
+            </Button>
+
+
+            <Button
+              variant="contained"
+              onClick={handleFiftyFifty}
+              disabled={selectedAnswer !== null || hasUsedFiftyFifty}
+
               sx={{
                 display: "flex",
                 flexDirection: "column",

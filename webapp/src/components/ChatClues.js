@@ -15,6 +15,8 @@ const ChatClues = forwardRef(({ question, answers }, ref) => {
   const apiEndpoint =
     process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
   const apiKey = process.env.LLM_API_KEY;
+  const [inputEnabled, setInputEnabled] = useState(false);
+
 
   // Scroll to bottom on new message
   useEffect(() => {
@@ -76,7 +78,15 @@ const ChatClues = forwardRef(({ question, answers }, ref) => {
     addMessage: (message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
     },
+    enableChat: () => {
+      setInputEnabled(true);
+    },
+    disableChat: () => {
+      setInputEnabled(false);
+      setInput("");
+    }
   }));
+  
 
   return (
     <Paper
@@ -135,6 +145,7 @@ const ChatClues = forwardRef(({ question, answers }, ref) => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           fullWidth
+          disabled={!inputEnabled}
           sx={{
             input: { color: "#fff" },
             "& .MuiOutlinedInput-root": {
@@ -147,6 +158,7 @@ const ChatClues = forwardRef(({ question, answers }, ref) => {
           variant="contained"
           onClick={handleSendMessage}
           size="small"
+          disabled={!inputEnabled}
           sx={{ bgcolor: "#90caf9", color: "#000", minWidth: 60 }}
         >
           Send

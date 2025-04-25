@@ -31,6 +31,11 @@ class Game {
 
     // Set para rastrear en qué preguntas se usó el 50/50 (para puntuación)
     this.usedFiftyFiftyOn = new Set();
+
+    this.usedHintOn = new Set();
+    this.usedAskAIOn = new Set();
+
+
   }
 
   // Método de inicialización modificado para aceptar questionCount
@@ -414,8 +419,14 @@ class Game {
           let basePoints = 100;
           // Reducir puntos si se usó 50/50 en esta pregunta específica
           if (this.usedFiftyFiftyOn.has(currentQ.questionText)) {
-            basePoints = 50;
-            console.log("Puntos base reducidos a 50 por usar 50/50.");
+            basePoints = basePoints - 40;
+          }
+          if (this.usedHintOn.has(currentQ.questionText)) {
+            basePoints = basePoints - 15;
+          }
+          if (this.usedAskAIOn.has(currentQ.questionText)) {
+            basePoints = basePoints - 25;
+
           }
           this.score += basePoints;
 
@@ -538,6 +549,21 @@ class Game {
     }
   }
   */
+  
+  useHint() {
+    const current = this.getCurrentQuestion();
+    if (current) {
+      this.usedHintOn.add(current.questionText);
+    }
+  }
+  
+  useAskAI() {
+    const current = this.getCurrentQuestion();
+    if (current) {
+      this.usedAskAIOn.add(current.questionText);
+    }
+  }
+  
 }
 
 export default Game;
