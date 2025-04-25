@@ -8,17 +8,15 @@ import React, {
 import { Grid, Typography, Button, TextField, Paper, Box } from "@mui/material";
 import axios from "axios";
 
-const ChatClues = forwardRef(({ question, answers }, ref) => {
+const ChatClues = forwardRef(({ actualQuestion, answers }, ref) => {
   const [messages, setMessages] = useState(["IA: How can I help you?"]);
   const [input, setInput] = useState("");
   const scrollRef = useRef(null);
   const apiEndpoint =
-    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
-  const apiKey = process.env.LLM_API_KEY;
+    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8003";
   const [inputEnabled, setInputEnabled] = useState(false);
 
-
-  // Scroll to bottom on new message
+  // Scroll automático al final del chat cada vez que cambian los mensajes
   useEffect(() => {
     scrollRef.current?.scrollTo({
       top: scrollRef.current.scrollHeight,
@@ -28,19 +26,17 @@ const ChatClues = forwardRef(({ question, answers }, ref) => {
 
   const handleSendMessage = async () => {
     if (input.trim() !== "") {
-      const userMessage = `You: ${input}`;
-      setInput("");
-
+      const userQuery = input;
+      const userMessage = `You: ${userQuery}`;
+      setInput(""); // Limpia el campo de texto
+      
+      console.log("UQuestion:", actualQuestion);
       try {
         const response = await axios.post(`${apiEndpoint}/getHintWithQuery`, {
-          question,
-          answers,
-          userQuery: input,
-          apiKey,
+          question: actualQuestion,   
+          answers: answers,     
+          userQuery: userQuery, 
         });
-        console.log("Peticion lanzada: pregunta " + question);
-        console.log("Peticion lanzada: opciones " + answers);
-        console.log("Peticion lanzada: query " + input);
 
         const hintMessage = `IA: ${response.data.hint}`;
         setMessages((prevMessages) => [
@@ -52,18 +48,10 @@ const ChatClues = forwardRef(({ question, answers }, ref) => {
         console.error("Error getting hint:", error);
         let errorMessage = "IA: Error retrieving hint. Please try again later.";
         if (error.response) {
-          console.error(
-            "Server responded with:",
-            error.response.status,
-            error.response.data
-          );
           errorMessage = `IA: Server error: ${error.response.status}`;
         } else if (error.request) {
-          console.error("No response received:", error.request);
           errorMessage =
             "IA: No response from server. Please check your connection.";
-        } else {
-          console.error("Error setting up request:", error.message);
         }
         setMessages((prevMessages) => [
           ...prevMessages,
@@ -74,6 +62,7 @@ const ChatClues = forwardRef(({ question, answers }, ref) => {
     }
   };
 
+  // Exponer funciones a componente padre
   useImperativeHandle(ref, () => ({
     addMessage: (message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
@@ -84,9 +73,8 @@ const ChatClues = forwardRef(({ question, answers }, ref) => {
     disableChat: () => {
       setInputEnabled(false);
       setInput("");
-    }
+    },
   }));
-  
 
   return (
     <Paper
