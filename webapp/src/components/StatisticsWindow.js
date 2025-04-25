@@ -21,6 +21,8 @@ import {
   Category as CategoryIcon,
   ArrowBack as BackIcon,
   Refresh as RefreshIcon,
+  ExpandMore as ExpandMoreIcon,
+  ExpandLess as ExpandLessIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import './AnimatedBackground.css';
@@ -29,6 +31,7 @@ const StatisticsWindow = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showMore, setShowMore] = useState(false); // State for Show More
   const navigate = useNavigate();
 
   // Generar partículas (estrellas y trofeos)
@@ -82,6 +85,85 @@ const StatisticsWindow = () => {
     'Fácil': '#4CAF50', // Green
     'Medio': '#FF9800', // Orange
     'Difícil': '#F44336' // Red
+  };
+
+  // Function to show all games
+  const showAllGames = () => {
+    const username = localStorage.getItem("username");
+    if (!username) {
+      setError("No user found. Please log in.");
+      return;
+    }
+
+    // Clear current games
+    setStats((prev) => ({ ...prev, bestGames: [] }));
+
+    // Call /getAllGames endpoint
+    fetch("http://localhost:8010/getAllGames", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "username": username,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.json();
+      })
+      .then((data) => {
+        console.log("All games received:", data);
+        setStats((prev) => ({ ...prev, bestGames: data }));
+        setShowMore(true);
+      })
+      .catch((err) => {
+        console.error("Error fetching all games:", err);
+        setError("Error fetching all games: " + err.message);
+        setStats((prev) => ({ ...prev, bestGames: [] }));
+      });
+  };
+
+  // Function to show best games
+  const showBestGames = () => {
+    const username = localStorage.getItem("username");
+    if (!username) {
+      setError("No user found. Please log in.");
+      return;
+    }
+
+    // Clear current games
+    setStats((prev) => ({ ...prev, bestGames: [] }));
+
+    // Call /getBestGames endpoint
+    fetch("http://localhost:8010/getBestGames", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "username": username,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.json();
+      })
+      .then((data) => {
+        console.log("Best games received:", data);
+        setStats((prev) => ({ ...prev, bestGames: data }));
+        setShowMore(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching best games:", err);
+        setError("Error fetching best games: " + err.message);
+        setStats((prev) => ({ ...prev, bestGames: [] }));
+      });
+  };
+
+  // Handle Show More/Less toggle
+  const handleShowMoreToggle = () => {
+    if (!showMore) {
+      showAllGames();
+    } else {
+      showBestGames();
+    }
   };
 
   return (
@@ -215,13 +297,38 @@ const StatisticsWindow = () => {
                 </Box>
 
                 <Box>
-                  <Typography variant="h6" gutterBottom>
-                    Best Games
-                  </Typography>
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    mb={2}
+                  >
+                    <Typography variant="h6" gutterBottom>
+                      Best Games
+                    </Typography>
+                    {stats.bestGames && stats.bestGames.length > 0 && (
+                      <Tooltip title={showMore ? "Show Less" : "Show More"}>
+                        <IconButton
+                          onClick={handleShowMoreToggle}
+                          color="primary"
+                          size="small"
+                        >
+                          {showMore ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                  </Box>
                   <Grid container spacing={2}>
                     {stats.bestGames && stats.bestGames.length > 0 ? (
                       stats.bestGames.map((game) => {
-                        console.log("Game ID:", game.id, "Difficulty:", game.difficulty, "Color:", difficultyColors[game.difficulty]);
+                        console.log(
+                          "Game ID:",
+                          game.id,
+                          "Difficulty:",
+                          game.difficulty,
+                          "Color:",
+                          difficultyColors[game.difficulty]
+                        );
                         return (
                           <Grid item xs={12} sm={6} md={4} key={game.id}>
                             <Card
@@ -235,7 +342,10 @@ const StatisticsWindow = () => {
                               <CardContent>
                                 <Box display="flex" alignItems="center" mb={1}>
                                   <TrophyIcon color="primary" sx={{ mr: 1 }} />
-                                  <Typography variant="subtitle1" fontWeight="bold">
+                                  <Typography
+                                    variant="subtitle1"
+                                    fontWeight="bold"
+                                  >
                                     Game {game.id}
                                   </Typography>
                                 </Box>
@@ -248,7 +358,11 @@ const StatisticsWindow = () => {
                                     ? new Date(game.date).toLocaleDateString()
                                     : "N/A"}
                                 </Typography>
-                                <Box display="flex" alignItems="center" mt={1}>
+                                <Box
+                                  display="flex"
+                                  alignItems="center"
+                                  mt={1}
+                                >
                                   <CategoryIcon
                                     fontSize="small"
                                     color="action"
@@ -259,7 +373,11 @@ const StatisticsWindow = () => {
                                     {game.category || "N/A"}
                                   </Typography>
                                 </Box>
-                                <Box display="flex" alignItems="center" mt={1}>
+                                <Box
+                                  display="flex"
+                                  alignItems="center"
+                                  mt={1}
+                                >
                                   <TimeIcon
                                     fontSize="small"
                                     color="action"
@@ -272,7 +390,11 @@ const StatisticsWindow = () => {
                                       : "N/A"}
                                   </Typography>
                                 </Box>
-                                <Box display="flex" alignItems="center" mt={1}>
+                                <Box
+                                  display="flex"
+                                  alignItems="center"
+                                  mt={1}
+                                >
                                   <Typography variant="body2">
                                     <strong>Difficulty:</strong>{" "}
                                   </Typography>
@@ -280,17 +402,29 @@ const StatisticsWindow = () => {
                                     label={game.difficulty || "N/A"}
                                     sx={{
                                       ml: 1,
-                                      bgcolor: difficultyColors[game.difficulty] || '#757575',
+                                      bgcolor:
+                                        difficultyColors[game.difficulty] ||
+                                        '#757575',
                                       color: 'white',
-                                      fontSize: '0.75rem'
+                                      fontSize: '0.75rem',
                                     }}
                                     size="small"
                                   />
                                 </Box>
                                 <Box mt={1}>
                                   <Chip
-                                    label={game.correctQuestions >= game.totalQuestions / 2 ? "Win" : "Loss"}
-                                    color={game.correctQuestions >= game.totalQuestions / 2 ? "success" : "error"}
+                                    label={
+                                      game.correctQuestions >=
+                                      game.totalQuestions / 2
+                                        ? "Win"
+                                        : "Loss"
+                                    }
+                                    color={
+                                      game.correctQuestions >=
+                                      game.totalQuestions / 2
+                                        ? "success"
+                                        : "error"
+                                    }
                                     size="small"
                                   />
                                 </Box>
