@@ -26,4 +26,4 @@ RUN chmod +x start.sh
 EXPOSE 8003
 
 # Run the custom startup script
-CMD ["./start.sh"]
+CMD ["/bin/bash", "./start.sh"]
