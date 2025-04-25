@@ -31,7 +31,11 @@ const historySchema = new mongoose.Schema({
     },
     totalQuestions: {
         type: Number,
-        required: false, 
+        required: true, 
+    },
+    difficulty: {
+        type: String,
+        required: true, 
     },
 });
 

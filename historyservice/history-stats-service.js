@@ -101,7 +101,7 @@ app.get("/stats", async (req, res) => {
 
 app.post("/addGame", async (req, res) => {
   try {
-    const { username, score, correctQuestions, gameId, category, timeTaken, totalQuestions } = req.body;
+    const { username, score, correctQuestions, gameId, category, timeTaken, totalQuestions, difficulty } = req.body;
 
     // Validación de campos obligatorios
     const requiredFields = {
@@ -109,7 +109,8 @@ app.post("/addGame", async (req, res) => {
       'score': { type: 'number', message: 'Score must be a number' },
       'correctQuestions': { type: 'number', message: 'CorrectQuestions must be a number' },
       'gameId': { type: 'string', message: 'GameId must be a string' },
-      'totalQuestions': { type: 'number', message: 'TotalQuestions must be a number' }
+      'totalQuestions': { type: 'number', message: 'TotalQuestions must be a number' },
+      'difficulty': { type: 'string', message: 'Difficulty must be a name' }
     };
 
     const errors = [];
@@ -128,6 +129,7 @@ app.post("/addGame", async (req, res) => {
     if (correctQuestions !== undefined && correctQuestions < 0) errors.push("CorrectQuestions cannot be negative");
     if (timeTaken !== undefined && timeTaken < 0) errors.push("TimeTaken cannot be negative");
     if (totalQuestions !== undefined && totalQuestions < 0) errors.push("totalQuestions cannot be negative");
+    if (difficulty !== undefined ) errors.push("Not a valid difficulty");
 
     if (errors.length > 0) {
       return res.status(400).json({
@@ -144,7 +146,8 @@ app.post("/addGame", async (req, res) => {
       gameId,
       category: category || null, // Si no se proporciona, se guarda como null
       timeTaken: timeTaken ? Math.floor(timeTaken) : null, // Si no se proporciona, se guarda como null
-      totalQuestions: totalQuestions || null // Si no se proporciona, se guarda como 0
+      totalQuestions: totalQuestions || null, // Si no se proporciona, se guarda como 0
+      difficulty: difficulty || "Not set" 
     });
 
     const savedGame = await newGame.save();
@@ -158,7 +161,8 @@ app.post("/addGame", async (req, res) => {
       recordedAt: savedGame.recordedAt,
       category: savedGame.category,
       timeTaken: savedGame.timeTaken,
-      totalQuestions: savedGame.totalQuestions
+      totalQuestions: savedGame.totalQuestions,
+      difficulty: savedGame.difficulty,
     };
 
     res.status(201).json({
