@@ -56,12 +56,15 @@ const GameOptions = () => {
     setSelectedCategory(category);
   };
 
+
   const handlePlayClick = () => {
     if (selectedCategory && selectedDifficulty) {
+      // Create a serializable version of selectedDifficulty without the icon
+      const { icon, ...serializableDifficulty } = selectedDifficulty;
       navigate("/game", {
         state: {
           category: selectedCategory,
-          difficulty: selectedDifficulty,
+          difficulty: serializableDifficulty,
         },
       });
     } else {
@@ -201,7 +204,7 @@ const GameOptions = () => {
             sx={{
               fontWeight: "bold",
               color: "#01579b",
-              textShadow: "1px 1px 3px rgba(0r: rgba(0, 0, 0, 0.1)",
+              textShadow: "1px 1px 3px rgba(0, 0, 0, 0.1)",
               mb: 2,
             }}
           >
