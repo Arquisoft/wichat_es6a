@@ -28,7 +28,15 @@ const historySchema = new mongoose.Schema({
     timeTaken: {
         type: Number,
         required: false, 
-    }
+    },
+    totalQuestions: {
+        type: Number,
+        required: true, 
+    },
+    difficulty: {
+        type: String,
+        required: true, 
+    },
 });
 
 module.exports = (mongoose) => {

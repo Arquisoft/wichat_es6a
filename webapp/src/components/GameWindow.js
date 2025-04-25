@@ -62,7 +62,7 @@ export function GameWindow() {
 
       try {
         // Inicializar la instancia de Game (obtiene preguntas Y imageUrls del llm-service)
-        await gameRef.current.init(category, difficulty.questionCount);
+        await gameRef.current.init(category, difficulty);
         console.log(
           `[init] Game instance initialized. ${gameRef.current.questions.length} questions loaded.`
         );

@@ -20,7 +20,89 @@ app.use(cors({
   allowedHeaders: "Content-Type,Authorization,username"
 }));
 
-// Ruta para obtener estadísticas de usuario
+// Helper function to normalize difficulty
+const normalizeDifficulty = (diff) => {
+  if (!diff) return "Not set";
+  const map = {
+    'fácil': 'Fácil',
+    'medio': 'Medio',
+    'difícil': 'Difícil',
+    'Fácil': 'Fácil',
+    'Medio': 'Medio',
+    'Difícil': 'Difícil'
+  };
+  return map[diff.toLowerCase()] || diff;
+};
+
+// Helper function to map games to response format
+const mapGamesToResponse = (games) => {
+  return games.map((game) => ({
+    id: game.gameId,
+    points: game.score,
+    date: game.recordedAt.toISOString(),
+    category: game.category || "Sin categoría",
+    timeTaken: game.timeTaken || 0,
+    totalQuestions: game.totalQuestions || 0,
+    correctQuestions: game.correctQuestions || 0,
+    difficulty: normalizeDifficulty(game.difficulty)
+  }));
+};
+
+// Endpoint to get the top 3 best games
+app.get("/getBestGames", async (req, res) => {
+  try {
+    const username = req.headers.username;
+    console.log("Username recibido en /getBestGames:", username);
+
+    if (!username) {
+      return res.status(400).json({ message: "Username is required" });
+    }
+
+    const games = await UserGame.find({ username });
+    console.log("Partidas encontradas en /getBestGames:", games.length);
+
+    if (!games || games.length === 0) {
+      return res.json([]);
+    }
+
+    const bestGames = games
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+
+    res.json(mapGamesToResponse(bestGames));
+  } catch (error) {
+    console.error("Error en /getBestGames:", error);
+    res.status(500).json({ message: "Error fetching best games", error: error.message });
+  }
+});
+
+// Endpoint to get all games
+app.get("/getAllGames", async (req, res) => {
+  try {
+    const username = req.headers.username;
+    console.log("Username recibido en /getAllGames:", username);
+
+    if (!username) {
+      return res.status(400).json({ message: "Username is required" });
+    }
+
+    const games = await UserGame.find({ username });
+    console.log("Partidas encontradas en /getAllGames:", games.length);
+
+    if (!games || games.length === 0) {
+      return res.json([]);
+    }
+
+    const allGames = games.sort((a, b) => b.score - a.score);
+
+    res.json(mapGamesToResponse(allGames));
+  } catch (error) {
+    console.error("Error en /getAllGames:", error);
+    res.status(500).json({ message: "Error fetching all games", error: error.message });
+  }
+});
+
+// Refactored /stats endpoint
 app.get("/stats", async (req, res) => {
   try {
     console.log("Servicio iniciado:");
@@ -46,18 +128,19 @@ app.get("/stats", async (req, res) => {
         bestGames: [],
         mostPlayedCategory: "Sin categoría",
         averageGameTime: 0,
+        difficulty: "Not set",
       });
     }
 
     // Calcular estadísticas existentes
-    const wins = games.filter((game) => game.score > 50).length;
+    const wins = games.filter((game) => game.correctQuestions >= game.totalQuestions / 2).length;
     const losses = games.length - wins;
     const totalPoints = games.reduce((acc, game) => acc + game.score, 0);
     const pointsPerGame = games.length > 0 ? totalPoints / games.length : 0;
 
     // Calcular la categoría más jugada
     const categoryCounts = games.reduce((acc, game) => {
-      const category = game.category || "Sin categoría"; 
+      const category = game.category || "Sin categoría";
       acc[category] = (acc[category] || 0) + 1;
       return acc;
     }, {});
@@ -66,19 +149,13 @@ app.get("/stats", async (req, res) => {
     );
 
     // Calcular el tiempo medio de partida
-    const totalTime = games.reduce((acc, game) => acc + (game.timeTaken || 0), 0); 
+    const totalTime = games.reduce((acc, game) => acc + (game.timeTaken || 0), 0);
     const averageGameTime = games.length > 0 ? totalTime / games.length : 0;
 
+    // Get best games using the same logic as /getBestGames
     const bestGames = games
       .sort((a, b) => b.score - a.score)
-      .slice(0, 3)
-      .map((game) => ({
-        id: game.gameId,
-        points: game.score,
-        date: game.recordedAt.toISOString(),
-        category: game.category || "Sin categoría",
-        timeTaken: game.timeTaken || 0, 
-      }));
+      .slice(0, 3);
 
     res.json({
       username: username,
@@ -87,7 +164,7 @@ app.get("/stats", async (req, res) => {
       pointsPerGame,
       wins,
       losses,
-      bestGames,
+      bestGames: mapGamesToResponse(bestGames),
       mostPlayedCategory,
       averageGameTime,
     });
@@ -99,14 +176,18 @@ app.get("/stats", async (req, res) => {
 
 app.post("/addGame", async (req, res) => {
   try {
-    const { username, score, correctQuestions, gameId, category, timeTaken } = req.body;
+    const { username, score, correctQuestions, gameId, category, timeTaken, totalQuestions, difficulty } = req.body;
+
+    console.log("Datos recibidos:", req.body);
 
     // Validación de campos obligatorios
     const requiredFields = {
       'username': { type: 'string', message: 'Username must be a string' },
       'score': { type: 'number', message: 'Score must be a number' },
       'correctQuestions': { type: 'number', message: 'CorrectQuestions must be a number' },
-      'gameId': { type: 'string', message: 'GameId must be a string' }
+      'gameId': { type: 'string', message: 'GameId must be a string' },
+      'totalQuestions': { type: 'number', message: 'TotalQuestions must be a number' },
+      'difficulty': { type: 'string', message: 'Difficulty must be a name' }
     };
 
     const errors = [];
@@ -124,6 +205,8 @@ app.post("/addGame", async (req, res) => {
     if (score !== undefined && score < 0) errors.push("Score cannot be negative");
     if (correctQuestions !== undefined && correctQuestions < 0) errors.push("CorrectQuestions cannot be negative");
     if (timeTaken !== undefined && timeTaken < 0) errors.push("TimeTaken cannot be negative");
+    if (totalQuestions !== undefined && totalQuestions < 0) errors.push("totalQuestions cannot be negative");
+    if (difficulty == undefined ) errors.push("Not a valid difficulty");
 
     if (errors.length > 0) {
       return res.status(400).json({
@@ -138,8 +221,10 @@ app.post("/addGame", async (req, res) => {
       score: Math.floor(score),
       correctQuestions: Math.floor(correctQuestions),
       gameId,
-      category: category || null, // Si no se proporciona, se guarda como null
-      timeTaken: timeTaken ? Math.floor(timeTaken) : null // Si no se proporciona, se guarda como null
+      category: category || null,
+      timeTaken: timeTaken ? Math.floor(timeTaken) : null,
+      totalQuestions: totalQuestions || null,
+      difficulty: normalizeDifficulty(difficulty)
     });
 
     const savedGame = await newGame.save();
@@ -152,7 +237,9 @@ app.post("/addGame", async (req, res) => {
       gameId: savedGame.gameId,
       recordedAt: savedGame.recordedAt,
       category: savedGame.category,
-      timeTaken: savedGame.timeTaken
+      timeTaken: savedGame.timeTaken,
+      totalQuestions: savedGame.totalQuestions,
+      difficulty: savedGame.difficulty,
     };
 
     res.status(201).json({
@@ -162,9 +249,9 @@ app.post("/addGame", async (req, res) => {
 
   } catch (error) {
     console.error("Error in /addGame:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       message: "Internal server error",
-      error: error.message 
+      error: error.message
     });
   }
 });
