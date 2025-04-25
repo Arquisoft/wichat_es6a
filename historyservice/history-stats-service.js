@@ -46,6 +46,7 @@ app.get("/stats", async (req, res) => {
         bestGames: [],
         mostPlayedCategory: "Sin categoría",
         averageGameTime: 0,
+        difficulty: "Not set",
       });
     }
 
@@ -80,6 +81,7 @@ app.get("/stats", async (req, res) => {
         timeTaken: game.timeTaken || 0, 
         totalQuestions: game.totalQuestions || 0,
         correctQuestions: game.correctQuestions || 0,
+        difficulty: game.difficulty,
       }));
 
     res.json({
