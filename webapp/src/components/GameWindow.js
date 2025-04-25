@@ -281,7 +281,9 @@ export function GameWindow() {
 
 
   return (
+    
     <Box
+
       sx={{
         bgcolor: "#121212",
         minHeight: "100vh",
@@ -291,6 +293,7 @@ export function GameWindow() {
         alignItems: "center",
       }}
     >
+      <h1 text={currentQuestion.questionText}></h1>
       <Box sx={{ width: "100%", maxWidth: 1200 }}>
         {/* Cabecera: Número de Pregunta */}
         <Typography
@@ -331,7 +334,10 @@ export function GameWindow() {
                 minHeight: { sm: 250, md: 300 },
               }}
             >
-              <ChatClues ref={chatCluesRef} />
+              
+              <ChatClues ref={chatCluesRef}   
+                actualQuestion={currentQuestion.questionText}
+                answers={currentQuestion.answers}/>
             </Box>
           </Grid>
   
