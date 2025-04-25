@@ -327,6 +327,7 @@ class Game {
           category: this.category?.name || "General",
           timeTaken: this.totalTimeTaken,
           maxStreak: this.maxConsecutiveCorrectAnswers,
+          totalQuestions: this.questions.length,
         }),
       });
 
