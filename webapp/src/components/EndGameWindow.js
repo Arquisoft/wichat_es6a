@@ -36,12 +36,21 @@ export default function FullScreenScoreWindow() {
     totalQuestions = 0,
     streak = 0,
     timeTaken = 0,
-    category = "General"
+    category = "General",
+    difficulty = "Medio"
   } = location.state || {};
 
   const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
   const averageTimePerQuestion = totalQuestions > 0 ? (timeTaken / totalQuestions).toFixed(1) : 0;
-  const win = correctAnswers >=  totalQuestions/2;
+  const win = correctAnswers >= totalQuestions/2;
+
+  // Define difficulty colors
+  const difficultyColors = {
+    Fácil: '#4CAF50', // Green
+    Medio: '#FF9800', // Orange
+    Difícil: '#F44336' // Red
+  };
+
   return (
     <Box sx={{
       minHeight: '100vh',
@@ -68,18 +77,28 @@ export default function FullScreenScoreWindow() {
         <Typography variant="h3" fontWeight="bold" gutterBottom>
           ¡Partida Finalizada!
         </Typography>
-        <Chip
-          label={`Categoría: ${category}`}
-          color="secondary"
-          icon={<Category />}
-          sx={{ 
-            mb: 2,
-            bgcolor: 'rgba(255,255,255,0.15)',
-            color: 'white',
-            fontSize: '1rem',
-            py: 1.5
-          }}
-        />
+        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 2 }}>
+          <Chip
+            label={`Categoría: ${category}`}
+            color="secondary"
+            icon={<Category />}
+            sx={{ 
+              bgcolor: 'rgba(255,255,255,0.15)',
+              color: 'white',
+              fontSize: '1rem',
+              py: 1.5
+            }}
+          />
+          <Chip
+            label={`Dificultad: ${difficulty}`}
+            sx={{ 
+              bgcolor: difficultyColors[difficulty] || 'rgba(255,255,255,0.15)',
+              color: 'white',
+              fontSize: '1rem',
+              py: 1.5
+            }}
+          />
+        </Box>
       </Box>
 
       {/* Contenido principal */}
@@ -122,21 +141,21 @@ export default function FullScreenScoreWindow() {
               border: '1px solid rgba(255,255,255,0.2)'
             }}>
               <Typography
-  variant="h5"
-  gutterBottom
-  sx={{
-    display: 'flex',
-    alignItems: 'center',
-    mb: 3,
-  }}
->
-{win ? (
-  <CheckCircle color="success" sx={{ mr: 2, fontSize: '2rem' }} />
-) : (
-  <Cancel color="error" sx={{ mr: 2, fontSize: '2rem' }} />
-)}
-  Rendimiento
-</Typography>
+                variant="h5"
+                gutterBottom
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  mb: 3,
+                }}
+              >
+                {win ? (
+                  <CheckCircle color="success" sx={{ mr: 2, fontSize: '2rem' }} />
+                ) : (
+                  <Cancel color="error" sx={{ mr: 2, fontSize: '2rem' }} />
+                )}
+                Rendimiento
+              </Typography>
 
               <Box mb={4}>
                 <Box display="flex" justifyContent="space-between" mb={1}>

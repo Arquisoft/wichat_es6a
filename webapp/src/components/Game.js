@@ -326,8 +326,8 @@ class Game {
             .toString(36)
             .substr(2, 3)}`,
           username: username,
-          score: this.score,
-          correctQuestions: this.correctAnswers,
+          score: this.score || 0,
+          correctQuestions: this.correctAnswers || 0,
           category: this.category?.name || "General",
           timeTaken: this.totalTimeTaken,
           maxStreak: this.maxConsecutiveCorrectAnswers,
@@ -355,6 +355,7 @@ class Game {
           streak: this.maxConsecutiveCorrectAnswers || 0,
           timeTaken: this.totalTimeTaken,
           category: this.category?.name || "General",
+          difficulty: this.difficulty.name,
         },
       });
     } else {
