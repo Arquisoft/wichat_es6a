@@ -251,7 +251,7 @@ export default function FullScreenScoreWindow() {
             variant="contained"
             color="primary"
             startIcon={<Replay />}
-            onClick={() => navigate("/game")}
+            onClick={() => navigate("/game-options")}
             sx={{
               px: 4,
               py: 1.5,
