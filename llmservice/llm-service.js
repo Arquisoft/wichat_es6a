@@ -127,7 +127,6 @@ async function sendQuestionToLLM(question, apiKey, moderation) {
 
     const effectiveApiKey = apiKey || process.env.LLM_API_KEY;
     // Verificar API key solo si es necesaria para el proveedor
-    // Ajusta la condición si Empathy no requiere API Key en tu caso
     if (!effectiveApiKey && modelProvider !== "empathy") {
       console.error(
         `[sendQuestionToLLM] API Key missing for provider ${modelProvider}`
@@ -615,7 +614,7 @@ app.post("/getHintWithQuery", async (req, res) => {
   console.log("[/getHintWithQuery] Received request.");
   try {
     validateRequiredFields(req, ["question", "answers", "userQuery"]);
-    const { question, answers, userQuery, apiKey } = req.body;
+    const { question, answers, userQuery} = req.body;
     const forbiddenPatterns = [
       /respuesta/i,
       /answer/i,
@@ -632,7 +631,7 @@ app.post("/getHintWithQuery", async (req, res) => {
     }
     const answerTexts = answers.map((a) => a.text).join("; ");
     const prompt = `Eres un asistente de chat para un juego de quiz. No des la respuesta correcta. La pregunta actual es: "${question}". Las opciones son: ${answerTexts}. El usuario pregunta: "${userQuery}". Responde a la consulta del usuario de forma útil pero SIN REVELAR LA RESPUESTA CORRECTA. Si pregunta algo no relacionado, indica que te centres en la pregunta. Genera SOLO la respuesta del asistente (1-2 frases).`;
-    const hintResponse = await sendQuestionToLLM(prompt, apiKey, moderation);
+    const hintResponse = await sendQuestionToLLM(prompt, process.env.LLM_API_KEY, moderation);
     if (
       typeof hintResponse === "string" &&
       hintResponse.startsWith("LLM_ERROR:")
