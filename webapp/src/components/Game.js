@@ -7,9 +7,10 @@ class Answer {
 }
 
 class Question {
-  constructor(questionText, answers) {
+  constructor(questionText, answers, imageUrl) {
     this.questionText = questionText;
     this.answers = answers; // Debe ser un array de instancias de Answer
+    this.imageUrl = imageUrl;
   }
 }
 
@@ -63,7 +64,7 @@ class Game {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           category: categoryName,
-          questionCount: questionCount, // <--- Usar el questionCount recibido
+          questionCount: questionCount,
         }),
       });
 
@@ -130,7 +131,8 @@ class Game {
             const shuffledAnswers = validAnswers.sort(
               () => Math.random() - 0.5
             );
-            return new Question(qData.question, shuffledAnswers);
+            const imageUrl = qData.imageUrl || null;
+            return new Question(qData.question, shuffledAnswers, imageUrl);
           })
           .filter((q) => q !== null); // Filtrar preguntas nulas (inválidas o saltadas)
       } else {
@@ -201,56 +203,80 @@ class Game {
   */
 
   // Método de fallback
-  async TestingInit(questionCount = 4) {
+  TestingInit(questionCount = 4) {
     console.log(
       `Modo de prueba activado: Cargando ${questionCount} preguntas predefinidas`
     );
     const allTestQuestions = [
-      new Question("¿Cuál es la capital de Francia?", [
-        new Answer("Madrid", false),
-        new Answer("París", true),
-        new Answer("Berlín", false),
-        new Answer("Lisboa", false),
-      ]),
-      new Question("¿Quién escribió 'Don Quijote de la Mancha'?", [
-        new Answer("Miguel de Cervantes", true),
-        new Answer("Gabriel García Márquez", false),
-        new Answer("William Shakespeare", false),
-        new Answer("Federico García Lorca", false),
-      ]),
-      new Question("¿En qué año llegó el ser humano a la Luna?", [
-        new Answer("1969", true),
-        new Answer("1975", false),
-        new Answer("1965", false),
-        new Answer("1980", false),
-      ]),
-      new Question("¿Cuál es el océano más grande del mundo?", [
-        new Answer("Atlántico", false),
-        new Answer("Índico", false),
-        new Answer("Pacífico", true),
-        new Answer("Ártico", false),
-      ]),
-      new Question("¿Cuál es el río más largo del mundo?", [
-        new Answer("Nilo", false),
-        new Answer("Amazonas", true),
-        new Answer("Misisipi", false),
-        new Answer("Yangtsé", false),
-      ]),
-      new Question("¿Cuántos lados tiene un hexágono?", [
-        new Answer("5", false),
-        new Answer("7", false),
-        new Answer("6", true),
-        new Answer("8", false),
-      ]),
+      new Question(
+        "¿Cuál es la capital de Francia?",
+        [
+          new Answer("Madrid", false),
+          new Answer("París", true),
+          new Answer("Berlín", false),
+          new Answer("Lisboa", false),
+        ],
+        null
+      ),
+      new Question(
+        "¿Quién escribió 'Don Quijote de la Mancha'?",
+        [
+          new Answer("Miguel de Cervantes", true),
+          new Answer("Gabriel García Márquez", false),
+          new Answer("William Shakespeare", false),
+          new Answer("Federico García Lorca", false),
+        ],
+        null
+      ),
+      new Question(
+        "¿En qué año llegó el ser humano a la Luna?",
+        [
+          new Answer("1969", true),
+          new Answer("1975", false),
+          new Answer("1965", false),
+          new Answer("1980", false),
+        ],
+        null
+      ),
+      new Question(
+        "¿Cuál es el océano más grande del mundo?",
+        [
+          new Answer("Atlántico", false),
+          new Answer("Índico", false),
+          new Answer("Pacífico", true),
+          new Answer("Ártico", false),
+        ],
+        null
+      ),
+      new Question(
+        "¿Cuál es el río más largo del mundo?",
+        [
+          new Answer("Nilo", false),
+          new Answer("Amazonas", true),
+          new Answer("Misisipi", false),
+          new Answer("Yangtsé", false),
+        ],
+        null
+      ),
+      new Question(
+        "¿Cuántos lados tiene un hexágono?",
+        [
+          new Answer("5", false),
+          new Answer("7", false),
+          new Answer("6", true),
+          new Answer("8", false),
+        ],
+        null
+      ),
     ];
 
     // Barajar y seleccionar el número correcto de preguntas de prueba
     this.questions = allTestQuestions
       .sort(() => Math.random() - 0.5)
-      .slice(0, questionCount); // <--- Aplicar questionCount aquí
+      .slice(0, questionCount);
 
     console.log("Preguntas de prueba cargadas:", this.questions);
-    // Asegurar que startTime se registre si no se hizo antes (ej. si se llama directamente a TestingInit)
+    // Asegurar que startTime se registre si no se hizo antes
     if (!this.startTime) {
       this.startTime = Date.now();
     }
@@ -293,9 +319,9 @@ class Game {
           correctQuestions: this.correctAnswers,
           // Usar this.questions.length que ahora es dinámico según dificultad
           totalQuestions: this.questions.length || 0,
-          category: this.category?.name || "General", // Usar nombre de categoría o 'General'
+          category: this.category?.name || "General",
           timeTaken: this.totalTimeTaken,
-          maxStreak: this.maxConsecutiveCorrectAnswers, // Podrías añadir la racha máxima si quieres guardarla
+          maxStreak: this.maxConsecutiveCorrectAnswers,
         }),
       });
 
@@ -306,7 +332,6 @@ class Game {
       console.log("Game saved successfully");
     } catch (error) {
       console.error("Error saving game:", error);
-      // Considerar si mostrar un mensaje al usuario aquí
     }
 
     // --- Navegar a la pantalla de fin de juego ---
@@ -315,7 +340,7 @@ class Game {
         state: {
           score: this.score || 0,
           correctAnswers: this.correctAnswers || 0,
-          totalQuestions: this.questions.length || 0, // Ya es dinámico
+          totalQuestions: this.questions.length || 0,
           streak: this.maxConsecutiveCorrectAnswers || 0,
           timeTaken: this.totalTimeTaken,
           category: this.category?.name || "General",
@@ -339,10 +364,15 @@ class Game {
     return this.consecutiveCorrectAnswers;
   }
 
+  getCurrentQuestionImageUrl() {
+    if (this.questionIndex < this.questions.length) {
+      return this.questions[this.questionIndex].imageUrl;
+    }
+    return null;
+  }
   // Devuelve el texto de una respuesta específica por índice
   getCurrentQuestionAnswer(index) {
     if (this.questionIndex < this.questions.length) {
-      // Añadir comprobación por si el índice es inválido
       if (
         index >= 0 &&
         index < this.questions[this.questionIndex].answers.length
@@ -350,7 +380,7 @@ class Game {
         return this.questions[this.questionIndex].answers[index]?.text;
       }
     }
-    return undefined; // O un string vacío "" si prefieres
+    return undefined;
   }
 
   // Devuelve la puntuación actual
@@ -363,8 +393,7 @@ class Game {
     // Verificar si el juego ya terminó o la pregunta no existe
     if (this.questionIndex >= this.questions.length) {
       console.warn("answerQuestion called after game should have ended.");
-      // Podría ser útil llamar a endGame() aquí por si acaso, aunque no debería ser necesario
-      // if (!this.endTime) this.endGame();
+
       return; // No procesar más
     }
 

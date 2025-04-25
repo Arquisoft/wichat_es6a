@@ -1,217 +1,259 @@
 // wikidataservice/wikidataCacheService.js
-import WikidataEntry from './models/wikidata-entry-model.js';
-import WikiQueries from './wikidataQueries.js';
+import WikidataEntry from "./models/wikidata-entry-model.js";
+import WikiQueries from "./wikidataQueries.js";
 
 class WikidataCacheService {
   constructor() {
-    this.minEntriesPerCategory = 500; // Mantener al menos este número de entradas por categoría
+    this.minEntriesPerCategory = 500;
     this.categories = [
-      'paises',
-      'monumentos',
-      'elementos',
-      'peliculas',
-      'canciones',
-      'formula1',
-      'pinturas'
+      "paises",
+      "monumentos",
+      "elementos",
+      "peliculas",
+      "canciones",
+      "formula1",
+      "pinturas",
     ];
   }
 
-  /**
-   * Obtiene entradas para una categoría específica desde la base de datos
-   * @param {String} category - Categoría de las entradas
-   * @param {Number} count - Número de entradas a obtener
-   * @returns {Array} - Array de entradas
-   */
   async getEntriesForCategory(category, count = 1) {
     try {
-      // Obtener el conteo total de entradas para esa categoría
       const totalEntries = await WikidataEntry.countDocuments({ category });
-      
-      // Si hay suficientes entradas, obtener una muestra aleatoria
+
       if (totalEntries >= count) {
-        // Usando la agregación con $sample para obtener entradas aleatorias
         const randomEntries = await WikidataEntry.aggregate([
           { $match: { category } },
-          { $sample: { size: count } }
+          { $sample: { size: count } },
         ]);
-        
         return randomEntries;
       }
-      
-      // Si no hay suficientes entradas, obtener las que existen
+
+      // If not enough, fetch existing and try to add more needed ones
       const existingEntries = await WikidataEntry.find({ category });
-      
-      // Calcular cuántas entradas adicionales necesitamos
       const neededEntries = count - existingEntries.length;
-      
-      // Obtener nuevas entradas y guardarlas
-      const newEntries = await this.fetchAndSaveEntries(category, neededEntries);
-      
-      // Combinar las entradas existentes con las nuevas
-      return [...existingEntries, ...newEntries];
+
+      if (neededEntries > 0) {
+        console.log(
+          `Trying to fetch ${neededEntries} new entries with images for ${category} as cache is low.`
+        );
+        const newEntries = await this.fetchAndSaveEntries(
+          category,
+          neededEntries
+        );
+        return [...existingEntries, ...newEntries].slice(0, count); // Combine and ensure max count
+      } else {
+        return existingEntries; // Return existing if somehow count was met or less than 0 needed
+      }
     } catch (error) {
-      console.error(`Error al obtener entradas para la categoría ${category}:`, error);
+      console.error(
+        `Error al obtener entradas para la categoría ${category}:`,
+        error
+      );
       return [];
     }
   }
 
-  /**
-   * Obtiene una entrada aleatoria de la base de datos
-   * @returns {Object} - Entrada aleatoria
-   */
   async getRandomEntry() {
     try {
-      // Obtener una categoría aleatoria
-      const randomCategory = this.categories[Math.floor(Math.random() * this.categories.length)];
-      
-      // Contar entradas en esa categoría
-      const count = await WikidataEntry.countDocuments({ category: randomCategory });
-      console.log(`🔍 Categoría: ${randomCategory}, Entradas: ${count}`);
-      
+      const randomCategory =
+        this.categories[Math.floor(Math.random() * this.categories.length)];
+
+      const count = await WikidataEntry.countDocuments({
+        category: randomCategory,
+      });
+
       if (count === 0) {
-        // No hay entradas para esta categoría, obtener nuevas
-        await this.fetchAndSaveEntries(randomCategory, this.minEntriesPerCategory);
-        return this.getRandomEntry();
+        console.log(
+          `No entries found for ${randomCategory}, attempting to fetch...`
+        );
+        // Attempt to fetch minimum entries if cache is empty for this category
+        await this.fetchAndSaveEntries(
+          randomCategory,
+          this.minEntriesPerCategory // Try fetching enough to meet minimum requirement
+        );
+        // Try getting a random entry again after attempting fetch
+        const newCount = await WikidataEntry.countDocuments({
+          category: randomCategory,
+        });
+        if (newCount === 0) {
+          console.error(
+            `Still no entries for ${randomCategory} after fetch attempt.`
+          );
+          return null; // Give up if still none
+        }
+        const random = Math.floor(Math.random() * newCount);
+        const entry = await WikidataEntry.findOne({
+          category: randomCategory,
+        }).skip(random);
+        return entry;
+      } else {
+        // Get a random entry from existing ones
+        const random = Math.floor(Math.random() * count);
+        const entry = await WikidataEntry.findOne({
+          category: randomCategory,
+        }).skip(random);
+        return entry;
       }
-      
-      // Obtener una entrada aleatoria
-      const random = Math.floor(Math.random() * count);
-      const entry = await WikidataEntry.findOne({ category: randomCategory }).skip(random);
-      console.log('Entrada aleatoria:', entry);
-      
-      return entry;
     } catch (error) {
-      console.error('Error al obtener una entrada aleatoria:', error);
+      console.error("Error al obtener una entrada aleatoria:", error);
       return null;
     }
   }
 
-  /**
-   * Obtiene y guarda nuevas entradas de WikiData
-   * @param {String} category - Categoría de las entradas
-   * @param {Number} count - Número de entradas a obtener
-   * @returns {Array} - Array de nuevas entradas
-   */
   async fetchAndSaveEntries(category, count = 10) {
     try {
-      // Obtener la función de consulta adecuada según la categoría
       const queryFunction = this.getCategoryQueryFunction(category);
       if (!queryFunction) {
         throw new Error(`Categoría no válida: ${category}`);
       }
-      
-      // Obtener datos de WikiData
+
+      // Fetch raw data (potentially more than 'count' to find enough with images)
+      // Consider increasing LIMIT in WikiQueries if needed
       const wikidataEntries = await queryFunction();
-      
-      // Guardar entradas en la base de datos
+      console.log(
+        `🔍 Obtenidas ${
+          wikidataEntries?.length || 0
+        } entradas crudas de WikiQueries para ${category}. Buscando ${count} con imagen...`
+      );
+
       const savedEntries = [];
-      
-      for (let i = 0; i < Math.min(count, wikidataEntries.length); i++) {
-        const wikidataEntry = wikidataEntries[i];
-        
-        // Crear un objeto con los campos relevantes según la categoría
-        const entryData = {
-          category,
-          rawData: wikidataEntry // Guardar los datos originales para referencia
-        };
-        
-        // Añadir campos específicos de la categoría
-        switch (category) {
-          case 'paises':
-            entryData.countryLabel = wikidataEntry.countryLabel;
-            entryData.capitalLabel = wikidataEntry.capitalLabel;
-            break;
-          case 'monumentos':
-            entryData.monumentLabel = wikidataEntry.monumentLabel;
-            entryData.countryLabel = wikidataEntry.countryLabel;
-            break;
-          case 'elementos':
-            entryData.elementLabel = wikidataEntry.elementLabel;
-            entryData.symbol = wikidataEntry.symbol;
-            break;
-          case 'peliculas':
-            entryData.peliculaLabel = wikidataEntry.peliculaLabel;
-            entryData.directorLabel = wikidataEntry.directorLabel;
-            break;
-          case 'canciones':
-            entryData.songLabel = wikidataEntry.songLabel;
-            entryData.artistLabel = wikidataEntry.artistLabel;
-            break;
-          case 'formula1':
-            entryData.year = wikidataEntry.year;
-            entryData.winnerLabel = wikidataEntry.winnerLabel;
-            break;
-          case 'pinturas':
-            entryData.paintingLabel = wikidataEntry.paintingLabel;
-            entryData.artistLabel = wikidataEntry.artistLabel;
-            break;
-        }
-        
-        // Guardar la entrada en la base de datos
-        const newEntry = new WikidataEntry(entryData);
-        await newEntry.save();
-        savedEntries.push(newEntry);
+      if (!wikidataEntries || wikidataEntries.length === 0) {
+        console.warn(
+          `No se obtuvieron entradas de WikiQueries para ${category}.`
+        );
+        return savedEntries;
       }
-      
+
+      let savedCount = 0;
+      // Iterate through fetched entries until we save 'count' entries WITH images, or run out of source entries
+      for (let i = 0; i < wikidataEntries.length && savedCount < count; i++) {
+        const wikidataEntry = wikidataEntries[i];
+
+        // --- GUARDAR SOLO SI TIENE IMAGEN ---
+        if (wikidataEntry && wikidataEntry.image) {
+          const entryData = {
+            category,
+            rawData: wikidataEntry,
+            imageUrl: wikidataEntry.image, // Assign the valid URL
+          };
+
+          // Add specific fields (optional, keeps structure consistent if needed)
+          switch (category) {
+            case "paises":
+              entryData.countryLabel = wikidataEntry.countryLabel;
+              entryData.capitalLabel = wikidataEntry.capitalLabel;
+              break;
+            case "monumentos":
+              entryData.monumentLabel = wikidataEntry.monumentLabel;
+              entryData.countryLabel = wikidataEntry.countryLabel;
+              break;
+            case "elementos":
+              entryData.elementLabel = wikidataEntry.elementLabel;
+              entryData.symbol = wikidataEntry.symbol;
+              break;
+            case "peliculas":
+              entryData.peliculaLabel = wikidataEntry.peliculaLabel;
+              entryData.directorLabel = wikidataEntry.directorLabel;
+              break;
+            case "canciones":
+              entryData.songLabel = wikidataEntry.songLabel;
+              entryData.artistLabel = wikidataEntry.artistLabel;
+              break;
+            case "formula1":
+              entryData.year = wikidataEntry.year;
+              entryData.winnerLabel = wikidataEntry.winnerLabel;
+              break;
+            case "pinturas":
+              entryData.paintingLabel = wikidataEntry.paintingLabel;
+              entryData.artistLabel = wikidataEntry.artistLabel;
+              break;
+          }
+
+          try {
+            // Save entry ONLY if it has an image
+            const newEntry = new WikidataEntry(entryData);
+            await newEntry.save();
+            savedEntries.push(newEntry);
+            savedCount++; // Increment only when an entry with image is saved
+          } catch (saveError) {
+            console.error(
+              `Error guardando entrada (${category}) con imagen: ${saveError.message}`,
+              entryData
+            );
+            // Continue to next entry if save fails
+          }
+        }
+      }
+
+      console.log(
+        `💾 Guardadas ${savedEntries.length} nuevas entradas CON IMAGEN en caché para ${category}.`
+      );
       return savedEntries;
     } catch (error) {
-      console.error(`Error al obtener y guardar entradas para ${category}:`, error);
+      console.error(
+        `Error al obtener y guardar entradas para ${category}:`,
+        error
+      );
       return [];
     }
   }
 
-  /**
-   * Obtiene la función de consulta adecuada según la categoría
-   * @param {String} category - Nombre de la categoría
-   * @returns {Function} - Función de consulta de WikiData
-   */
   getCategoryQueryFunction(category) {
     const queryMap = {
-      'paises': WikiQueries.obtenerPaisYCapital,
-      'monumentos': WikiQueries.obtenerMonumentoYPais,
-      'elementos': WikiQueries.obtenerSimboloQuimico,
-      'peliculas': WikiQueries.obtenerPeliculaYDirector,
-      'canciones': WikiQueries.obtenerCancionYArtista,
-      'formula1': WikiQueries.obtenerAñoYGanadorF1,
-      'pinturas': WikiQueries.obtenerPintorYObras
+      paises: WikiQueries.obtenerPaisYCapital,
+      monumentos: WikiQueries.obtenerMonumentoYPais,
+      elementos: WikiQueries.obtenerSimboloQuimico,
+      peliculas: WikiQueries.obtenerPeliculaYDirector,
+      canciones: WikiQueries.obtenerCancionYArtista,
+      formula1: WikiQueries.obtenerAñoYGanadorF1,
+      pinturas: WikiQueries.obtenerPintorYObras,
     };
-    
     return queryMap[category];
   }
 
-  /**
-   * Verificar si se han inicializado las entradas para todas las categorías
-   * @returns {Boolean} - True si todas las categorías tienen entradas
-   */
   async isDatabaseInitialized() {
     for (const category of this.categories) {
+      // Check if there's at least a reasonable number, not necessarily the full amount
+      // This prevents constant re-fetching if only a few items lack images
       const count = await WikidataEntry.countDocuments({ category });
-      if (count < this.minEntriesPerCategory) {
+      if (count < Math.min(50, this.minEntriesPerCategory)) {
+        // Check for at least 50 (or minEntries, whichever is smaller)
+        console.log(
+          `Category ${category} has only ${count} entries (needs ~50). Initializing.`
+        );
         return false;
       }
     }
     return true;
   }
 
-  /**
-   * Inicializa la base de datos con entradas para todas las categorías
-   */
   async initializeDatabase() {
-    console.log('🔄 Inicializando base de datos de WikiData...');
-    
+    console.log(
+      "🔄 Inicializando base de datos de WikiData (asegurando entradas con imagen)..."
+    );
+
     for (const category of this.categories) {
       const count = await WikidataEntry.countDocuments({ category });
+      // Aim to reach minEntriesPerCategory, fetch in batches if needed
       const neededEntries = Math.max(0, this.minEntriesPerCategory - count);
-      
+
       if (neededEntries > 0) {
-        console.log(`📚 Obteniendo ${neededEntries} entradas para la categoría: ${category}...`);
+        console.log(
+          `📚 Obteniendo hasta ${neededEntries} entradas NUEVAS CON IMAGEN para la categoría: ${category}...`
+        );
+        // Fetch potentially more than needed raw to find enough with images
+        // Let's fetch a bit more than strictly needed to increase chances
         await this.fetchAndSaveEntries(category, neededEntries);
       } else {
-        console.log(`✅ La categoría ${category} ya tiene suficientes entradas.`);
+        console.log(
+          `✅ La categoría ${category} ya tiene suficientes entradas.`
+        );
       }
     }
-    
-    console.log('✅ Inicialización de la base de datos completada!');
+
+    console.log(
+      "✅ Inicialización/Verificación de la base de datos completada!"
+    );
   }
 }
 
