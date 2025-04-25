@@ -38,8 +38,6 @@ export function GameWindow() {
   const [hasUsedHint, setHasUsedHint] = useState(false);
   const [questionImage, setQuestionImage] = useState(null);
 
-  const [questionImage, setQuestionImage] = useState(null); // URL/base64 de la imagen a mostrar
-
   const [isGameLoading, setIsGameLoading] = useState(true);
   const isInitializedRef = useRef(false);
   const chatCluesRef = useRef(null);
@@ -336,25 +334,24 @@ export function GameWindow() {
               <ChatClues ref={chatCluesRef} />
             </Box>
           </Grid>
-
+  
           {/* Columna Central: Imagen */}
           <Grid item xs={12} sm={6} md={4}>
             <Box
               sx={{
                 width: "100%",
                 height: 0,
-                paddingBottom: { xs: "75%", sm: "100%" }, // Mantiene el aspect ratio
-                position: "relative", // Necesario para posicionar spinner e imagen absoluta
+                paddingBottom: { xs: "75%", sm: "100%" },
+                position: "relative",
                 borderRadius: 4,
                 boxShadow: 6,
-                overflow: "hidden", // Para bordes redondeados
-                bgcolor: "#333", // Fondo mientras carga o si no hay imagen
+                overflow: "hidden",
+                bgcolor: "#333",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
               }}
             >
-              {/* ---Indicador de Carga (Spinner) --- */}
               {isImageActuallyLoading && questionImage && (
                 <CircularProgress
                   size={40}
@@ -369,16 +366,11 @@ export function GameWindow() {
                   }}
                 />
               )}
-
               <Box
                 component="img"
-                key={
-                  questionImage || `default-${currentQuestion?.questionText}`
-                }
-                src={questionImage || "/WichatAmigos.png"} // Usa la imagen del estado o fallback
-                alt={`Imagen para: ${
-                  currentQuestion?.questionText || "Cargando..."
-                }`}
+                key={questionImage || `default-${currentQuestion?.questionText}`}
+                src={questionImage || "/WichatAmigos.png"}
+                alt={`Imagen para: ${currentQuestion?.questionText || "Cargando..."}`}
                 sx={{
                   position: "absolute",
                   top: 0,
@@ -387,161 +379,81 @@ export function GameWindow() {
                   height: "100%",
                   objectFit: "cover",
                   display: "block",
-                  opacity: isImageActuallyLoading ? 0 : 1, // Ocultar img mientras carga
-                  transition: "opacity 0.3s ease-in-out", // Transición suave al aparecer
-                  // --------------------------------------
+                  opacity: isImageActuallyLoading ? 0 : 1,
+                  transition: "opacity 0.3s ease-in-out",
                 }}
-                // --- Manejadores onLoad/onError ---
-                // Se ejecutan cuando el navegador termina de cargar o falla al cargar la imagen del src
-                onLoad={() => setIsImageActuallyLoading(false)} // Imagen cargada -> ocultar spinner
+                onLoad={() => setIsImageActuallyLoading(false)}
                 onError={(e) => {
-                  setIsImageActuallyLoading(false); // Error al cargar -> ocultar spinner
-                  console.warn(
-                    `Error loading image: ${e.target.src}. Using default.`
-                  );
-                  e.target.onerror = null; // Prevenir bucle infinito si el fallback también falla
-                  e.target.src = "/WichatAmigos.png"; // Forzar imagen por defecto
+                  setIsImageActuallyLoading(false);
+                  console.warn(`Error loading image: ${e.target.src}. Using default.`);
+                  e.target.onerror = null;
+                  e.target.src = "/WichatAmigos.png";
                 }}
               />
             </Box>
-
-          </Box>
-        </Grid>
-
-        {/* Columna Derecha: Timer y Botón Hint */}
-        <Grid item xs={12} sm={6} md={3}>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              height: { xs: "auto", sm: 300, md: 300 },
-              gap: 3,
-              mt: { xs: 2, sm: 0 },
-            }}
-          >
-            <QuestionTimer
-              keyProp={`timer-${
-                currentQuestion?.id || gameRef.current.questionIndex
-              }`}
-              duration={30} // 30 segundos
-              pauseTimer={selectedAnswer !== null}
-              onComplete={() => {
-                if (selectedAnswer !== null) return;
-                console.log("[onComplete] Timer finished.");
-                const correctIndex =
-                  currentQuestion?.answers.findIndex((ans) => ans.isCorrect) ??
-                  -1;
-                setSelectedAnswer(-1);
-
-                const newColors =
-                  currentQuestion?.answers.map((_, i) =>
-                    i === correctIndex ? "#a5d6a7" : "#ef9a9a"
-                  ) || [];
-                setFeedbackColors(newColors);
-
-                setTimeout(() => {
-                  console.log("[onComplete Timeout] Updating game state...");
-                  gameRef.current.answerQuestion(-1, true);
-                  const nextQ = gameRef.current.getCurrentQuestion();
-                  setCurrentQuestion(nextQ);
-                  setPoints(gameRef.current.getCurrentPoints());
-                  setStreak(gameRef.current.getCurrentStreak());
-                  setSelectedAnswer(null);
-                  setFeedbackColors([]);
-                }, 1500);
-
-                return { shouldRepeat: false };
-              }}
-            />
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={handleGetHint}
-              disabled={selectedAnswer !== null || hasUsedHint}
-              >
-              Pista
-            </Button>
-
-            <Button
-              variant="contained"
-              onClick={handleAskAI}
-              disabled={selectedAnswer !== null || hasUsedAskAI}
-              sx={{
-                mt: 1,
-                bgcolor: "#4db6ac",
-                color: "#fff",
-                "&:hover": {
-                  bgcolor: "#00897b",
-                },
-                "&:disabled": {
-                  bgcolor: "#888",
-                  color: "#eee",
-                },
-              }}
-            >
-              Pregunta IA
-            </Button>
-
-
-            <Button
-              variant="contained"
-              onClick={handleFiftyFifty}
-              disabled={selectedAnswer !== null || hasUsedFiftyFifty}
-
+          </Grid>
+  
+          {/* Columna Derecha: Timer y Botón Hint */}
+          <Grid item xs={12} sm={6} md={3}>
+            <Box
               sx={{
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                height: "100%",
-                minHeight: { xs: 150, sm: 250, md: 300 },
-                gap: 2,
+                height: { xs: "auto", sm: 300, md: 300 },
+                gap: 3,
                 mt: { xs: 2, sm: 0 },
               }}
             >
-              {/* Temporizador */}
-              {currentQuestion && (
-                <QuestionTimer
-                  keyProp={`timer-${gameRef.current.questionIndex}-${difficulty.timePerQuestion}`}
-                  duration={difficulty.timePerQuestion}
-                  pauseTimer={selectedAnswer !== null}
-                  onComplete={() => {
-                    if (selectedAnswer !== null) return;
-                    console.log("[onComplete Timer] Time's up!");
-                    setSelectedAnswer(-1);
-                    const correctIndex =
-                      currentQuestion?.answers.findIndex(
-                        (ans) => ans.isCorrect
-                      ) ?? -1;
-                    const newColors =
-                      currentQuestion?.answers.map((_, i) =>
-                        i === correctIndex ? "#a5d6a7" : "#ef9a9a"
-                      ) || [];
-                    setFeedbackColors(newColors);
-                    setTimeout(() => {
-                      gameRef.current.answerQuestion(-1, true);
-                      const nextQ = gameRef.current.getCurrentQuestion();
-                      setCurrentQuestion(nextQ);
-                      setPoints(gameRef.current.getCurrentPoints());
-                      setStreak(gameRef.current.getCurrentStreak());
-                      setSelectedAnswer(null);
-                      setFeedbackColors([]);
-                      setHasUsedFiftyFifty(false);
-                    }, 1500);
-                    return { shouldRepeat: false };
-                  }}
-                />
-              )}
-              {/* Botones de Acción */}
+              <QuestionTimer
+                keyProp={`timer-${currentQuestion?.id || gameRef.current.questionIndex}`}
+                duration={difficulty.timePerQuestion || 30}
+                pauseTimer={selectedAnswer !== null}
+                onComplete={() => {
+                  if (selectedAnswer !== null) return;
+                  console.log("[onComplete Timer] Time's up!");
+                  const correctIndex =
+                    currentQuestion?.answers.findIndex((ans) => ans.isCorrect) ?? -1;
+                  const newColors =
+                    currentQuestion?.answers.map((_, i) =>
+                      i === correctIndex ? "#a5d6a7" : "#ef9a9a"
+                    ) || [];
+                  setFeedbackColors(newColors);
+                  setTimeout(() => {
+                    gameRef.current.answerQuestion(-1, true);
+                    const nextQ = gameRef.current.getCurrentQuestion();
+                    setCurrentQuestion(nextQ);
+                    setPoints(gameRef.current.getCurrentPoints());
+                    setStreak(gameRef.current.getCurrentStreak());
+                    setSelectedAnswer(null);
+                    setFeedbackColors([]);
+                    setHasUsedFiftyFifty(false);
+                  }, 1500);
+                  return { shouldRepeat: false };
+                }}
+              />
               <Button
                 variant="contained"
                 color="secondary"
                 onClick={handleGetHint}
-                disabled={selectedAnswer !== null || !currentQuestion}
+                disabled={selectedAnswer !== null || hasUsedHint || !currentQuestion}
               >
                 Pista
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleAskAI}
+                disabled={selectedAnswer !== null || hasUsedAskAI || !currentQuestion}
+                sx={{
+                  mt: 1,
+                  bgcolor: "#4db6ac",
+                  color: "#fff",
+                  "&:hover": { bgcolor: "#00897b" },
+                  "&:disabled": { bgcolor: "#888", color: "#eee" },
+                }}
+              >
+                Pregunta IA
               </Button>
               <Button
                 variant="contained"
@@ -562,8 +474,8 @@ export function GameWindow() {
               </Button>
             </Box>
           </Grid>
-        </Grid>{" "}
-        {/* Fin Grid Principal */}
+        </Grid>
+  
         {/* Sección Inferior: Texto Pregunta y Botones Respuesta */}
         <Box
           sx={{
@@ -594,7 +506,6 @@ export function GameWindow() {
                 ? currentQuestion.questionText
                 : "Cargando pregunta..."}
             </Typography>
-            {/* Puntos y Racha */}
             <Box sx={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
               <Typography variant="h6" color="#90caf9" sx={{ mr: 1 }}>
                 Pts: {points}
@@ -670,7 +581,6 @@ export function GameWindow() {
                 </Button>
               </Grid>
             ))}
-            {/* Mensaje fin de juego / error */}
             {!currentQuestion && !isGameLoading && (
               <Grid item xs={12}>
                 <Typography color="gray" align="center" sx={{ mt: 4 }}>
@@ -681,9 +591,9 @@ export function GameWindow() {
                 </Typography>
               </Grid>
             )}
-          </Grid>{" "}
-        </Box>{" "}
-      </Box>{" "}
+          </Grid>
+        </Box>
+      </Box>
     </Box>
   );
 }

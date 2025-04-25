@@ -12,34 +12,32 @@ import {
 } from "@mui/material";
 import { Home as HomeIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";  // Asegúrate de tener axios instalado
+import axios from "axios";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const username = localStorage.getItem("username");
   const userId = localStorage.getItem("_id");
-  const [profilePic, setProfilePic] = useState(null);  // Guardar la imagen del perfil en estado
+  const [profilePic, setProfilePic] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
 
   useEffect(() => {
     if (userId) {
-      // Llamar al endpoint para obtener la imagen de perfil
-      axios.get(`http://localhost:8001/user/${userId}/profile-pic`, {
-        responseType: 'blob',  // Esperamos una respuesta en formato binario
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-      })
-      .then(response => {
-        // Convertir la respuesta binaria a un URL
-        const imageUrl = URL.createObjectURL(response.data);
-        setProfilePic(imageUrl);  // Establecer la URL de la imagen en el estado
-      })
-      .catch(error => {
-        console.error("Error al obtener la imagen de perfil:", error);
-      });
+      axios
+        .get(`http://localhost:8001/user/${userId}/profile-pic`, {
+          responseType: "blob",
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        })
+        .then((response) => {
+          const imageUrl = URL.createObjectURL(response.data);
+          setProfilePic(imageUrl);
+        })
+        .catch((error) => {
+          console.error("Error al obtener la imagen de perfil:", error);
+        });
     }
   }, [userId]);
-
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -71,16 +69,23 @@ const Navbar = () => {
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
           Home Page
         </Typography>
-        <Button color="inherit" onClick={() => navigate("/home")}>Home</Button>
-        <Button color="inherit" onClick={() => navigate("/game-options")}>Jugar</Button>
-        <Button color="inherit" onClick={() => navigate("/statistics")}>Stats</Button>
-        <Button color="inherit" onClick={() => navigate("/ranking")}>Ranking</Button>
-
-        <Button color="inherit" onClick={() => navigate("/questions")}>Questions</Button>
-        <Button color="inherit" onClick={() => { navigate("/"); localStorage.removeItem("username"); }}>
-          Logout
+        <Button color="inherit" onClick={() => navigate("/home")}>
+          Home
         </Button>
-        
+        <Button color="inherit" onClick={() => navigate("/game-options")}>
+          Jugar
+        </Button>
+        {username && (
+          <Button color="inherit" onClick={() => navigate("/statistics")}>
+            Stats
+          </Button>
+        )}
+        <Button color="inherit" onClick={() => navigate("/ranking")}>
+          Ranking
+        </Button>
+        <Button color="inherit" onClick={() => navigate("/questions")}>
+          Questions
+        </Button>
         {username && (
           <Box
             onClick={handleMenuOpen}
@@ -92,28 +97,42 @@ const Navbar = () => {
               padding: "4px 10px",
               borderRadius: "20px",
               marginLeft: 2,
-              cursor: "pointer"
+              cursor: "pointer",
             }}
           >
-            <Typography variant="body1" sx={{ fontWeight: "bold", marginRight: 2 }}>
+            <Typography
+              variant="body1"
+              sx={{ fontWeight: "bold", marginRight: 2 }}
+            >
               {username}
             </Typography>
             <Avatar
-              src={profilePic ? profilePic : "/default-profile-img.jpg"} // Si no hay imagen, usar una por defecto
+              src={profilePic ? profilePic : "/default-profile-img.jpg"}
               alt={username}
               sx={{ width: 32, height: 32 }}
             />
           </Box>
         )}
+        {!username && (
+          <Button
+            color="inherit"
+            onClick={() => {
+              navigate("/");
+              localStorage.removeItem("username");
+            }}
+          >
+            Logout
+          </Button>
+        )}
 
-        {/* Dropdown Menu */}
-        <Menu
+          {/* Dropdown Menu */}
+          <Menu
           anchorEl={anchorEl}
           open={open}
           onClose={handleMenuClose}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        >
+          >
           <MenuItem onClick={handleSettings}>Configuración</MenuItem>
           <MenuItem onClick={handleLogout}>Logout</MenuItem>
         </Menu>
