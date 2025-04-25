@@ -19,6 +19,7 @@ import {
   Home,
   Replay,
   BarChart,
+  Cancel, 
   Star
 } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -40,7 +41,7 @@ export default function FullScreenScoreWindow() {
 
   const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
   const averageTimePerQuestion = totalQuestions > 0 ? (timeTaken / totalQuestions).toFixed(1) : 0;
-
+  const win = correctAnswers >=  totalQuestions/2;
   return (
     <Box sx={{
       minHeight: '100vh',
@@ -120,14 +121,22 @@ export default function FullScreenScoreWindow() {
               backdropFilter: 'blur(10px)',
               border: '1px solid rgba(255,255,255,0.2)'
             }}>
-              <Typography variant="h5" gutterBottom sx={{ 
-                display: 'flex',
-                alignItems: 'center',
-                mb: 3
-              }}>
-                <CheckCircle color="success" sx={{ mr: 2, fontSize: '2rem' }} />
-                Rendimiento
-              </Typography>
+              <Typography
+  variant="h5"
+  gutterBottom
+  sx={{
+    display: 'flex',
+    alignItems: 'center',
+    mb: 3,
+  }}
+>
+{win ? (
+  <CheckCircle color="success" sx={{ mr: 2, fontSize: '2rem' }} />
+) : (
+  <Cancel color="error" sx={{ mr: 2, fontSize: '2rem' }} />
+)}
+  Rendimiento
+</Typography>
 
               <Box mb={4}>
                 <Box display="flex" justifyContent="space-between" mb={1}>
