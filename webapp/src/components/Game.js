@@ -112,13 +112,13 @@ class Game {
                   : String(aData?.isCorrect).toLowerCase() === "true";
               return new Answer(aData?.text || "Respuesta inválida", isCorrect);
             });
-
+      
             // Filtrar respuestas potencialmente inválidas si es necesario
             const validAnswers = answers.filter(
               (a) => a.text !== "Respuesta inválida"
             );
-
-            // Asegurar que hay 4 respuestas válidas y al menos una correcta (aunque el backend DEBERÍA garantizarlo)
+      
+            // Asegurar que hay 4 respuestas válidas y al menos una correcta
             if (validAnswers.length !== 4) {
               console.warn(
                 `Question "${qData.question}" has ${validAnswers.length} valid answers, expected 4. Skipping.`
@@ -131,20 +131,20 @@ class Game {
               );
               return null;
             }
-
-            // Barajar respuestas para que la correcta no esté siempre en la misma posición
-            const shuffledAnswers = validAnswers.sort(
-              () => Math.random() - 0.5
-            );
+      
+            // Barajar respuestas usando Fisher-Yates para que la correcta no esté siempre en la misma posición
+            const shuffledAnswers = [...validAnswers]; // Crear una copia para no mutar el original
+            for (let i = shuffledAnswers.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1)); // Elegir índice aleatorio
+              [shuffledAnswers[i], shuffledAnswers[j]] = [shuffledAnswers[j], shuffledAnswers[i]]; // Intercambiar elementos
+            }
+      
             const imageUrl = qData.imageUrl || null;
             return new Question(qData.question, shuffledAnswers, imageUrl);
           })
           .filter((q) => q !== null); // Filtrar preguntas nulas (inválidas o saltadas)
       } else {
-        console.error(
-          "Formato inesperado recibido de /generateQuestions:",
-          data
-        );
+        console.error("Formato inesperado recibido de /generateQuestions:", data);
         throw new Error("Formato de preguntas inesperado.");
       }
 
