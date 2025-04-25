@@ -78,6 +78,8 @@ app.get("/stats", async (req, res) => {
         date: game.recordedAt.toISOString(),
         category: game.category || "Sin categoría",
         timeTaken: game.timeTaken || 0, 
+        totalQuestions: game.totalQuestions || 0,
+        correctQuestions: game.correctQuestions || 0,
       }));
 
     res.json({

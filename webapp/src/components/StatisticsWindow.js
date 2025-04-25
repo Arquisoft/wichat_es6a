@@ -274,8 +274,8 @@ const StatisticsWindow = () => {
                               </Box>
                               <Box mt={1}>
                                 <Chip
-                                  label={game.points > 50 ? "Win" : "Loss"}
-                                  color={game.points > 50 ? "success" : "error"}
+                                  label={game.correctQuestions >= game.totalQuestions / 2 ? "Win" : "Loss"}
+                                  color={game.correctQuestions >= game.totalQuestions / 2 ? "success" : "error"}
                                   size="small"
                                 />
                               </Box>
