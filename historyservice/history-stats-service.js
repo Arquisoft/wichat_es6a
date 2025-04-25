@@ -50,7 +50,7 @@ app.get("/stats", async (req, res) => {
     }
 
     // Calcular estadísticas existentes
-    const wins = games.filter((game) => game.score > 50).length;
+    const wins = games.filter((game) => game.correctQuestions >= game.totalQuestions / 2).length;
     const losses = games.length - wins;
     const totalPoints = games.reduce((acc, game) => acc + game.score, 0);
     const pointsPerGame = games.length > 0 ? totalPoints / games.length : 0;
@@ -99,14 +99,15 @@ app.get("/stats", async (req, res) => {
 
 app.post("/addGame", async (req, res) => {
   try {
-    const { username, score, correctQuestions, gameId, category, timeTaken } = req.body;
+    const { username, score, correctQuestions, gameId, category, timeTaken, totalQuestions } = req.body;
 
     // Validación de campos obligatorios
     const requiredFields = {
       'username': { type: 'string', message: 'Username must be a string' },
       'score': { type: 'number', message: 'Score must be a number' },
       'correctQuestions': { type: 'number', message: 'CorrectQuestions must be a number' },
-      'gameId': { type: 'string', message: 'GameId must be a string' }
+      'gameId': { type: 'string', message: 'GameId must be a string' },
+      'totalQuestions': { type: 'number', message: 'TotalQuestions must be a number' }
     };
 
     const errors = [];
@@ -124,6 +125,7 @@ app.post("/addGame", async (req, res) => {
     if (score !== undefined && score < 0) errors.push("Score cannot be negative");
     if (correctQuestions !== undefined && correctQuestions < 0) errors.push("CorrectQuestions cannot be negative");
     if (timeTaken !== undefined && timeTaken < 0) errors.push("TimeTaken cannot be negative");
+    if (totalQuestions !== undefined && totalQuestions < 0) errors.push("totalQuestions cannot be negative");
 
     if (errors.length > 0) {
       return res.status(400).json({
@@ -139,7 +141,8 @@ app.post("/addGame", async (req, res) => {
       correctQuestions: Math.floor(correctQuestions),
       gameId,
       category: category || null, // Si no se proporciona, se guarda como null
-      timeTaken: timeTaken ? Math.floor(timeTaken) : null // Si no se proporciona, se guarda como null
+      timeTaken: timeTaken ? Math.floor(timeTaken) : null, // Si no se proporciona, se guarda como null
+      totalQuestions: totalQuestions || null // Si no se proporciona, se guarda como 0
     });
 
     const savedGame = await newGame.save();
@@ -152,7 +155,8 @@ app.post("/addGame", async (req, res) => {
       gameId: savedGame.gameId,
       recordedAt: savedGame.recordedAt,
       category: savedGame.category,
-      timeTaken: savedGame.timeTaken
+      timeTaken: savedGame.timeTaken,
+      totalQuestions: savedGame.totalQuestions
     };
 
     res.status(201).json({
