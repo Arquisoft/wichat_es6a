@@ -119,7 +119,7 @@ const Home = () => {
           <Button
             variant="contained"
             size="large"
-            onClick={() => navigate("/game")}
+            onClick={() => navigate("/game-options")}
             sx={{
               position: "absolute",
               bottom: 32,        
