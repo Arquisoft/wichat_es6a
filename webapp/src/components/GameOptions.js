@@ -1,20 +1,41 @@
-// src/components/GameOptions.js
 import React, { useState } from "react";
-import { Box, Button, Typography, Grid } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  Grid,
+  Icon,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
+import BalanceIcon from "@mui/icons-material/Balance";
+import WarningIcon from "@mui/icons-material/Warning";
 
 const GameOptions = () => {
   const navigate = useNavigate();
 
   const difficulties = [
-    { name: "Fácil", questionCount: 4, timePerQuestion: 50, color: "#4caf50" },
-    { name: "Medio", questionCount: 5, timePerQuestion: 30, color: "#ff9800" },
+    {
+      name: "Fácil",
+      questionCount: 4,
+      timePerQuestion: 50,
+      color: "#4caf50",
+      icon: SentimentSatisfiedAltIcon,
+    },
+    {
+      name: "Medio",
+      questionCount: 5,
+      timePerQuestion: 30,
+      color: "#ff9800",
+      icon: BalanceIcon,
+    },
     {
       name: "Difícil",
       questionCount: 6,
       timePerQuestion: 15,
       color: "#f44336",
+      icon: WarningIcon,
     },
   ];
   const [selectedDifficulty, setSelectedDifficulty] = useState(difficulties[1]);
@@ -50,9 +71,9 @@ const GameOptions = () => {
   };
 
   return (
-    <Box // Contenedor principal
+    <Box
       sx={{
-        padding: { xs: 2, sm: 3, md: 4 }, // Padding exterior
+        padding: { xs: 2, sm: 3, md: 4 },
         background: "linear-gradient(135deg, #e0f7fa 0%, #80deea 100%)",
         borderRadius: 12,
         boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
@@ -63,7 +84,7 @@ const GameOptions = () => {
       }}
     >
       <Grid container spacing={4}>
-        {/* --- Columna Izquierda: Categorías --- */}
+        {/* Columna Izquierda: Categorías */}
         <Grid
           item
           xs={12}
@@ -130,7 +151,7 @@ const GameOptions = () => {
                   border:
                     selectedCategory?.endpoint === category.endpoint
                       ? "4px solid #1e88e5"
-                      : "2px solid transparent", // Borde transparente para mantener tamaño
+                      : "2px solid transparent",
                 }}
               >
                 <Box
@@ -160,7 +181,7 @@ const GameOptions = () => {
           </Box>
         </Grid>
 
-        {/* --- Columna Derecha: Dificultad y Jugar --- */}
+        {/* Columna Derecha: Dificultad y Jugar */}
         <Grid
           item
           xs={12}
@@ -180,7 +201,7 @@ const GameOptions = () => {
             sx={{
               fontWeight: "bold",
               color: "#01579b",
-              textShadow: "1px 1px 3px rgba(0, 0, 0, 0.1)",
+              textShadow: "1px 1px 3px rgba(0r: rgba(0, 0, 0, 0.1)",
               mb: 2,
             }}
           >
@@ -228,23 +249,45 @@ const GameOptions = () => {
               </Button>
             ))}
           </Box>
-          <Typography
-            variant="subtitle1"
+          <Box
             sx={{
-              color: selectedDifficulty.color,
-              // color: '#01579b',
-              fontWeight: "500",
-              textAlign: "center",
-              fontStyle: "italic",
-              transition: "color 0.3s ease-in-out",
+              backgroundColor: "rgba(255, 255, 255, 0.95)",
+              borderRadius: 2,
+              padding: 2,
               mt: 1,
               mb: 4,
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              width: "100%",
+              maxWidth: 300,
+              transition: "background-color 0.3s ease",
             }}
           >
-            {`${selectedDifficulty.questionCount} preguntas / ${selectedDifficulty.timePerQuestion} segundos por pregunta`}
-          </Typography>
+            <Icon
+              component={selectedDifficulty.icon}
+              sx={{
+                color: selectedDifficulty.color,
+                fontSize: 28,
+              }}
+            />
+            <Typography
+              variant="subtitle1"
+              sx={{
+                color: selectedDifficulty.color,
+                fontWeight: "600",
+                textAlign: "left",
+                fontStyle: "italic",
+                textShadow: "0.5px 0.5px 1px rgba(0, 0, 0, 0.2)",
+                transition: "color 0.3s ease-in-out",
+              }}
+            >
+              {`${selectedDifficulty.questionCount} preguntas / ${selectedDifficulty.timePerQuestion} segundos por pregunta`}
+            </Typography>
+          </Box>
 
-          {/* --- Botón Jugar --- */}
+          {/* Botón Jugar */}
           <Button
             variant="contained"
             color="success"
@@ -262,8 +305,7 @@ const GameOptions = () => {
             Jugar
           </Button>
         </Grid>
-      </Grid>{" "}
-      {/* Fin Grid container */}
+      </Grid>
     </Box>
   );
 };
