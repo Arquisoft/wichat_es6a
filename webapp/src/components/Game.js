@@ -28,6 +28,7 @@ class Game {
     this.startTime = null;
     this.endTime = null;
     this.totalTimeTaken = 0;
+    this.difficulty = "Not set"; // Dificultad seleccionada
 
     // Set para rastrear en qué preguntas se usó el 50/50 (para puntuación)
     this.usedFiftyFiftyOn = new Set();
@@ -39,8 +40,10 @@ class Game {
   }
 
   // Método de inicialización modificado para aceptar questionCount
-  async init(category, questionCount = 5) {
+  async init(category, difficulty) {
     // Default a 5 (Medio) si no se provee
+    questionCount = difficulty.questionCount || 5
+    this.difficulty = difficulty.name || "Not set";
     console.log(
       `Inicializando juego con categoría: ${
         category?.name || "Variado"
@@ -328,6 +331,7 @@ class Game {
           timeTaken: this.totalTimeTaken,
           maxStreak: this.maxConsecutiveCorrectAnswers,
           totalQuestions: this.questions.length,
+          difficulty: this.difficulty,
         }),
       });
 
