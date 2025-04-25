@@ -103,6 +103,8 @@ app.post("/addGame", async (req, res) => {
   try {
     const { username, score, correctQuestions, gameId, category, timeTaken, totalQuestions, difficulty } = req.body;
 
+    console.log("Datos recibidos:", req.body);
+
     // Validación de campos obligatorios
     const requiredFields = {
       'username': { type: 'string', message: 'Username must be a string' },
@@ -129,7 +131,7 @@ app.post("/addGame", async (req, res) => {
     if (correctQuestions !== undefined && correctQuestions < 0) errors.push("CorrectQuestions cannot be negative");
     if (timeTaken !== undefined && timeTaken < 0) errors.push("TimeTaken cannot be negative");
     if (totalQuestions !== undefined && totalQuestions < 0) errors.push("totalQuestions cannot be negative");
-    if (difficulty !== undefined ) errors.push("Not a valid difficulty");
+    if (difficulty == undefined ) errors.push("Not a valid difficulty");
 
     if (errors.length > 0) {
       return res.status(400).json({

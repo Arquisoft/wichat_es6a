@@ -29,6 +29,7 @@ class Game {
     this.endTime = null;
     this.totalTimeTaken = 0;
     this.difficulty = "Not set"; // Dificultad seleccionada
+    this.totalQuestions = 0; // Total de preguntas a responder
 
     // Set para rastrear en qué preguntas se usó el 50/50 (para puntuación)
     this.usedFiftyFiftyOn = new Set();
@@ -42,12 +43,13 @@ class Game {
   // Método de inicialización modificado para aceptar questionCount
   async init(category, difficulty) {
     // Default a 5 (Medio) si no se provee
-    questionCount = difficulty.questionCount || 5
-    this.difficulty = difficulty.name || "Not set";
+    this.totalQuestions = difficulty.questionCount || 5
+    var questionCount = this.totalQuestions; // Guardar el total de preguntas
+    this.difficulty = difficulty || "Not set";
     console.log(
       `Inicializando juego con categoría: ${
         category?.name || "Variado"
-      } y ${questionCount} preguntas.`
+      } y ${this.totalQuestions} preguntas.`
     );
     this.category = category; // Guardar la categoría
     this.startTime = Date.now(); // Registrar tiempo de inicio
@@ -64,7 +66,7 @@ class Game {
     try {
       const categoryName = category ? category.name.toLowerCase() : "variado";
       console.log(
-        `Workspaceing ${questionCount} questions for category ${categoryName} from backend...`
+        `Workspaceing ${this.totalQuestions} questions for category ${categoryName} from backend...`
       );
 
       const response = await fetch("http://localhost:8003/generateQuestions", {
@@ -72,7 +74,7 @@ class Game {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           category: categoryName,
-          questionCount: questionCount,
+          questionCount: this.totalQuestions,
         }),
       });
 
@@ -311,6 +313,7 @@ class Game {
       const username = localStorage.getItem("username");
       if (!username) throw new Error("No username found in localStorage");
 
+      console.log(this.difficulty.name);
       const response = await fetch("http://localhost:8010/addGame", {
         // Endpoint para guardar partida
         method: "POST",
@@ -325,13 +328,11 @@ class Game {
           username: username,
           score: this.score,
           correctQuestions: this.correctAnswers,
-          // Usar this.questions.length que ahora es dinámico según dificultad
-          totalQuestions: this.questions.length || 0,
           category: this.category?.name || "General",
           timeTaken: this.totalTimeTaken,
           maxStreak: this.maxConsecutiveCorrectAnswers,
           totalQuestions: this.questions.length,
-          difficulty: this.difficulty,
+          difficulty: this.difficulty.name,
         }),
       });
 
