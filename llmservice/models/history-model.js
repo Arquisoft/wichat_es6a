@@ -32,5 +32,5 @@ const historySchema = new mongoose.Schema({
 });
 
 module.exports = (mongoose) => {
-  return mongoose.model('History', historySchema, 'usergames');
+  return mongoose.models.History || mongoose.model('History', historySchema, 'usergames');
 };

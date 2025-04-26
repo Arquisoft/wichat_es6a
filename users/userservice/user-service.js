@@ -12,15 +12,22 @@ let User;
 let History; 
 
 try {
-  const connectDatabase = require("/usr/src/llmservice/config/database.js");
-  connectDatabase(mongoose);
   User = require("/usr/src/llmservice/models/user-model")(mongoose);
   History = require("/usr/src/llmservice/models/history-model")(mongoose);
 } catch (error) {
-  const connectDatabase = require("../../llmservice/config/database.js");
-  connectDatabase(mongoose);
   User = require("../../llmservice/models/user-model")(mongoose);
   History = require("../../llmservice/models/history-model")(mongoose);
+}
+
+// Conectar solo si NO estamos en test
+if (process.env.NODE_ENV !== 'test') {
+  try {
+    const connectDatabase = require("/usr/src/llmservice/config/database.js");
+    connectDatabase(mongoose);
+  } catch (error) {
+    const connectDatabase = require("../../llmservice/config/database.js");
+    connectDatabase(mongoose);
+  }
 }
 
 const app = express();

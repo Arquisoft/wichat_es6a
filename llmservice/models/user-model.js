@@ -1,4 +1,8 @@
 module.exports = (mongoose) => {
+  if (mongoose.models.User) {
+    return mongoose.models.User;
+  }
+
   const userSchema = new mongoose.Schema({
     username: {
       type: String,
