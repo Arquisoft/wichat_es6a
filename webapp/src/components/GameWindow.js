@@ -253,10 +253,6 @@ export function GameWindow() {
       setHasUsedAskAI(true);
     }
   };
-  
-
-
-  // --- Renderizado del Componente ---
 
   // Estado de Carga Inicial
   if (isGameLoading) {
@@ -279,11 +275,8 @@ export function GameWindow() {
     );
   }
 
-
   return (
-    
     <Box
-
       sx={{
         bgcolor: "#121212",
         minHeight: "100vh",
@@ -293,7 +286,7 @@ export function GameWindow() {
         alignItems: "center",
       }}
     >
-      <h1 text={currentQuestion.questionText}></h1>
+      <h1 hidden>{currentQuestion?.questionText || "Cargando..."}</h1>
       <Box sx={{ width: "100%", maxWidth: 1200 }}>
         {/* Cabecera: Número de Pregunta */}
         <Typography
@@ -334,10 +327,11 @@ export function GameWindow() {
                 minHeight: { sm: 250, md: 300 },
               }}
             >
-              
-              <ChatClues ref={chatCluesRef}   
-                actualQuestion={currentQuestion.questionText}
-                answers={currentQuestion.answers}/>
+              <ChatClues
+                ref={chatCluesRef}
+                actualQuestion={currentQuestion?.questionText || ""}
+                answers={currentQuestion?.answers || []}
+              />
             </Box>
           </Grid>
   
@@ -374,7 +368,7 @@ export function GameWindow() {
               )}
               <Box
                 component="img"
-                key={questionImage || `default-${currentQuestion?.questionText}`}
+                key={questionImage || `default-${currentQuestion?.questionText || "no-question"}`}
                 src={questionImage || "/WichatAmigos.png"}
                 alt={`Imagen para: ${currentQuestion?.questionText || "Cargando..."}`}
                 sx={{
@@ -491,7 +485,6 @@ export function GameWindow() {
             width: "100%",
           }}
         >
-          {/* Contenedor Pregunta, Puntos, Racha */}
           <Box
             sx={{
               display: "flex",
@@ -508,9 +501,7 @@ export function GameWindow() {
               color="white"
               sx={{ textAlign: "left", flexGrow: 1, mr: 2, fontWeight: "500" }}
             >
-              {currentQuestion
-                ? currentQuestion.questionText
-                : "Cargando pregunta..."}
+              {currentQuestion?.questionText || "Cargando pregunta..."}
             </Typography>
             <Box sx={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
               <Typography variant="h6" color="#90caf9" sx={{ mr: 1 }}>
@@ -522,7 +513,6 @@ export function GameWindow() {
               </Typography>
             </Box>
           </Box>
-          {/* Grid para botones de respuesta */}
           <Grid container spacing={2} mt={1}>
             {currentQuestion?.answers.map((answer, index) => (
               <Grid
@@ -597,11 +587,11 @@ export function GameWindow() {
                 </Typography>
               </Grid>
             )}
-          </Grid>
+            </Grid>
+          </Box>
         </Box>
       </Box>
-    </Box>
-  );
+    );
 }
 
 export default GameWindow;
