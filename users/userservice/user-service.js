@@ -18,8 +18,8 @@ try {
 } catch (error) {
   const connectDatabase = require("../llmservice/config/database.js");
   connectDatabase(mongoose);
-  User = require("../llmservice/models/user-model")(mongoose);
-  History = require("../llmservice/models/history-model")(mongoose);
+  User = require("../../llmservice/models/user-model")(mongoose);
+  History = require("../../llmservice/models/history-model")(mongoose);
 }
 
 const app = express();
