@@ -6,48 +6,39 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-let UserGame; //IMPORTANTE: declararlo afuera sino falla
-
-let User; 
-let History; 
+let User;
+let History;
 
 try {
+  const connectDatabase = require("/usr/src/llmservice/config/database.js");
+  connectDatabase(mongoose);
   User = require("/usr/src/llmservice/models/user-model")(mongoose);
   History = require("/usr/src/llmservice/models/history-model")(mongoose);
 } catch (error) {
+  const connectDatabase = require("../../llmservice/config/database.js");
+  connectDatabase(mongoose);
   User = require("../../llmservice/models/user-model")(mongoose);
   History = require("../../llmservice/models/history-model")(mongoose);
-}
-
-// Conectar solo si NO estamos en test
-if (process.env.NODE_ENV !== 'test') {
-  try {
-    const connectDatabase = require("/usr/src/llmservice/config/database.js");
-    connectDatabase(mongoose);
-  } catch (error) {
-    const connectDatabase = require("../../llmservice/config/database.js");
-    connectDatabase(mongoose);
-  }
 }
 
 const app = express();
 const port = 8001;
 
-// Crear un directorio para almacenar las imágenes de perfil
+// Create a directory to store profile pictures
 const uploadDir = './uploads/profile_pics';
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Configuración de Multer para la carga de imágenes
+// Configure Multer for image uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, uploadDir);  // Guardar imágenes en la carpeta 'uploads/profile_pics'
+    cb(null, uploadDir); // Save images in 'uploads/profile_pics' folder
   },
   filename: function (req, file, cb) {
-    const userId = req.params.id;  // Usar el ID del usuario como nombre del archivo
-    const fileExtension = path.extname(file.originalname);  // Obtener la extensión del archivo (jpg, png, etc.)
-    cb(null, `${userId}${fileExtension}`);  // El nombre del archivo será el ID del usuario
+    const userId = req.params.id; // Use the user's ID as the filename
+    const fileExtension = path.extname(file.originalname); // Get the file extension (jpg, png, etc.)
+    cb(null, `${userId}${fileExtension}`); // The filename will be the user ID
   }
 });
 
@@ -61,7 +52,7 @@ app.use(cors({
 
 app.use(express.json());
 
-// Validación de campos requeridos
+// Validate required fields
 function validateRequiredFields(req, requiredFields) {
   for (const field of requiredFields) {
     if (!(field in req.body)) {
@@ -70,7 +61,11 @@ function validateRequiredFields(req, requiredFields) {
   }
 }
 
-// Crear usuario
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
+// Create user
 app.post('/adduser', async (req, res) => {
   try {
     validateRequiredFields(req, ['username', 'password']);
@@ -92,7 +87,7 @@ app.post('/adduser', async (req, res) => {
   }
 });
 
-// Obtener detalles de usuario
+// Get user details
 app.get('/user/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -106,44 +101,38 @@ app.get('/user/:id', async (req, res) => {
   }
 });
 
-// Cambiar nombre de usuario
+// Change username
 app.put('/user/:id/username', async (req, res) => {
   try {
-    // Buscar al usuario
     const user = await User.findById(req.params.id);
     const actualUserName = user.username;
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    // Validar el nuevo nombre de usuario
     if (!req.body.username) {
-      return res.status(400).json({ error: 'El nuevo nombre de usuario es obligatorio' });
+      return res.status(400).json({ error: 'New username is required' });
     }
 
-    // Verificar si el nombre de usuario ya existe
     const existingUser = await User.findOne({ username: req.body.username });
     if (existingUser) {
-      return res.status(400).json({ error: 'Este nombre de usuario ya está en uso' });
+      return res.status(400).json({ error: 'This username is already taken' });
     }
 
-    // Actualizar el nombre de usuario en el perfil del usuario
     user.username = req.body.username;
     await user.save();
 
-    // Actualizar el nombre de usuario en todas las partidas del usuario
-    // Actualizar todos los registros de "History" (partidas) donde el campo "username" sea igual al antiguo nombre de usuario
+    // Update username in all the user's game records
     await History.updateMany(
-      { username: actualUserName },  // Filtrar las partidas donde el nombre de usuario coincida
-      { $set: { username: req.body.username } }  // Actualizar el campo "username" a su nuevo valor
+      { username: actualUserName },
+      { $set: { username: req.body.username } }
     );
 
-    res.status(200).json({ message: 'Username actualizado correctamente' });
+    res.status(200).json({ message: 'Username updated successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-
-// Cambiar contraseña
+// Change password
 app.put('/user/:id/password', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -173,7 +162,7 @@ app.put('/user/:id/password', async (req, res) => {
   }
 });
 
-// Subir imagen de perfil
+// Upload profile picture
 app.post('/user/:id/profile-pic', upload.single('profilePic'), async (req, res) => {
   try {
     if (!req.file) {
@@ -185,7 +174,6 @@ app.post('/user/:id/profile-pic', upload.single('profilePic'), async (req, res) 
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Guardar la URL de la imagen en el perfil del usuario
     user.profilePic = `/uploads/profile_pics/${req.file.filename}`;
     await user.save();
 
@@ -197,49 +185,40 @@ app.post('/user/:id/profile-pic', upload.single('profilePic'), async (req, res) 
   }
 });
 
-// Obtener imagen de perfil
+// Get profile picture
 app.get('/user/:id/profile-pic', async (req, res) => {
   try {
     const userId = req.params.id;
-    const imagePath = path.join(__dirname, 'uploads', 'profile_pics', `${userId}.png`);  // Ruta completa a la imagen
+    const imagePath = path.join(__dirname, 'uploads', 'profile_pics', `${userId}.png`);
 
-    // Verificar si el archivo existe
     fs.access(imagePath, fs.constants.F_OK, (err) => {
       if (err) {
         return res.status(404).json({ error: 'Profile picture not found' });
       }
 
-      // Si el archivo existe, devolverlo como un archivo binario
       res.sendFile(imagePath);
     });
-
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-
-// Eliminar imagen de perfil
+// Delete profile picture
 app.delete('/user/:id/profile-pic', async (req, res) => {
   try {
     const userId = req.params.id;
-    
-    // Construir la ruta de la imagen de perfil de acuerdo al ID
     const imagePath = path.join(__dirname, 'uploads', 'profile_pics', `${userId}.png`);
 
-    // Verificar si el archivo existe
     fs.access(imagePath, fs.constants.F_OK, (err) => {
       if (err) {
         return res.status(400).json({ error: 'No profile picture to delete' });
       }
 
-      // Eliminar el archivo de la imagen de perfil en el sistema de archivos
       fs.unlink(imagePath, (err) => {
         if (err) {
           return res.status(500).json({ error: 'Failed to delete the image' });
         }
 
-        // En este caso, como no estamos guardando la URL en la base de datos, no es necesario actualizar nada en la base de datos
         res.status(200).json({ message: 'Profile picture deleted successfully' });
       });
     });
@@ -248,25 +227,21 @@ app.delete('/user/:id/profile-pic', async (req, res) => {
   }
 });
 
-// Eliminar usuario, sus partidas y su imagen de perfil
+// Delete user, their games, and profile picture
 app.delete('/user/:id', async (req, res) => {
   try {
     const userId = req.params.id;
 
-    // Buscar al usuario
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Eliminar las partidas relacionadas con el usuario
     await History.deleteMany({ username: user.username });
 
-    // Eliminar la imagen de perfil si existe
     const imagePath = path.join(__dirname, 'uploads', 'profile_pics', `${userId}.png`);
     fs.access(imagePath, fs.constants.F_OK, (err) => {
       if (!err) {
-        // Si la imagen existe, eliminarla
         fs.unlink(imagePath, (err) => {
           if (err) {
             return res.status(507).json({ error: 'Failed to delete the profile picture' });
@@ -275,7 +250,6 @@ app.delete('/user/:id', async (req, res) => {
       }
     });
 
-    // Eliminar el usuario
     await user.remove();
 
     res.status(200).json({ message: 'User and related data deleted successfully' });
@@ -284,18 +258,12 @@ app.delete('/user/:id', async (req, res) => {
   }
 });
 
-// Only connect and start server if running the file directly
-if (require.main === module) {
-  const connectDatabase = require('/usr/src/llmservice/config/database');
-  connectDatabase(mongoose);
+const server = app.listen(port, () => {
+  console.log(`User Service listening at http://localhost:${port}`);
+});
 
-  const server = app.listen(port, () => {
-      console.log(`User Service listening at http://localhost:${port}`);
-  });
+server.on('close', () => {
+  mongoose.connection.close();
+});
 
-  server.on('close', () => {
-      mongoose.connection.close();
-  });
-}
-
-module.exports = app;
+module.exports = server;
