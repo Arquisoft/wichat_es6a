@@ -10,17 +10,15 @@ const fs = require('fs');
 let User; 
 let History; 
 
-let UserGame; //IMPORTANTE: declararlo afuera sino falla
-
 try {
   const connectDatabase = require("/usr/src/llmservice/config/database.js");
   connectDatabase(mongoose);
-  UserGame = require("/usr/src/llmservice/models/history-model")(mongoose);
+  User = require("/usr/src/llmservice/models/user-model")(mongoose);
   History = require("/usr/src/llmservice/models/history-model")(mongoose);
 } catch (error) {
   const connectDatabase = require("../llmservice/config/database.js");
   connectDatabase(mongoose);
-  UserGame = require("../llmservice/models/history-model")(mongoose);
+  User = require("../llmservice/models/user-model")(mongoose);
   History = require("../llmservice/models/history-model")(mongoose);
 }
 
