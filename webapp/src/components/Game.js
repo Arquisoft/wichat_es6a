@@ -40,136 +40,54 @@ class Game {
 
   }
 
-  // Método de inicialización modificado para aceptar questionCount
-  async init(category, difficulty) {
-    // Default a 5 (Medio) si no se provee
-    this.totalQuestions = difficulty.questionCount || 5
-    var questionCount = this.totalQuestions; // Guardar el total de preguntas
-    this.difficulty = difficulty || "Not set";
-    console.log(
-      `Inicializando juego con categoría: ${
-        category?.name || "Variado"
-      } y ${this.totalQuestions} preguntas.`
-    );
-    this.category = category; // Guardar la categoría
-    this.startTime = Date.now(); // Registrar tiempo de inicio
-    // Resetear estado del juego
-    this.questionIndex = 0;
-    this.score = 0;
-    this.correctAnswers = 0;
-    this.consecutiveCorrectAnswers = 0;
-    this.maxConsecutiveCorrectAnswers = 0;
-    this.questions = []; // Limpiar preguntas de partidas anteriores
-    this.usedFiftyFiftyOn = new Set(); // Limpiar set de 50/50
+  // Método de inicialización modificado para cargar preguntas desde la DB
+async init(category, difficulty) {
+  // Default a 5 (Medio) si no se provee
+  this.totalQuestions = difficulty?.questionCount || 5;
+  var questionCount = this.totalQuestions; // Guardar el total de preguntas
+  this.difficulty = difficulty || "Not set";
+  
+  console.log(
+    `Inicializando juego con categoría: ${category?.name || "Variado"} y ${this.totalQuestions} preguntas.`
+  );
+  
+  this.category = category; // Guardar la categoría
+  this.startTime = Date.now(); // Registrar tiempo de inicio
 
-    // --- Carga de preguntas desde el Backend (generadas) ---
-    try {
-      const categoryName = category ? category.name.toLowerCase() : "variado";
-      console.log(
-        `Workspaceing ${this.totalQuestions} questions for category ${categoryName} from backend...`
+  // Resetear estado del juego
+  this.questionIndex = 0;
+  this.score = 0;
+  this.correctAnswers = 0;
+  this.consecutiveCorrectAnswers = 0;
+  this.maxConsecutiveCorrectAnswers = 0;
+  this.questions = []; // Limpiar preguntas de partidas anteriores
+  this.usedFiftyFiftyOn = new Set(); // Limpiar set de 50/50
+
+  try {
+    const categoryName = category ? category.name : "Variado";
+    console.log(`Cargando ${this.totalQuestions} preguntas para la categoría "${categoryName}" desde la base de datos...`);
+
+    // --- Aquí llamamos a cargar desde la DB ---
+    await this.loadQuestionsFromDB(categoryName, questionCount);
+
+    // Fallback si no hay preguntas válidas
+    if (!this.questions || this.questions.length === 0) {
+      console.warn(
+        "No se obtuvieron preguntas válidas de la base de datos, cargando preguntas de prueba."
       );
-
-      const response = await fetch("http://localhost:8003/generateQuestions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          category: categoryName,
-          questionCount: this.totalQuestions,
-        }),
-      });
-
-      console.log("Response status from /generateQuestions:", response.status);
-      if (!response.ok) {
-        const errorText = await response.text(); // Intentar leer cuerpo del error
-        console.error(
-          "Error response body from /generateQuestions:",
-          errorText
-        );
-        throw new Error(
-          `Failed to fetch questions: ${response.status} ${response.statusText} - ${errorText}`
-        );
-      }
-
-      const data = await response.json();
-      console.log("Parsed questions data:", data);
-
-      // Parsear y mapear la respuesta a las clases Question y Answer
-      if (data && Array.isArray(data.questions)) {
-        this.questions = data.questions
-          .map((qData) => {
-            // Validar estructura mínima de qData
-            if (
-              !qData ||
-              typeof qData.question !== "string" ||
-              !Array.isArray(qData.answers)
-            ) {
-              console.warn(
-                "Skipping invalid question data structure from backend:",
-                qData
-              );
-              return null; // Marcar para filtrar después
-            }
-            const answers = qData.answers.map((aData) => {
-              // Validar estructura mínima de aData y asegurar que isCorrect sea booleano
-              const isCorrect =
-                typeof aData?.isCorrect === "boolean"
-                  ? aData.isCorrect
-                  : String(aData?.isCorrect).toLowerCase() === "true";
-              return new Answer(aData?.text || "Respuesta inválida", isCorrect);
-            });
-      
-            // Filtrar respuestas potencialmente inválidas si es necesario
-            const validAnswers = answers.filter(
-              (a) => a.text !== "Respuesta inválida"
-            );
-      
-            // Asegurar que hay 4 respuestas válidas y al menos una correcta
-            if (validAnswers.length !== 4) {
-              console.warn(
-                `Question "${qData.question}" has ${validAnswers.length} valid answers, expected 4. Skipping.`
-              );
-              return null;
-            }
-            if (!validAnswers.some((a) => a.isCorrect)) {
-              console.warn(
-                `Question "${qData.question}" has no correct answer marked. Skipping.`
-              );
-              return null;
-            }
-      
-            // Barajar respuestas usando Fisher-Yates para que la correcta no esté siempre en la misma posición
-            const shuffledAnswers = [...validAnswers]; // Crear una copia para no mutar el original
-            for (let i = shuffledAnswers.length - 1; i > 0; i--) {
-              const j = Math.floor(Math.random() * (i + 1)); // Elegir índice aleatorio
-              [shuffledAnswers[i], shuffledAnswers[j]] = [shuffledAnswers[j], shuffledAnswers[i]]; // Intercambiar elementos
-            }
-      
-            const imageUrl = qData.imageUrl || null;
-            return new Question(qData.question, shuffledAnswers, imageUrl);
-          })
-          .filter((q) => q !== null); // Filtrar preguntas nulas (inválidas o saltadas)
-      } else {
-        console.error("Formato inesperado recibido de /generateQuestions:", data);
-        throw new Error("Formato de preguntas inesperado.");
-      }
-
-      // Fallback si, después de todo el proceso, no hay preguntas válidas
-      if (!this.questions || this.questions.length === 0) {
-        console.warn(
-          "No se obtuvieron/parsearon preguntas válidas del servidor, cargando preguntas de prueba."
-        );
-        await this.TestingInit(questionCount);
-      }
-
-      console.log("Preguntas guardadas en el objeto Game:", this.questions);
-    } catch (error) {
-      console.error("Error fetching or parsing questions:", error.message);
-      // Fallback a preguntas de prueba si falla la carga principal
       await this.TestingInit(questionCount);
     }
-  }
 
-  /* --- COMENTADO: Carga desde DB (mantener comentado según original) ---
+    console.log("Preguntas guardadas en el objeto Game:", this.questions);
+  } catch (error) {
+    console.error("Error cargando preguntas desde la base de datos:", error.message);
+    // Fallback a preguntas de prueba si falla la carga principal
+    await this.TestingInit(questionCount);
+  }
+}
+
+
+  // --- Carga desde DB  ---
   async loadQuestionsFromDB(category = "", questionCount = 5) {
     try {
       const isVariado = category.toLowerCase() === "variado";
@@ -210,7 +128,6 @@ class Game {
       await this.TestingInit(questionCount); // Fallback con questionCount
     }
   }
-  */
 
   // Método de fallback
   TestingInit(questionCount = 4) {
