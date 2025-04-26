@@ -186,7 +186,7 @@ class WikidataCacheService {
       }
 
       console.log(
-        `💾 Guardadas ${savedEntries.length} nuevas entradas CON IMAGEN en caché para ${category}.`
+        `Guardadas ${savedEntries.length} nuevas entradas CON IMAGEN en caché para ${category}.`
       );
       return savedEntries;
     } catch (error) {
@@ -229,7 +229,7 @@ class WikidataCacheService {
 
   async initializeDatabase() {
     console.log(
-      "🔄 Inicializando base de datos de WikiData (asegurando entradas con imagen)..."
+      "Inicializando base de datos de WikiData (asegurando entradas con imagen)..."
     );
 
     for (const category of this.categories) {
@@ -246,13 +246,13 @@ class WikidataCacheService {
         await this.fetchAndSaveEntries(category, neededEntries);
       } else {
         console.log(
-          `✅ La categoría ${category} ya tiene suficientes entradas.`
+          `La categoría ${category} ya tiene suficientes entradas.`
         );
       }
     }
 
     console.log(
-      "✅ Inicialización/Verificación de la base de datos completada!"
+      "Inicialización/Verificación de la base de datos completada!"
     );
   }
 }

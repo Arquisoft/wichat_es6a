@@ -302,6 +302,112 @@ app.get('/questions', async (req, res) => {
   }
 });
 
+/* ENDPOINTS DEL SERVICIO DE WIKIDATA */
+
+app.get('/api/entries/random', async (req, res) => {
+  try {
+    const wikiResponse = await axios.get(wikidataServiceUrl + '/api/entries/random');
+    res.json(wikiResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'wikidata', endpoint: '/api/entries/random', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.get('/api/entries/:category', async (req, res) => {
+  try {
+    const wikiResponse = await axios.get(wikidataServiceUrl + `/api/entries/${req.params.category}`, {
+      params: req.query
+    });
+    res.json(wikiResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'wikidata', endpoint: '/api/entries/:category', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.post('/api/entries/fetch/:category', async (req, res) => {
+  try {
+    const wikiResponse = await axios.post(wikidataServiceUrl + `/api/entries/fetch/${req.params.category}`, req.body, {
+      params: req.query
+    });
+    res.json(wikiResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'wikidata', endpoint: '/api/entries/fetch/:category', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.get('/api/paises', async (req, res) => {
+  try {
+    const wikiResponse = await axios.get(wikidataServiceUrl + '/api/paises');
+    res.json(wikiResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'wikidata', endpoint: '/api/paises', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.get('/api/monumentos', async (req, res) => {
+  try {
+    const wikiResponse = await axios.get(wikidataServiceUrl + '/api/monumentos');
+    res.json(wikiResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'wikidata', endpoint: '/api/monumentos', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.get('/api/elementos', async (req, res) => {
+  try {
+    const wikiResponse = await axios.get(wikidataServiceUrl + '/api/elementos');
+    res.json(wikiResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'wikidata', endpoint: '/api/elementos', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.get('/api/peliculas', async (req, res) => {
+  try {
+    const wikiResponse = await axios.get(wikidataServiceUrl + '/api/peliculas');
+    res.json(wikiResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'wikidata', endpoint: '/api/peliculas', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.get('/api/canciones', async (req, res) => {
+  try {
+    const wikiResponse = await axios.get(wikidataServiceUrl + '/api/canciones');
+    res.json(wikiResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'wikidata', endpoint: '/api/canciones', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.get('/api/formula1', async (req, res) => {
+  try {
+    const wikiResponse = await axios.get(wikidataServiceUrl + '/api/formula1');
+    res.json(wikiResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'wikidata', endpoint: '/api/formula1', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.get('/api/pinturas', async (req, res) => {
+  try {
+    const wikiResponse = await axios.get(wikidataServiceUrl + '/api/pinturas');
+    res.json(wikiResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'wikidata', endpoint: '/api/pinturas', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
 // **Configuración de Swagger**
 openapiPath = './openapi.yaml'
 if (fs.existsSync(openapiPath)) {
