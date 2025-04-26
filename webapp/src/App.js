@@ -20,7 +20,7 @@ function App() {
   return (
     <Router>
       <CssBaseline />
-      <Navbar /> {/* Renderiza el Navbar en todas las rutas */}
+      <Navbar />
       <Routes>
         <Route path="/" element={<Auth />} />
         <Route path="/home" element={<Home />} />
@@ -29,10 +29,7 @@ function App() {
         <Route path="/statistics" element={<Statistics />} />
         <Route path="/editProfile" element={<EditProfile />} />
         <Route path="/endgame" element={<EndGame />} />{" "}
-        {/* Cambié a minúsculas por convención */}
-        <Route path="/ranking" element={<div>Ranking Page (TBD)</div>} />{" "}
         <Route path="/questions" element={<AllQuestionsWindow />} />
-        {/* Placeholder para Ranking */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

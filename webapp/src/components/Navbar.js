@@ -80,9 +80,6 @@ const Navbar = () => {
             Stats
           </Button>
         )}
-        <Button color="inherit" onClick={() => navigate("/ranking")}>
-          Ranking
-        </Button>
         <Button color="inherit" onClick={() => navigate("/questions")}>
           Questions
         </Button>
