@@ -149,6 +149,16 @@ app.delete('/user/:id/profile-pic', async (req, res) => {
   }
 });
 
+app.post('/adduser', async (req, res) => {
+  try {
+    const userResponse = await axios.post(userServiceUrl + '/adduser', req.body);
+    res.json(userResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'user', endpoint: '/adduser', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
 /* ENDPOINTS DEL SERVICIO DE AUTENTIFICACIÓN */
 
 app.post('/login', async (req, res) => {
@@ -157,16 +167,6 @@ app.post('/login', async (req, res) => {
     res.json(authResponse.data);
   } catch (error) {
     failedRequestsCounter.inc({ service: 'auth', endpoint: '/login', status: error.response?.status || 500 });
-    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
-  }
-});
-
-app.post('/adduser', async (req, res) => {
-  try {
-    const userResponse = await axios.post(userServiceUrl + '/adduser', req.body);
-    res.json(userResponse.data);
-  } catch (error) {
-    failedRequestsCounter.inc({ service: 'user', endpoint: '/adduser', status: error.response?.status || 500 });
     res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
   }
 });
