@@ -6,11 +6,22 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const connectDatabase = require('/usr/src/llmservice/config/database');
-connectDatabase(mongoose);
+let UserGame; //IMPORTANTE: declararlo afuera sino falla
 
-const User = require("/usr/src/llmservice/models/user-model")(mongoose);
-const History = require("/usr/src/llmservice/models/history-model")(mongoose);
+let User; 
+let History; 
+
+try {
+  const connectDatabase = require("/usr/src/llmservice/config/database.js");
+  connectDatabase(mongoose);
+  User = require("/usr/src/llmservice/models/user-model")(mongoose);
+  History = require("/usr/src/llmservice/models/history-model")(mongoose);
+} catch (error) {
+  const connectDatabase = require("../llmservice/config/database.js");
+  connectDatabase(mongoose);
+  User = require("../../llmservice/models/user-model")(mongoose);
+  History = require("../../llmservice/models/history-model")(mongoose);
+}
 
 const app = express();
 const port = 8001;
@@ -43,7 +54,7 @@ app.use(cors({
 
 app.use(express.json());
 
-// ✅ Validación de campos requeridos
+// Validación de campos requeridos
 function validateRequiredFields(req, requiredFields) {
   for (const field of requiredFields) {
     if (!(field in req.body)) {
@@ -52,7 +63,7 @@ function validateRequiredFields(req, requiredFields) {
   }
 }
 
-// 🔐 Crear usuario
+// Crear usuario
 app.post('/adduser', async (req, res) => {
   try {
     validateRequiredFields(req, ['username', 'password']);
@@ -74,7 +85,7 @@ app.post('/adduser', async (req, res) => {
   }
 });
 
-// 🧾 Obtener detalles de usuario
+// Obtener detalles de usuario
 app.get('/user/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -88,7 +99,7 @@ app.get('/user/:id', async (req, res) => {
   }
 });
 
-// ✏️ Cambiar nombre de usuario
+// Cambiar nombre de usuario
 app.put('/user/:id/username', async (req, res) => {
   try {
     // Buscar al usuario
@@ -125,7 +136,7 @@ app.put('/user/:id/username', async (req, res) => {
 });
 
 
-// 🔒 Cambiar contraseña
+// Cambiar contraseña
 app.put('/user/:id/password', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -155,7 +166,7 @@ app.put('/user/:id/password', async (req, res) => {
   }
 });
 
-// 📸 Subir imagen de perfil
+// Subir imagen de perfil
 app.post('/user/:id/profile-pic', upload.single('profilePic'), async (req, res) => {
   try {
     if (!req.file) {
@@ -179,7 +190,7 @@ app.post('/user/:id/profile-pic', upload.single('profilePic'), async (req, res) 
   }
 });
 
-// 📸 Obtener imagen de perfil
+// Obtener imagen de perfil
 app.get('/user/:id/profile-pic', async (req, res) => {
   try {
     const userId = req.params.id;
@@ -201,7 +212,7 @@ app.get('/user/:id/profile-pic', async (req, res) => {
 });
 
 
-// 🗑️ Eliminar imagen de perfil
+// Eliminar imagen de perfil
 app.delete('/user/:id/profile-pic', async (req, res) => {
   try {
     const userId = req.params.id;
@@ -230,7 +241,7 @@ app.delete('/user/:id/profile-pic', async (req, res) => {
   }
 });
 
-// 🗑️ Eliminar usuario, sus partidas y su imagen de perfil
+// Eliminar usuario, sus partidas y su imagen de perfil
 app.delete('/user/:id', async (req, res) => {
   try {
     const userId = req.params.id;
@@ -266,13 +277,18 @@ app.delete('/user/:id', async (req, res) => {
   }
 });
 
+// Only connect and start server if running the file directly
+if (require.main === module) {
+  const connectDatabase = require('/usr/src/llmservice/config/database');
+  connectDatabase(mongoose);
 
-const server = app.listen(port, () => {
-  console.log(`User Service listening at http://localhost:${port}`);
-});
+  const server = app.listen(port, () => {
+      console.log(`User Service listening at http://localhost:${port}`);
+  });
 
-server.on('close', () => {
-  mongoose.connection.close();
-});
+  server.on('close', () => {
+      mongoose.connection.close();
+  });
+}
 
-module.exports = server;
+module.exports = app;
