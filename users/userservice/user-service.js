@@ -19,16 +19,6 @@ try {
   History = require("../../llmservice/models/history-model")(mongoose);
 }
 
-// Conectar solo si NO estamos en test
-if (process.env.NODE_ENV !== 'test') {
-  try {
-    const connectDatabase = require("/usr/src/llmservice/config/database.js");
-    connectDatabase(mongoose);
-  } catch (error) {
-    const connectDatabase = require("../../llmservice/config/database.js");
-    connectDatabase(mongoose);
-  }
-}
 
 const app = express();
 const port = 8001;
