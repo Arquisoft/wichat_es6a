@@ -313,7 +313,7 @@ class Game {
       const username = localStorage.getItem("username");
       if (!username) throw new Error("No username found in localStorage");
 
-      const response = await fetch("http://localhost:8010/addGame", {
+      const response = await fetch("http://localhost:8000/addGame", {
         // Endpoint para guardar partida
         method: "POST",
         headers: {

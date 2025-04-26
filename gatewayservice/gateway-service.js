@@ -14,8 +14,8 @@ const port = 8000;
 const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:8001';
 const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:8002';
 const llmServiceUrl = process.env.LLM_SERVICE_URL || 'http://localhost:8003';
-const questionServiceUrl = process.env.QUESTION_SERVICE_URL || 'http://localhost:8005';
 const historyServiceUrl = process.env.HISTORY_SERVICE_URL || 'http://localhost:8010';
+const questionServiceUrl = process.env.QUESTION_SERVICE_URL || 'http://localhost:8005';
 const wikidataServiceUrl = process.env.WIKIDATA_SERVICE_URL || 'http://localhost:8020';
 
 app.use(cors());
@@ -223,13 +223,56 @@ app.post('/getHintWithQuery', async (req, res) => {
   }
 });
 
-// Nuevo endpoint para generar preguntas
-app.post('/generateQuestions', async (req, res) => {
+/* ENDPOINTS DEL SERVICIO DE HISTORIAL DE PARTIDAS */
+
+app.get('/getBestGames', async (req, res) => {
+  console.log("Username recibido en /getBestGames:", req.headers.username);
   try {
-    const questionResponse = await axios.post(`${llmServiceUrl}/generateQuestions`, req.body);
-    res.json(questionResponse.data);
+    const historyResponse = await axios.get(historyServiceUrl + '/getBestGames', {
+      headers: { username: req.headers.username, "Content-Type": "application/json", }
+    });
+    res.json(historyResponse.data);
   } catch (error) {
-    failedRequestsCounter.inc({ service: 'llm', endpoint: '/generateQuestions', status: error.response?.status || 500 });
+    failedRequestsCounter.inc({ service: 'history', endpoint: '/getBestGames', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.get('/getAllGames', async (req, res) => {
+  console.log("Username recibido en /getAllGames:", req.headers.username);
+  try {
+    const historyResponse = await axios.get(historyServiceUrl + '/getAllGames', {
+      headers: { username: req.headers.username, "Content-Type": "application/json", }
+    });
+    res.json(historyResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'history', endpoint: '/getAllGames', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.get('/stats', async (req, res) => {
+  console.log("Username recibido en /stats:", req.headers.username);
+  try {
+    const historyResponse = await axios.get(historyServiceUrl + '/stats', {
+      headers: { username: req.headers.username, "Content-Type": "application/json", }
+    });
+    res.json(historyResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'history', endpoint: '/stats', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.post('/addGame', async (req, res) => {
+  console.log("Username recibido en /addGame:", req.headers.username);
+  try {
+    const historyResponse = await axios.post(historyServiceUrl + '/addGame',
+       req.body, {
+        headers: {"Content-Type": "application/json",}});
+    res.status(201).json(historyResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'history', endpoint: '/addGame', status: error.response?.status || 500 });
     res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
   }
 });
