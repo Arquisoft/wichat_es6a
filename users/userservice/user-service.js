@@ -17,7 +17,7 @@ try {
   User = require("/usr/src/llmservice/models/user-model")(mongoose);
   History = require("/usr/src/llmservice/models/history-model")(mongoose);
 } catch (error) {
-  const connectDatabase = require("../llmservice/config/database.js");
+  const connectDatabase = require("../../llmservice/config/database.js");
   connectDatabase(mongoose);
   User = require("../../llmservice/models/user-model")(mongoose);
   History = require("../../llmservice/models/history-model")(mongoose);
