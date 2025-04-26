@@ -13,6 +13,7 @@ import {
   Divider,
   IconButton,
   Tooltip,
+  keyframes, // Import keyframes
 } from "@mui/material";
 import {
   SportsEsports as GameIcon,
@@ -25,20 +26,26 @@ import {
   ExpandLess as ExpandLessIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import './AnimatedBackground.css';
+// Removed import "./AnimatedBackground.css";
+
+// Keyframes for the background animation (consistent with other components)
+const gradientAnimation = keyframes`
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+`;
 
 const StatisticsWindow = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showMore, setShowMore] = useState(false); // State for Show More
+  const [showMore, setShowMore] = useState(false);
   const navigate = useNavigate();
 
-  // Generar partículas (estrellas y trofeos)
   const particleCount = 20;
   const particles = Array.from({ length: particleCount }, (_, index) => ({
     id: index,
-    type: index % 2 === 0 ? 'star' : 'trophy',
+    type: index % 2 === 0 ? "star" : "trophy",
     left: Math.random() * 100,
     top: Math.random() * 100,
   }));
@@ -58,7 +65,7 @@ const StatisticsWindow = () => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "username": username,
+        username: username,
       },
     })
       .then((res) => {
@@ -80,14 +87,12 @@ const StatisticsWindow = () => {
     fetchStats();
   }, []);
 
-  // Define difficulty colors
   const difficultyColors = {
-    'Fácil': '#4CAF50', // Green
-    'Medio': '#FF9800', // Orange
-    'Difícil': '#F44336' // Red
+    Fácil: "#4CAF50",
+    Medio: "#FF9800",
+    Difícil: "#F44336",
   };
 
-  // Function to show all games
   const showAllGames = () => {
     const username = localStorage.getItem("username");
     if (!username) {
@@ -95,15 +100,13 @@ const StatisticsWindow = () => {
       return;
     }
 
-    // Clear current games
     setStats((prev) => ({ ...prev, bestGames: [] }));
 
-    // Call /getAllGames endpoint
     fetch("http://localhost:8010/getAllGames", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "username": username,
+        username: username,
       },
     })
       .then((res) => {
@@ -122,7 +125,6 @@ const StatisticsWindow = () => {
       });
   };
 
-  // Function to show best games
   const showBestGames = () => {
     const username = localStorage.getItem("username");
     if (!username) {
@@ -130,15 +132,13 @@ const StatisticsWindow = () => {
       return;
     }
 
-    // Clear current games
     setStats((prev) => ({ ...prev, bestGames: [] }));
 
-    // Call /getBestGames endpoint
     fetch("http://localhost:8010/getBestGames", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "username": username,
+        username: username,
       },
     })
       .then((res) => {
@@ -157,7 +157,6 @@ const StatisticsWindow = () => {
       });
   };
 
-  // Handle Show More/Less toggle
   const handleShowMoreToggle = () => {
     if (!showMore) {
       showAllGames();
@@ -168,24 +167,46 @@ const StatisticsWindow = () => {
 
   return (
     <>
-      <div className="background-container">
+      <Box
+        sx={{
+          position: "fixed", // Keep background fixed behind content
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          zIndex: -1, // Ensure it's behind everything else
+          background: "linear-gradient(135deg, #e0f2ff, #c2e5ff, #a8d8ff)",
+          backgroundSize: "200% 200%",
+          animation: `${gradientAnimation} 15s ease infinite`,
+          overflow: "hidden", // Prevent scrollbars if particles somehow overflow
+        }}
+      >
         <div className="particles">
           {particles.map((particle) => (
             <span
               key={particle.id}
-              className={`particle ${particle.type}`}
+              className={`particle ${particle.type}`} // Assuming CSS handles particle appearance/animation
               style={{
+                position: "absolute", // Position required for left/top
                 left: `${particle.left}%`,
                 top: `${particle.top}%`,
+                // Add styles for particle appearance if not handled by CSS
+                fontSize: particle.type === "star" ? "1.5rem" : "2rem",
+                userSelect: "none",
               }}
             >
-              {particle.type === 'star' ? '⭐' : '🏆'}
+              {particle.type === "star" ? "⭐" : "🏆"}
             </span>
           ))}
         </div>
-      </div>
+      </Box>
 
-      <div className="content-wrapper">
+      <div
+        className="content-wrapper"
+        style={{ position: "relative", zIndex: 1 }}
+      >
+        {" "}
+        {/* Ensure content is above background */}
         <Container maxWidth="md" sx={{ py: 4 }}>
           {loading && <LinearProgress sx={{ mb: 2, borderRadius: 5 }} />}
           {error && (
@@ -225,7 +246,10 @@ const StatisticsWindow = () => {
                       </IconButton>
                     </Tooltip>
                     <Tooltip title="Back">
-                      <IconButton onClick={() => navigate(-1)} color="secondary">
+                      <IconButton
+                        onClick={() => navigate(-1)}
+                        color="secondary"
+                      >
                         <BackIcon />
                       </IconButton>
                     </Tooltip>
@@ -358,11 +382,7 @@ const StatisticsWindow = () => {
                                     ? new Date(game.date).toLocaleDateString()
                                     : "N/A"}
                                 </Typography>
-                                <Box
-                                  display="flex"
-                                  alignItems="center"
-                                  mt={1}
-                                >
+                                <Box display="flex" alignItems="center" mt={1}>
                                   <CategoryIcon
                                     fontSize="small"
                                     color="action"
@@ -373,11 +393,7 @@ const StatisticsWindow = () => {
                                     {game.category || "N/A"}
                                   </Typography>
                                 </Box>
-                                <Box
-                                  display="flex"
-                                  alignItems="center"
-                                  mt={1}
-                                >
+                                <Box display="flex" alignItems="center" mt={1}>
                                   <TimeIcon
                                     fontSize="small"
                                     color="action"
@@ -390,11 +406,7 @@ const StatisticsWindow = () => {
                                       : "N/A"}
                                   </Typography>
                                 </Box>
-                                <Box
-                                  display="flex"
-                                  alignItems="center"
-                                  mt={1}
-                                >
+                                <Box display="flex" alignItems="center" mt={1}>
                                   <Typography variant="body2">
                                     <strong>Difficulty:</strong>{" "}
                                   </Typography>
@@ -404,9 +416,9 @@ const StatisticsWindow = () => {
                                       ml: 1,
                                       bgcolor:
                                         difficultyColors[game.difficulty] ||
-                                        '#757575',
-                                      color: 'white',
-                                      fontSize: '0.75rem',
+                                        "#757575",
+                                      color: "white",
+                                      fontSize: "0.75rem",
                                     }}
                                     size="small"
                                   />
