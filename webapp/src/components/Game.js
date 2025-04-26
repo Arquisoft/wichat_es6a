@@ -69,7 +69,7 @@ class Game {
         `Workspaceing ${this.totalQuestions} questions for category ${categoryName} from backend...`
       );
 
-      const response = await fetch("http://localhost:8003/generateQuestions", {
+      const response = await fetch("http://localhost:8000/generateQuestions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -173,12 +173,52 @@ app.post('/login', async (req, res) => {
 
 /* ENDPOINTS DEL SERVICIO DE LLM */
 
-app.post('/askllm', async (req, res) => {
+app.post('/generateQuestions', async (req, res) => {
+  try {
+    const llmResponse = await axios.post(llmServiceUrl + '/generateQuestions', req.body);
+    res.json(llmResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'llm', endpoint: '/generateQuestions', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.post('/configureAssistant', async (req, res) => {
+  try {
+    const llmResponse = await axios.post(llmServiceUrl + '/configureAssistant', req.body);
+    res.json(llmResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'llm', endpoint: '/configureAssistant', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.post('/ask', async (req, res) => {
   try {
     const llmResponse = await axios.post(llmServiceUrl + '/ask', req.body);
     res.json(llmResponse.data);
   } catch (error) {
-    failedRequestsCounter.inc({ service: 'llm', endpoint: '/askllm', status: error.response?.status || 500 });
+    failedRequestsCounter.inc({ service: 'llm', endpoint: '/ask', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.post('/getHint', async (req, res) => {
+  try {
+    const llmResponse = await axios.post(llmServiceUrl + '/getHint', req.body);
+    res.json(llmResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'llm', endpoint: '/getHint', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.post('/getHintWithQuery', async (req, res) => {
+  try {
+    const llmResponse = await axios.post(llmServiceUrl + '/getHintWithQuery', req.body);
+    res.json(llmResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'llm', endpoint: '/getHintWithQuery', status: error.response?.status || 500 });
     res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
   }
 });
