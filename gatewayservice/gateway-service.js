@@ -11,9 +11,12 @@ const { Counter, Gauge } = require('prom-client');  // Importar nuevas métricas
 const app = express();
 const port = 8000;
 
-const llmServiceUrl = process.env.LLM_SERVICE_URL || 'http://localhost:8003';
-const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:8002';
 const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:8001';
+const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:8002';
+const llmServiceUrl = process.env.LLM_SERVICE_URL || 'http://localhost:8003';
+const questionServiceUrl = process.env.QUESTION_SERVICE_URL || 'http://localhost:8005';
+const historyServiceUrl = process.env.HISTORY_SERVICE_URL || 'http://localhost:8010';
+const wikidataServiceUrl = process.env.WIKIDATA_SERVICE_URL || 'http://localhost:8020';
 
 app.use(cors());
 app.use(express.json());
@@ -80,8 +83,73 @@ async function checkServiceHealth() {
   }
 }
 setInterval(checkServiceHealth, 10000); // Cada 10 segundos
+// Endpoints de la aplicación
 
-// Endpoints de tu aplicación
+/* ENDPOINTS DEL SERVICIO DE USUARIOS */
+
+app.get('/user/:id', async (req, res) => {
+  try {
+    const userResponse = await axios.get(userServiceUrl + `/user/${req.params.id}`);
+    res.json(userResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'user', endpoint: '/user/:id', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.put('/user/:id/username', async (req, res) => {
+  try {
+    const userResponse = await axios.put(userServiceUrl + `/user/${req.params.id}/username`, req.body);
+    res.json(userResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'user', endpoint: '/user/:id/username', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.put('/user/:id/password', async (req, res) => {
+  try {
+    const userResponse = await axios.put(userServiceUrl + `/user/${req.params.id}/password`, req.body);
+    res.json(userResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'user', endpoint: '/user/:id/password', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.post('/user/:id/profile-pic', async (req, res) => {
+  try {
+    const userResponse = await axios.post(userServiceUrl + `/user/${req.params.id}/profile-pic`, req.body, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    res.json(userResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'user', endpoint: '/user/:id/profile-pic', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.get('/user/:id/profile-pic', async (req, res) => {
+  try {
+    const userResponse = await axios.get(userServiceUrl + `/user/${req.params.id}/profile-pic`, { responseType: 'stream' });
+    userResponse.data.pipe(res);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'user', endpoint: '/user/:id/profile-pic', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.delete('/user/:id/profile-pic', async (req, res) => {
+  try {
+    const userResponse = await axios.delete(userServiceUrl + `/user/${req.params.id}/profile-pic`);
+    res.json(userResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'user', endpoint: '/user/:id/profile-pic', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+/* ENDPOINTS DEL SERVICIO DE AUTENTIFICACIÓN */
 
 app.post('/login', async (req, res) => {
   try {
@@ -103,6 +171,8 @@ app.post('/adduser', async (req, res) => {
   }
 });
 
+/* ENDPOINTS DEL SERVICIO DE LLM */
+
 app.post('/askllm', async (req, res) => {
   try {
     const llmResponse = await axios.post(llmServiceUrl + '/ask', req.body);
@@ -119,6 +189,7 @@ app.post('/generateQuestions', async (req, res) => {
     const questionResponse = await axios.post(`${llmServiceUrl}/generateQuestions`, req.body);
     res.json(questionResponse.data);
   } catch (error) {
+    failedRequestsCounter.inc({ service: 'llm', endpoint: '/generateQuestions', status: error.response?.status || 500 });
     res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
   }
 });

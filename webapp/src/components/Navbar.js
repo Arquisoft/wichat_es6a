@@ -25,7 +25,7 @@ const Navbar = () => {
   useEffect(() => {
     if (userId) {
       axios
-        .get(`http://localhost:8001/user/${userId}/profile-pic`, {
+        .get(`http://localhost:8000/user/${userId}/profile-pic`, {
           responseType: "blob",
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         })
