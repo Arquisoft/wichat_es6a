@@ -277,6 +277,31 @@ app.post('/addGame', async (req, res) => {
   }
 });
 
+
+/* ENDPOINTS DEL SERVICIO DE PREGUNTAS */
+
+app.post('/addQuestion', async (req, res) => {
+  try {
+    const questionResponse = await axios.post(questionServiceUrl + '/addQuestion', req.body, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    res.status(questionResponse.status).json(questionResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'question', endpoint: '/addQuestion', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+app.get('/questions', async (req, res) => {
+  try {
+    const questionResponse = await axios.get(questionServiceUrl + '/questions');
+    res.json(questionResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({ service: 'question', endpoint: '/questions', status: error.response?.status || 500 });
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
 // **Configuración de Swagger**
 openapiPath = './openapi.yaml'
 if (fs.existsSync(openapiPath)) {

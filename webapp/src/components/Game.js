@@ -177,7 +177,7 @@ class Game {
         ? `?category=${encodeURIComponent(category)}`
         : "";
 
-      const response = await fetch(`http://localhost:8005/questions${categoryParam}`);
+      const response = await fetch(`http://localhost:8000/questions${categoryParam}`);
 
       if (!response.ok) {
         throw new Error(`Error loading questions from DB: ${response.statusText}`);
