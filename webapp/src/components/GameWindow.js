@@ -42,6 +42,8 @@ export function GameWindow() {
   const isInitializedRef = useRef(false);
   const chatCluesRef = useRef(null);
   const [isImageActuallyLoading, setIsImageActuallyLoading] = useState(false);
+  
+  const [imageWidth, setImageWidth] = useState(0);
 
   // --- Configuración de Endpoints y API Key ---
   const apiEndpoint =
@@ -337,61 +339,69 @@ export function GameWindow() {
   
           {/* Columna Central: Imagen */}
           <Grid item xs={12} sm={6} md={4}>
-            <Box
-              sx={{
-                width: "100%",
-                height: 0,
-                paddingBottom: { xs: "75%", sm: "100%" },
-                position: "relative",
-                borderRadius: 4,
-                boxShadow: 6,
-                overflow: "hidden",
-                bgcolor: "#333",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {isImageActuallyLoading && questionImage && (
-                <CircularProgress
-                  size={40}
-                  sx={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    marginTop: "-20px",
-                    marginLeft: "-20px",
-                    color: "primary.light",
-                    zIndex: 1,
-                  }}
-                />
-              )}
-              <Box
-                component="img"
-                key={questionImage || `default-${currentQuestion?.questionText || "no-question"}`}
-                src={questionImage || "/WichatAmigos.png"}
-                alt={`Imagen para: ${currentQuestion?.questionText || "Cargando..."}`}
-                sx={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  display: "block",
-                  opacity: isImageActuallyLoading ? 0 : 1,
-                  transition: "opacity 0.3s ease-in-out",
-                }}
-                onLoad={() => setIsImageActuallyLoading(false)}
-                onError={(e) => {
-                  setIsImageActuallyLoading(false);
-                  console.warn(`Error loading image: ${e.target.src}. Using default.`);
-                  e.target.onerror = null;
-                  e.target.src = "/WichatAmigos.png";
-                }}
-              />
-            </Box>
-          </Grid>
+  <Box
+    sx={{
+      height: 300, // Altura fija
+      width: imageWidth ? `${imageWidth}px` : "100%", // Ancho basado en imagen o 100% inicial
+      maxWidth: "100%", // No permitir que se pase del grid
+      position: "relative",
+      borderRadius: 4,
+      boxShadow: 6,
+      overflow: "hidden",
+      bgcolor: "#333",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      mx: "auto", // Centrado horizontal
+    }}
+  >
+    {isImageActuallyLoading && questionImage && (
+      <CircularProgress
+        size={40}
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          marginTop: "-20px",
+          marginLeft: "-20px",
+          color: "primary.light",
+          zIndex: 1,
+        }}
+      />
+    )}
+    <Box
+      component="img"
+      key={questionImage || `default-${currentQuestion?.questionText || "no-question"}`}
+      src={questionImage || "/WichatAmigos.png"}
+      alt={`Imagen para: ${currentQuestion?.questionText || "Cargando..."}`}
+      sx={{
+        height: "100%",
+        width: "auto",
+        objectFit: "contain",
+        display: "block",
+        backgroundColor: "#222",
+        opacity: isImageActuallyLoading ? 0 : 1,
+        transition: "opacity 0.3s ease-in-out",
+      }}
+      onLoad={(e) => {
+        setIsImageActuallyLoading(false);
+        const { naturalWidth, naturalHeight } = e.target;
+        
+        const fixedHeight = 300;
+        const scaleFactor = fixedHeight / naturalHeight;
+        const scaledWidth = naturalWidth * scaleFactor;
+        setImageWidth(scaledWidth);
+      }}
+      onError={(e) => {
+        setIsImageActuallyLoading(false);
+        console.warn(`Error loading image: ${e.target.src}. Using default.`);
+        e.target.onerror = null;
+        e.target.src = "/WichatAmigos.png";
+        setImageWidth(300);
+      }}
+    />
+  </Box>
+</Grid>
   
           {/* Columna Derecha: Timer y Botón Hint */}
           <Grid item xs={12} sm={6} md={3}>
