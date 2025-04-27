@@ -47,7 +47,7 @@ export function GameWindow() {
 
   // --- Configuración de Endpoints y API Key ---
   const apiEndpoint =
-    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8003";
+    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
   const apiKey =
     process.env.REACT_APP_GEMINI_API_KEY || process.env.GEMINI_API_KEY; // Para pistas
 

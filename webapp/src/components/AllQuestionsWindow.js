@@ -9,7 +9,7 @@ const AllQuestionsWindow = () => {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await fetch(`http://localhost:8005/questions`);
+        const response = await fetch(`http://localhost:8000/questions`);
         if (!response.ok) throw new Error("Network response was not ok");
         
         const data = await response.json();
