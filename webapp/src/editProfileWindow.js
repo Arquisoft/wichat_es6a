@@ -21,7 +21,8 @@ const EditProfile = () => {
   const [passwordSuccess, setPasswordSuccess] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [loading, setLoading] = useState(true);
-  const baseURL = "http://localhost:8001/";
+  
+  const baseURL = "http://localhost:8000/";
   const user_Id = localStorage.getItem("_id");
 
   useEffect(() => {

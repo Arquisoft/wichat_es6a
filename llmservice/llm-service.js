@@ -22,8 +22,7 @@ require("dotenv").config();
 const port = process.env.PORT || 8003; // Puerto del servidor
 let moderation = "You are a quiz game assistant."; // Prompt base para el LLM
 // URL del wikidata-service (que ahora DEBE devolver imageUrl)
-const WIKIDATA_SERVICE_URL =
-  process.env.WIKIDATA_SERVICE_URL || "http://wikidataservice:8020/api";
+const WIKIDATA_SERVICE_URL = "http://gatewayservice:8000/api";
 
 // Middlewares de Express
 app.use(express.json({ limit: "10mb" })); // Parsear JSON con límite de tamaño
