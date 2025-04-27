@@ -239,7 +239,7 @@ const StatisticsWindow = () => {
                     <Box display="flex" alignItems="center">
                       <GameIcon color="action" sx={{ mr: 1 }} />
                       <Typography variant="body1">
-                        <strong>Games Played:</strong> {stats.gamesPlayed || 0}
+                        Games Played: {stats.gamesPlayed || 0}
                       </Typography>
                     </Box>
                   </Grid>
@@ -247,7 +247,7 @@ const StatisticsWindow = () => {
                     <Box display="flex" alignItems="center">
                       <TrophyIcon color="action" sx={{ mr: 1 }} />
                       <Typography variant="body1">
-                        <strong>Total Points:</strong> {stats.totalPoints || 0}
+                        Total Points: {stats.totalPoints || 0}
                       </Typography>
                     </Box>
                   </Grid>
@@ -255,7 +255,7 @@ const StatisticsWindow = () => {
                     <Box display="flex" alignItems="center">
                       <TrophyIcon color="action" sx={{ mr: 1 }} />
                       <Typography variant="body1">
-                        <strong>Points/Game:</strong>{" "}
+                        Points/Game:{" "}
                         {isNaN(stats.pointsPerGame)
                           ? 0
                           : stats.pointsPerGame.toFixed(2)}
@@ -350,10 +350,10 @@ const StatisticsWindow = () => {
                                   </Typography>
                                 </Box>
                                 <Typography variant="body2">
-                                  <strong>Points:</strong> {game.points}
+                                  Points: {game.points}
                                 </Typography>
                                 <Typography variant="body2">
-                                  <strong>Date:</strong>{" "}
+                                  Date:{" "}
                                   {game.date
                                     ? new Date(game.date).toLocaleDateString()
                                     : "N/A"}
@@ -369,7 +369,7 @@ const StatisticsWindow = () => {
                                     sx={{ mr: 1 }}
                                   />
                                   <Typography variant="body2">
-                                    <strong>Category:</strong>{" "}
+                                    Category:{" "}
                                     {game.category || "N/A"}
                                   </Typography>
                                 </Box>
@@ -384,7 +384,7 @@ const StatisticsWindow = () => {
                                     sx={{ mr: 1 }}
                                   />
                                   <Typography variant="body2">
-                                    <strong>Time Taken:</strong>{" "}
+                                    Time Taken:{" "}
                                     {game.timeTaken
                                       ? `${game.timeTaken} seconds`
                                       : "N/A"}
@@ -396,7 +396,7 @@ const StatisticsWindow = () => {
                                   mt={1}
                                 >
                                   <Typography variant="body2">
-                                    <strong>Difficulty:</strong>{" "}
+                                    Difficulty:{" "}
                                   </Typography>
                                   <Chip
                                     label={game.difficulty || "N/A"}
