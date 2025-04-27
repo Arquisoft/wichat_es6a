@@ -95,7 +95,7 @@ async init(category, difficulty) {
         ? `?category=${encodeURIComponent(category)}`
         : "";
 
-      const response = await fetch(`http://localhost:8005/questions${categoryParam}`);
+      const response = await fetch(`http://localhost:8000/questions${categoryParam}`);
 
       if (!response.ok) {
         throw new Error(`Error loading questions from DB: ${response.statusText}`);
@@ -230,7 +230,7 @@ async init(category, difficulty) {
       const username = localStorage.getItem("username");
       if (!username) throw new Error("No username found in localStorage");
 
-      const response = await fetch("http://localhost:8010/addGame", {
+      const response = await fetch("http://localhost:8000/addGame", {
         // Endpoint para guardar partida
         method: "POST",
         headers: {
