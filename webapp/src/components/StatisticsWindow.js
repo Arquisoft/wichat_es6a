@@ -13,7 +13,6 @@ import {
   Divider,
   IconButton,
   Tooltip,
-  keyframes, // Import keyframes
 } from "@mui/material";
 import {
   SportsEsports as GameIcon,
@@ -26,22 +25,16 @@ import {
   ExpandLess as ExpandLessIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-// Removed import "./AnimatedBackground.css";
-
-// Keyframes for the background animation (consistent with other components)
-const gradientAnimation = keyframes`
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-`;
+import "./AnimatedBackground.css";
 
 const StatisticsWindow = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showMore, setShowMore] = useState(false);
+  const [showMore, setShowMore] = useState(false); // State for Show More
   const navigate = useNavigate();
 
+  // Generar partículas (estrellas y trofeos)
   const particleCount = 20;
   const particles = Array.from({ length: particleCount }, (_, index) => ({
     id: index,
@@ -87,12 +80,14 @@ const StatisticsWindow = () => {
     fetchStats();
   }, []);
 
+  // Define difficulty colors
   const difficultyColors = {
-    Fácil: "#4CAF50",
-    Medio: "#FF9800",
-    Difícil: "#F44336",
+    Fácil: "#4CAF50", // Green
+    Medio: "#FF9800", // Orange
+    Difícil: "#F44336", // Red
   };
 
+  // Function to show all games
   const showAllGames = () => {
     const username = localStorage.getItem("username");
     if (!username) {
@@ -100,8 +95,10 @@ const StatisticsWindow = () => {
       return;
     }
 
+    // Clear current games
     setStats((prev) => ({ ...prev, bestGames: [] }));
 
+    // Call /getAllGames endpoint
     fetch("http://localhost:8010/getAllGames", {
       method: "GET",
       headers: {
@@ -125,6 +122,7 @@ const StatisticsWindow = () => {
       });
   };
 
+  // Function to show best games
   const showBestGames = () => {
     const username = localStorage.getItem("username");
     if (!username) {
@@ -132,8 +130,10 @@ const StatisticsWindow = () => {
       return;
     }
 
+    // Clear current games
     setStats((prev) => ({ ...prev, bestGames: [] }));
 
+    // Call /getBestGames endpoint
     fetch("http://localhost:8010/getBestGames", {
       method: "GET",
       headers: {
@@ -157,6 +157,7 @@ const StatisticsWindow = () => {
       });
   };
 
+  // Handle Show More/Less toggle
   const handleShowMoreToggle = () => {
     if (!showMore) {
       showAllGames();
@@ -167,46 +168,24 @@ const StatisticsWindow = () => {
 
   return (
     <>
-      <Box
-        sx={{
-          position: "fixed", // Keep background fixed behind content
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          zIndex: -1, // Ensure it's behind everything else
-          background: "linear-gradient(135deg, #e0f2ff, #c2e5ff, #a8d8ff)",
-          backgroundSize: "200% 200%",
-          animation: `${gradientAnimation} 15s ease infinite`,
-          overflow: "hidden", // Prevent scrollbars if particles somehow overflow
-        }}
-      >
+      <div className="background-container">
         <div className="particles">
           {particles.map((particle) => (
             <span
               key={particle.id}
-              className={`particle ${particle.type}`} // Assuming CSS handles particle appearance/animation
+              className={`particle ${particle.type}`}
               style={{
-                position: "absolute", // Position required for left/top
                 left: `${particle.left}%`,
                 top: `${particle.top}%`,
-                // Add styles for particle appearance if not handled by CSS
-                fontSize: particle.type === "star" ? "1.5rem" : "2rem",
-                userSelect: "none",
               }}
             >
               {particle.type === "star" ? "⭐" : "🏆"}
             </span>
           ))}
         </div>
-      </Box>
+      </div>
 
-      <div
-        className="content-wrapper"
-        style={{ position: "relative", zIndex: 1 }}
-      >
-        {" "}
-        {/* Ensure content is above background */}
+      <div className="content-wrapper">
         <Container maxWidth="md" sx={{ py: 4 }}>
           {loading && <LinearProgress sx={{ mb: 2, borderRadius: 5 }} />}
           {error && (

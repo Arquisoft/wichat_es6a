@@ -22,7 +22,17 @@ const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
+  const colors = {
+    federalBlue: "#03045eff", // Más oscuro
+    honoluluBlue: "#0077b6ff",
+    pacificCyan: "#00b4d8ff",
+    nonPhotoBlue: "#90e0efff",
+    lightCyan: "#caf0f8ff", // Más claro
+  };
+
   useEffect(() => {
+    let currentImageUrl = null;
+
     if (userId) {
       axios
         .get(`http://localhost:8001/user/${userId}/profile-pic`, {
@@ -31,12 +41,22 @@ const Navbar = () => {
         })
         .then((response) => {
           const imageUrl = URL.createObjectURL(response.data);
+          currentImageUrl = imageUrl;
           setProfilePic(imageUrl);
         })
         .catch((error) => {
           console.error("Error al obtener la imagen de perfil:", error);
+          setProfilePic(null);
         });
+    } else {
+      setProfilePic(null);
     }
+
+    return () => {
+      if (currentImageUrl) {
+        URL.revokeObjectURL(currentImageUrl);
+      }
+    };
   }, [userId]);
 
   const handleMenuOpen = (event) => {
@@ -51,6 +71,7 @@ const Navbar = () => {
     localStorage.removeItem("username");
     localStorage.removeItem("token");
     localStorage.removeItem("_id");
+    setProfilePic(null); // Limpiar estado local
     handleMenuClose();
     navigate("/");
   };
@@ -61,77 +82,148 @@ const Navbar = () => {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: "#1E90FF" }}>
+    <AppBar
+      position="static"
+      sx={{
+        backgroundColor: colors.federalBlue,
+        boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+      }}
+    >
       <Toolbar>
-        <IconButton edge="start" color="inherit" onClick={() => navigate("/")}>
+        {/* Icono Home */}
+        <IconButton
+          edge="start"
+          color="inherit"
+          onClick={() => navigate("/")}
+          sx={{
+            mr: 1,
+            color: colors.lightCyan,
+            "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" }, // Hover claro sobre oscuro funciona bien
+          }}
+        >
           <HomeIcon />
         </IconButton>
-        <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          Home Page
+
+        {/* Título */}
+        <Typography
+          variant="h6"
+          sx={{
+            flexGrow: 1,
+            color: colors.lightCyan,
+            fontWeight: "bold",
+          }}
+        >
+          WIQ - ES6A
         </Typography>
-        <Button color="inherit" onClick={() => navigate("/home")}>
-          Home
-        </Button>
-        <Button color="inherit" onClick={() => navigate("/game-options")}>
-          Jugar
-        </Button>
-        {username && (
-          <Button color="inherit" onClick={() => navigate("/statistics")}>
-            Stats
+
+        {/* Botones de navegación */}
+        {[
+          { label: "Home", path: "/home" },
+          { label: "Jugar", path: "/game-options" },
+          ...(username ? [{ label: "Stats", path: "/statistics" }] : []),
+          { label: "Questions", path: "/questions" },
+        ].map((item) => (
+          <Button
+            key={item.label}
+            color="inherit"
+            onClick={() => navigate(item.path)}
+            sx={{
+              color: colors.lightCyan,
+              textTransform: "none",
+              fontWeight: "500",
+              mx: 0.5,
+              "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
+            }}
+          >
+            {item.label}
           </Button>
-        )}
-        <Button color="inherit" onClick={() => navigate("/questions")}>
-          Questions
-        </Button>
-        {username && (
+        ))}
+
+        {/* Info de Usuario y Menú */}
+        {username ? (
           <Box
             onClick={handleMenuOpen}
             sx={{
               display: "flex",
               alignItems: "center",
-              backgroundColor: "#ffffff",
-              color: "#000000",
-              padding: "4px 10px",
+              backgroundColor: colors.honoluluBlue,
+              color: colors.federalBlue,
+              padding: "4px 8px 4px 12px",
               borderRadius: "20px",
               marginLeft: 2,
               cursor: "pointer",
+              transition: "background-color 0.2s ease",
+              "&:hover": {
+                backgroundColor: colors.pacificCyan,
+              },
             }}
           >
             <Typography
               variant="body1"
-              sx={{ fontWeight: "bold", marginRight: 2 }}
+              sx={{ fontWeight: "bold", marginRight: 1.5 }}
             >
               {username}
             </Typography>
             <Avatar
               src={profilePic ? profilePic : "/default-profile-img.jpg"}
               alt={username}
-              sx={{ width: 32, height: 32 }}
+              sx={{
+                width: 32,
+                height: 32,
+                bgcolor: colors.honoluluBlue,
+              }}
             />
           </Box>
-        )}
-        {!username && (
+        ) : (
+          // Botón Login si no está logueado
           <Button
             color="inherit"
-            onClick={() => {
-              navigate("/");
-              localStorage.removeItem("username");
+            onClick={() => navigate("/")}
+            sx={{
+              color: colors.lightCyan,
+              textTransform: "none",
+              fontWeight: "500",
+              mx: 0.5,
+              "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
             }}
           >
-            Logout
+            Login
           </Button>
         )}
 
-          {/* Dropdown Menu */}
-          <Menu
+        {/* Menú desplegable */}
+        <Menu
           anchorEl={anchorEl}
           open={open}
           onClose={handleMenuClose}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
+          PaperProps={{
+            sx: {
+              backgroundColor: colors.honoluluBlue,
+              color: colors.federalBlue,
+              borderRadius: "8px",
+              mt: 1,
+              boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            },
+          }}
+        >
+          <MenuItem
+            onClick={handleSettings}
+            sx={{
+              "&:hover": { backgroundColor: colors.pacificCyan },
+            }}
           >
-          <MenuItem onClick={handleSettings}>Configuración</MenuItem>
-          <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            Configuración
+          </MenuItem>
+          <MenuItem
+            onClick={handleLogout}
+            sx={{
+              "&:hover": { backgroundColor: colors.pacificCyan },
+            }}
+          >
+            Logout
+          </MenuItem>
         </Menu>
       </Toolbar>
     </AppBar>

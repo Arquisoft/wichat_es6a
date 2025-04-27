@@ -1,3 +1,4 @@
+// src/components/GameOptions.js
 import React, { useState } from "react";
 import {
   Box,
@@ -14,14 +15,26 @@ import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt
 import BalanceIcon from "@mui/icons-material/Balance";
 import WarningIcon from "@mui/icons-material/Warning";
 
-// Animación de fondo (sin cambios)
+// --- Paleta Azul ---
+// Paleta de colores principal utilizada en la aplicación.
+const PALETTE = {
+  federalBlue: "#03045eff", // Azul muy oscuro, para texto principal sobre fondos claros
+  honoluluBlue: "#0077b6ff", // Azul medio, para acentos, fondos secundarios, bordes
+  pacificCyan: "#00b4d8ff", // Azul brillante, para hovers, selecciones activas, brillos
+  nonPhotoBlue: "#90e0efff", // Azul claro
+  lightCyan: "#caf0f8ff", // Azul muy claro, para texto sobre fondos oscuros
+};
+
+// --- Animaciones Keyframes ---
+
+// Animación para el fondo degradado
 const gradientAnimation = keyframes`
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 `;
 
-// Keyframes para animación de entrada de botones
+// Animación para la entrada de elementos (fade in + slide up)
 const fadeInSlideUp = keyframes`
   from {
     opacity: 0;
@@ -33,17 +46,21 @@ const fadeInSlideUp = keyframes`
   }
 `;
 
-// Keyframes para animación de pulso del botón Jugar
-const pulse = keyframes`
-  0% { transform: scale(1); box-shadow: 0px 4px 12px rgba(0,0,0,0.25); }
-  50% { transform: scale(1.03); box-shadow: 0px 6px 18px rgba(30, 136, 229, 0.4); }
-  100% { transform: scale(1); box-shadow: 0px 4px 12px rgba(0,0,0,0.25); }
+// Animación de pulso para el botón "Jugar", usando un color de la paleta azul
+const pulse = (
+  shadowColor = `rgba(0, 180, 216, 0.4)`
+) => keyframes` // Usa pacificCyan con opacidad
+  0% { transform: scale(1); box-shadow: 0px 4px 12px rgba(0,0,0,0.2); } /* Sombra base oscura */
+  50% { transform: scale(1.03); box-shadow: 0px 6px 18px ${shadowColor}; } /* Sombra de color */
+  100% { transform: scale(1); box-shadow: 0px 4px 12px rgba(0,0,0,0.2); }
 `;
+
+// --- Componente Principal ---
 
 const GameOptions = () => {
   const navigate = useNavigate();
 
-  // Datos de dificultades
+  // --- Datos de Dificultades ---
   const difficulties = [
     {
       name: "Fácil",
@@ -67,9 +84,10 @@ const GameOptions = () => {
       icon: WarningIcon,
     },
   ];
-  const [selectedDifficulty, setSelectedDifficulty] = useState(difficulties[1]); // Medio por defecto
+  // Estado para la dificultad seleccionada, por defecto "Medio"
+  const [selectedDifficulty, setSelectedDifficulty] = useState(difficulties[1]);
 
-  // Datos de categorías
+  // --- Datos de Categorías ---
   const categories = [
     { name: "Países", endpoint: "/paises", image: "/paises.png" },
     { name: "Monumentos", endpoint: "/monumentos", image: "/monumentos.jpg" },
@@ -80,229 +98,243 @@ const GameOptions = () => {
     { name: "Pinturas", endpoint: "/pinturas", image: "/pinturas.png" },
     { name: "Variado", endpoint: "/variado", image: "/variado.png" },
   ];
+  // Estado para la categoría seleccionada
   const [selectedCategory, setSelectedCategory] = useState(null);
 
+  // --- Handlers ---
+
+  // Manejador para seleccionar una categoría
   const handleCategoryButtonClick = (category) => {
     setSelectedCategory(category);
   };
 
+  // Manejador para iniciar el juego
   const handlePlayClick = () => {
     if (selectedCategory && selectedDifficulty) {
-      // Create a serializable version of selectedDifficulty without the icon
-      const { icon, ...serializableDifficulty } = selectedDifficulty;
+      // Quitamos propiedades no serializables (icono, color) antes de navegar
+      const { icon, color, ...serializableDifficulty } = selectedDifficulty;
       navigate("/game", {
         state: {
           category: selectedCategory,
-          difficulty: serializableDifficulty,
+          difficulty: serializableDifficulty, // Pasamos solo los datos necesarios
         },
       });
     } else {
+      // Alerta simple si no se selecciona categoría (se podría mejorar con un Snackbar)
       alert("Por favor, selecciona una categoría antes de jugar.");
-      console.warn("Intento de jugar sin seleccionar categoría.");
     }
   };
 
+  // Generar la animación de pulso para el botón Jugar
+  const pulseAnimation = pulse(`rgba(0, 180, 216, 0.4)`); // Sombra pacificCyan
+
+  // --- Renderizado ---
   return (
-    // Contenedor principal de pantalla completa con fondo animado
+    // Contenedor principal con el fondo degradado solicitado
     <Box
       sx={{
-        minHeight: "100vh",
-        background: "linear-gradient(135deg, #e0f2ff, #c2e5ff, #a8d8ff)", // Mismo gradiente que Home
+        minHeight: "calc(100vh - 64px)", // Ajustar altura si hay AppBar
+        // Fondo degradado de AllQuestionsWindow aplicado aquí
+        background: "linear-gradient(135deg, #e0f2ff, #c2e5ff, #a8d8ff)",
         backgroundSize: "200% 200%",
-        animation: `${gradientAnimation} 15s ease infinite`, // Misma animación
+        animation: `${gradientAnimation} 15s ease infinite`, // Duración consistente
         display: "flex",
-        alignItems: "center", // Centrar verticalmente el contenido
-        justifyContent: "center", // Centrar horizontalmente el contenido
-        p: { xs: 2, sm: 3, md: 4 }, // Padding exterior
+        alignItems: "center", // Centrar verticalmente el Paper
+        justifyContent: "center", // Centrar horizontalmente el Paper
+        p: { xs: 2, sm: 3, md: 4 }, // Padding responsivo
+        boxSizing: "border-box",
       }}
     >
-      {/* Contenedor central tipo "tarjeta" para las opciones */}
+      {/* Contenedor central tipo "tarjeta" con efecto translúcido */}
       <Paper
-        elevation={8} // Sombra un poco más fuerte
+        elevation={8} // Sombra pronunciada
         sx={{
           padding: { xs: 2, sm: 3, md: 4 },
-          borderRadius: "20px", // Quizás un poco más redondeado
-          // Fondo blanco semi-transparente para destacar sobre el gradiente
-          backgroundColor: "rgba(255, 255, 255, 0.9)",
-          backdropFilter: "blur(10px)", // Efecto blur para el fondo
-          maxWidth: 1200,
-          width: "100%", // Ocupa el ancho disponible hasta maxWidth
-          margin: "0 auto", // Centrado por si acaso
-          border: "1px solid rgba(255, 255, 255, 0.2)", // Borde blanco sutil
+          borderRadius: "20px", // Bordes redondeados
+          backgroundColor: "rgba(255, 255, 255, 0.9)", // Fondo blanco translúcido
+          backdropFilter: "blur(10px)", // Efecto de desenfoque del fondo
+          maxWidth: 1200, // Ancho máximo del contenido
+          width: "100%", // Ocupa el ancho disponible
+          margin: "0 auto", // Centrado horizontal
+          border: "1px solid rgba(255, 255, 255, 0.2)", // Borde sutil para definir
         }}
       >
+        {/* Grid principal para dividir en dos columnas */}
         <Grid container spacing={4} alignItems="stretch">
           {" "}
-          {/* alignItems stretch para igualar altura de columnas */}
-          {/* Columna Izquierda: Categorías */}
+          {/* Columna Izquierda: Selección de Categorías */}
           <Grid item xs={12} md={8}>
             <Box
               sx={{ display: "flex", flexDirection: "column", height: "100%" }}
             >
+              {/* Título de la sección Categorías */}
               <Typography
-                variant="h4" // Tamaño consistente
-                gutterBottom
+                variant="h4"
+                gutterBottom // Margen inferior
                 sx={{
                   fontWeight: "bold",
-                  color: "#0b2d45", // Color oscuro consistente
-                  mb: 1, // Menos margen inferior
-                  textAlign: { xs: "center", md: "left" },
-                  fontFamily: "Poppins, sans-serif", // Fuente consistente
-                  position: "relative", // Para el pseudo-elemento
+                  color: PALETTE.federalBlue, // Texto oscuro de la paleta
+                  mb: 1,
+                  textAlign: { xs: "center", md: "left" }, // Centrado en móvil, izquierda en desktop
+                  fontFamily: "Poppins, sans-serif", // Fuente opcional
+                  position: "relative", // Para la línea decorativa
                   "&::after": {
-                    // Detalle visual bajo el título
+                    // Línea decorativa azul medio
                     content: '""',
                     position: "absolute",
-                    bottom: "-8px", // Posición bajo el texto
-                    left: { xs: "calc(50% - 30px)", md: 0 }, // Centrado en móvil, izquierda en desktop
+                    bottom: "-8px",
+                    left: { xs: "calc(50% - 30px)", md: 0 },
                     width: "60px",
                     height: "4px",
-                    backgroundColor: "#1e88e5", // Color azul primario
+                    backgroundColor: PALETTE.honoluluBlue,
                     borderRadius: "2px",
                   },
                 }}
               >
                 Selecciona una Categoría
               </Typography>
+
+              {/* Grid para los botones de categoría */}
               <Box
                 sx={{
                   display: "grid",
+                  // Columnas responsivas
                   gridTemplateColumns: {
                     xs: "repeat(2, 1fr)",
                     sm: "repeat(3, 1fr)",
                     lg: "repeat(4, 1fr)",
                   },
-                  gap: { xs: 2, md: 3 },
+                  gap: { xs: 2, md: 3 }, // Espaciado responsivo
                   width: "100%",
-                  flexGrow: 1, // Para que ocupe el espacio disponible
-                  mt: 4, // Más espacio tras el título
+                  flexGrow: 1, // Ocupa el espacio vertical disponible
+                  mt: 4, // Margen superior
                 }}
               >
-                {categories.map(
-                  (
-                    category,
-                    index // Añadido index para el delay
-                  ) => (
-                    <Button
-                      key={category.endpoint}
-                      onClick={() => handleCategoryButtonClick(category)}
-                      sx={{
-                        display: "flex", // Necesario para flex props
-                        flexDirection: "column", // Apilar imagen y texto
-                        alignItems: "center", // Centrar horizontalmente
-                        justifyContent: "center", // Centrar verticalmente
-                        textAlign: "center", // Centrar texto
-                        gap: 1, // Espacio entre imagen y texto
-                        backgroundColor: "#ffffff",
-                        borderRadius: "16px", // Más redondeado
-                        padding: "16px 8px", // Padding uniforme
-                        border:
-                          selectedCategory?.endpoint === category.endpoint
-                            ? "4px solid #007bff" // Borde más grueso y azul más brillante
-                            : "4px solid transparent", // Borde transparente para mantener tamaño
-                        boxShadow:
-                          selectedCategory?.endpoint === category.endpoint
-                            ? "0 8px 20px rgba(0, 123, 255, 0.5), 0 0 15px rgba(0, 123, 255, 0.3)" // Sombra + Brillo azul si seleccionado
-                            : "0 4px 8px rgba(0, 0, 0, 0.1)", // Sombra normal
+                {/* Mapeo de las categorías para crear los botones */}
+                {categories.map((category, index) => (
+                  <Button
+                    key={category.endpoint}
+                    onClick={() => handleCategoryButtonClick(category)}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      textAlign: "center",
+                      gap: 1,
+                      background: `linear-gradient(135deg, ${PALETTE.lightCyan} 0%, ${PALETTE.nonPhotoBlue} 100%)`,
+                      borderRadius: "16px",
+                      padding: "16px 8px",
+                      border:
+                        selectedCategory?.endpoint === category.endpoint
+                          ? `4px solid ${PALETTE.pacificCyan}`
+                          : "4px solid transparent", // Borde transparente si no está seleccionado
+                      boxShadow:
+                        selectedCategory?.endpoint === category.endpoint
+                          ? `0 8px 20px rgba(0, 180, 216, 0.5), 0 0 15px rgba(0, 180, 216, 0.3)` // Sombra pacificCyan
+                          : "0 4px 8px rgba(0, 0, 0, 0.1)", // Sombra normal más sutil por defecto
+                      transform:
+                        selectedCategory?.endpoint === category.endpoint
+                          ? "scale(1.05)" // Ligero aumento si seleccionado
+                          : "scale(1)", // Tamaño normal
+                      transition:
+                        "transform 0.3s ease-out, box-shadow 0.3s ease-out, border 0.3s ease-out, background 0.3s ease-out",
+                      minHeight: { xs: 170, sm: 190 }, // Altura mínima
+                      textTransform: "none", // Evitar mayúsculas
+                      // Animación de entrada
+                      opacity: 0,
+                      animation: `${fadeInSlideUp} 0.5s ease-out forwards`,
+                      animationDelay: `${index * 0.08}s`,
+                      "&:hover": {
                         transform:
                           selectedCategory?.endpoint === category.endpoint
-                            ? "scale(1.05)" // Escala un poco más si seleccionado
-                            : "scale(1)",
-                        transition:
-                          "transform 0.3s ease-out, box-shadow 0.3s ease-out, border 0.3s ease-out", // Transición más "elástica"
-                        minHeight: { xs: 170, sm: 190 }, // Altura mínima ajustada
-                        textTransform: "none", // Evitar mayúsculas automáticas
-                        // Animación de entrada con delay
-                        opacity: 0, // Empieza invisible
-                        animation: `${fadeInSlideUp} 0.5s ease-out forwards`,
-                        animationDelay: `${index * 0.08}s`, // Delay escalonado
-
-                        "&:hover": {
-                          transform:
-                            selectedCategory?.endpoint === category.endpoint
-                              ? "scale(1.07)"
-                              : "translateY(-5px) scale(1.04)", // Más reacción en hover
-                          boxShadow:
-                            selectedCategory?.endpoint === category.endpoint
-                              ? "0 10px 25px rgba(0, 123, 255, 0.6), 0 0 20px rgba(0, 123, 255, 0.4)" // Brillo/sombra más intensos en hover si seleccionado
-                              : "0 8px 16px rgba(0, 0, 0, 0.2), 0 0 10px rgba(0, 0, 0, 0.1)", // Sombra + ligero brillo genérico en hover
-                          backgroundColor: "#ffffff", // Mantenemos blanco para que destaque el brillo/sombra
-                        },
-                        "&:active": { transform: "scale(0.97)" }, // Encoger un poco más al click
+                            ? "scale(1.07)" // Aumento mayor en hover si está seleccionado
+                            : "translateY(-5px) scale(1.04)", // Levitar y aumentar si no seleccionado
+                        boxShadow:
+                          selectedCategory?.endpoint === category.endpoint
+                            ? `0 10px 25px rgba(0, 180, 216, 0.6), 0 0 20px rgba(0, 180, 216, 0.4)` // Más intensa si seleccionado
+                            : `0 8px 16px rgba(0, 180, 216, 0.3), 0 0 10px rgba(0, 180, 216, 0.1)`, // Sombra pacificCyan si no seleccionado
+                      },
+                      "&:active": { transform: "scale(0.97)" }, // Efecto click
+                    }}
+                  >
+                    {/* Imagen de la categoría */}
+                    <Box
+                      component="img"
+                      src={category.image}
+                      alt={`${category.name} icon`}
+                      sx={{
+                        width: { xs: 70, sm: 90 },
+                        height: { xs: 70, sm: 90 },
+                        objectFit: "contain",
+                        borderRadius: "12px",
+                        mb: 1.5,
+                      }}
+                    />
+                    {/* Nombre de la categoría */}
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        color: PALETTE.federalBlue, // Texto oscuro para contraste
+                        fontWeight: "600",
+                        fontFamily: "Poppins, sans-serif",
                       }}
                     >
-                      <Box
-                        component="img"
-                        src={category.image}
-                        alt={`${category.name} icon`}
-                        sx={{
-                          width: { xs: 70, sm: 90 }, // Tamaños ajustados
-                          height: { xs: 70, sm: 90 },
-                          objectFit: "contain",
-                          borderRadius: "12px", // Redondeo para la imagen interna
-                          mb: 1.5,
-                        }}
-                      />
-                      <Typography
-                        variant="body1" // Tamaño adecuado para el texto del botón
-                        sx={{
-                          color: "#1c4966", // Color de texto consistente
-                          fontWeight: "600", // Peso de fuente
-                          fontFamily: "Poppins, sans-serif", // Fuente consistente
-                        }}
-                      >
-                        {category.name}
-                      </Typography>
-                    </Button>
-                  )
-                )}
+                      {category.name}
+                    </Typography>
+                  </Button>
+                ))}
               </Box>
             </Box>
           </Grid>
-          {/* Columna Derecha: Dificultad y Jugar */}
+          {/* Columna Derecha: Selección de Dificultad y Botón Jugar */}
           <Grid item xs={12} md={4}>
             <Box
               sx={{
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                justifyContent: "space-around",
+                justifyContent: "space-around", // Mejor distribución vertical
                 height: "100%",
-                gap: 2,
+                gap: { xs: 3, md: 2 }, // Ajuste del espacio entre elementos
               }}
             >
-              {" "}
-              {/* Space Around para distribuir mejor */}
+              {/* Título de la sección Dificultad */}
               <Typography
                 variant="h5"
                 gutterBottom
                 sx={{
                   fontWeight: "bold",
-                  color: "#0b2d45",
+                  color: PALETTE.federalBlue,
                   fontFamily: "Poppins, sans-serif",
-                  position: "relative", // Para el pseudo-elemento
+                  position: "relative",
+                  textAlign: "center", // Asegurar centrado del título
+                  mb: { xs: 1, md: 0 }, // Margen inferior ajustado
                   "&::after": {
-                    // Detalle visual bajo el título
                     content: '""',
                     position: "absolute",
                     bottom: "-6px",
-                    left: "calc(50% - 25px)",
+                    left: "calc(50% - 25px)", // Centrado bajo el texto
                     width: "50px",
                     height: "3px",
-                    backgroundColor: selectedDifficulty.color, // Usa el color de la dificultad!
+                    backgroundColor: selectedDifficulty.color, // Color semántico
                     borderRadius: "2px",
-                    transition: "background-color 0.3s ease", // Transición del color
+                    transition: "background-color 0.3s ease",
                   },
                 }}
               >
                 Selecciona una Dificultad
               </Typography>
+
+              {/* Botones de dificultad  */}
               <Box
                 sx={{
                   display: "flex",
                   justifyContent: "center",
                   gap: 1.5,
-                  flexWrap: "wrap",
+                  flexWrap: "wrap", // Permite que los botones pasen a la siguiente línea si no caben
+                  width: "100%", // Asegurar que ocupa el ancho para centrar bien
+                  mt: { xs: 1, md: 0 }, // Margen superior ajustado
                 }}
               >
                 {difficulties.map((difficulty) => (
@@ -315,117 +347,119 @@ const GameOptions = () => {
                     }
                     onClick={() => setSelectedDifficulty(difficulty)}
                     sx={{
+                      // Estilos basados en el color semántico de la dificultad
                       fontWeight: "bold",
-                      borderRadius: "10px", // Redondeo
+                      borderRadius: "10px",
+                      px: 2.5, // Padding horizontal
+                      py: 0.8, // Padding vertical
                       borderColor: difficulty.color,
                       color:
                         selectedDifficulty.name === difficulty.name
-                          ? "#fff"
-                          : difficulty.color,
+                          ? "#fff" // Texto blanco si seleccionado
+                          : difficulty.color, // Texto de color si no seleccionado
                       backgroundColor:
                         selectedDifficulty.name === difficulty.name
-                          ? difficulty.color
-                          : "transparent",
+                          ? difficulty.color // Fondo de color si seleccionado
+                          : "transparent", // Fondo transparente si no seleccionado
                       boxShadow:
                         selectedDifficulty.name === difficulty.name
-                          ? `0 0 10px ${difficulty.color}66`
-                          : "none", // Ligero brillo si seleccionado
-                      transition: "all 0.3s ease-out", // Transición más elástica
+                          ? `0 0 10px ${difficulty.color}66` // Sombra suave si seleccionado
+                          : "none", // Sin sombra si no seleccionado
+                      transition: "all 0.3s ease-out",
                       "&:hover": {
                         backgroundColor:
                           selectedDifficulty.name !== difficulty.name
-                            ? `${difficulty.color}25`
-                            : difficulty.color, // Fondo suave al pasar ratón si no seleccionado
-                        borderColor: difficulty.color, // Mantener borde
-                        transform: "scale(1.05)", // Escalar más
-                        boxShadow: `0 0 12px ${difficulty.color}88`, // Brillo más intenso en hover
+                            ? `${difficulty.color}25` // Fondo muy claro en hover si no seleccionado
+                            : difficulty.color, // Mantiene color de fondo si seleccionado
+                        borderColor: difficulty.color, // Mantiene borde
+                        transform: "scale(1.05)", // Ligero aumento en hover
+                        boxShadow: `0 0 12px ${difficulty.color}88`, // Sombra más visible en hover
                       },
-                      "&:active": { transform: "scale(0.96)" },
+                      "&:active": { transform: "scale(0.96)" }, // Efecto click
                     }}
                   >
                     {difficulty.name}
                   </Button>
                 ))}
               </Box>
-              {/* Caja de descripción de dificultad */}
+
+              {/* Caja de descripción de la dificultad */}
               <Box
                 sx={{
-                  backgroundColor: "rgba(255, 255, 255, 0.9)", // Fondo blanco ligeramente transparente
-                  borderRadius: "16px", // Redondeo consistente
+                  backgroundColor: "rgba(255, 255, 255, 0.9)", // Fondo ligeramente translúcido
+                  borderRadius: "16px",
                   padding: "12px 16px",
                   boxShadow: "inset 0 1px 4px rgba(0, 0, 0, 0.1)", // Sombra interior sutil
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "center", // Centrar contenido
+                  justifyContent: "center",
                   gap: 1.5,
-                  width: "100%",
-                  maxWidth: 320,
-                  border: `3px solid ${selectedDifficulty.color}`, // Borde más grueso que cambia con la dificultad
+                  width: "100%", // Ocupar ancho disponible
+                  maxWidth: 320, // Ancho máximo
+                  border: `3px solid ${selectedDifficulty.color}`, // Borde con color semántico
                   transition:
-                    "border-color 0.4s ease, background-color 0.4s ease",
+                    "border-color 0.4s ease, background-color 0.4s ease", // Transición suave
+                  mt: { xs: 1, md: 0 }, // Margen superior ajustado
                 }}
               >
                 <Icon
                   component={selectedDifficulty.icon}
-                  sx={{ color: selectedDifficulty.color, fontSize: 28 }}
+                  sx={{ color: selectedDifficulty.color, fontSize: 28 }} // Icono con color semántico
                 />
                 <Typography
-                  variant="body2" // Tamaño más pequeño para la descripción
+                  variant="body2"
                   sx={{
-                    color: selectedDifficulty.color,
+                    color: selectedDifficulty.color, // Texto con color semántico
                     fontWeight: "500",
                     textAlign: "center",
-                    fontStyle: "italic",
+                    fontStyle: "italic", // Estilo itálico
                     transition: "color 0.4s ease-in-out",
-                    fontFamily: "Poppins, sans-serif",
+                    fontFamily: "Poppins, sans-serif", // Fuente consistente
                   }}
                 >
                   {`${selectedDifficulty.questionCount} preguntas / ${selectedDifficulty.timePerQuestion}s por pregunta`}
                 </Typography>
               </Box>
+
               {/* Botón Jugar */}
               <Button
                 variant="contained"
                 size="large"
                 startIcon={<PlayArrowIcon />}
                 onClick={handlePlayClick}
-                disabled={!selectedCategory} // Se deshabilita si no hay categoría
+                disabled={!selectedCategory} // Deshabilitado si no hay categoría
                 sx={{
                   fontWeight: "bold",
-                  padding: "14px 35px",
-                  width: { xs: "90%", sm: "85%" },
-                  maxWidth: "300px",
-                  borderRadius: "16px",
-                  fontFamily: "Poppins, sans-serif",
-                  color: "#fff",
-                  // Aplicamos el mismo gradiente y efectos que en Home
-                  background:
-                    "linear-gradient(45deg, #1E90FF 30%, #00BFFF 90%)",
-                  boxShadow: "0px 4px 12px rgba(0,0,0,0.25)",
+                  padding: "14px 35px", // Padding generoso
+                  width: { xs: "90%", sm: "85%" }, // Ancho responsivo
+                  maxWidth: "300px", // Ancho máximo
+                  borderRadius: "16px", // Bordes redondeados consistentes
+                  fontFamily: "Poppins, sans-serif", // Fuente consistente
+                  color: PALETTE.lightCyan, // Texto claro
+                  // Gradiente azul principal
+                  background: `linear-gradient(45deg, ${PALETTE.honoluluBlue} 30%, ${PALETTE.pacificCyan} 90%)`,
+                  boxShadow: "0px 4px 12px rgba(0,0,0,0.25)", // Sombra base
                   transition:
-                    "transform 0.25s ease-out, background 0.3s ease, box-shadow 0.25s ease-out, opacity 0.3s ease",
-                  // Aplicar animación de pulso si NO está deshabilitado
+                    "transform 0.25s ease-out, background 0.3s ease, box-shadow 0.25s ease-out, opacity 0.3s ease", // Transiciones suaves
+                  // Animación de pulso si está habilitado
                   animation: !selectedCategory
-                    ? "none"
-                    : `${pulse} 2s infinite ease-in-out`,
-
+                    ? "none" // Sin animación si deshabilitado
+                    : `${pulseAnimation} 2s infinite ease-in-out`,
+                  mt: { xs: 2, md: 1 },
                   "&:hover": {
-                    background:
-                      "linear-gradient(45deg, #00BFFF 30%, #1E90FF 90%)", // Invertir gradiente en hover
+                    background: `linear-gradient(45deg, ${PALETTE.pacificCyan} 30%, ${PALETTE.honoluluBlue} 90%)`,
                     transform: "translateY(-3px) scale(1.02)",
                     boxShadow: "0px 8px 18px rgba(0,0,0,0.4)",
                   },
-                  "&:active": {
-                    transform: "scale(0.97)", // Efecto click
-                  },
-                  // Estilo para cuando está deshabilitado
+                  "&:active": { transform: "scale(0.97)" },
                   "&.Mui-disabled": {
-                    background: "rgba(0, 0, 0, 0.12)", // Fondo grisáceo estándar
-                    color: "rgba(0, 0, 0, 0.26)",
+                    background: PALETTE.federalBlue,
+                    color: PALETTE.honoluluBlue,
                     boxShadow: "none",
                     cursor: "not-allowed",
                     pointerEvents: "auto",
-                    animation: "none", // Detener animación si está deshabilitado
+                    animation: "none",
+                    opacity: 0.7,
                   },
                 }}
               >
