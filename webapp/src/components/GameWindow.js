@@ -25,7 +25,7 @@ const gradientAnimation = keyframes`
   100% { background-position: 0% 50%; }
 `;
 
-// --- Colores de Feedback (para tema claro) ---
+// --- Colores de Feedback ---
 const FEEDBACK_COLORS = {
   correctBg: "#a5d6a7", // Verde claro (fondo)
   correctText: PALETTE.federalBlue, // Texto oscuro sobre verde
@@ -58,7 +58,6 @@ export function GameWindow() {
   const [points, setPoints] = useState(0);
   const [streak, setStreak] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
-  // *** Refactor: feedbackStates guarda strings ('success', 'error', 'eliminated') ***
   const [feedbackStates, setFeedbackStates] = useState([]); // Cambiado de feedbackColors
   const [hasUsedFiftyFifty, setHasUsedFiftyFifty] = useState(false);
   const [hasUsedAskAI, setHasUsedAskAI] = useState(false);
@@ -72,13 +71,12 @@ export function GameWindow() {
 
   // --- Configuración de Endpoints y API Key ---
   const apiEndpoint =
-    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000"; // Puerto 8000 usado antes
+    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
   const apiKey =
     process.env.REACT_APP_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
 
   // --- Efecto de Inicialización del Juego ---
   useEffect(() => {
-    // Lógica de inicialización (sin cambios funcionales)
     if (isInitializedRef.current) return;
     isInitializedRef.current = true;
     const initializeGame = async () => {
@@ -139,8 +137,6 @@ export function GameWindow() {
       }
       setIsImageActuallyLoading(!!imageUrl);
       setQuestionImage(imageUrl);
-      // Resetear ancho al cambiar de pregunta para que recalcule
-      // setImageWidth(0); // <-- Comentado: Podría causar parpadeo, mejor resetear si no hay imageUrl
     } else {
       setQuestionImage(null);
       setIsImageActuallyLoading(false);
@@ -151,19 +147,17 @@ export function GameWindow() {
   // --- Manejador de Clic en Respuesta ---
   const handleAnswerClick = useCallback(
     (index) => {
-      // Lógica de click (cambiar setFeedbackColors por setFeedbackStates)
       if (selectedAnswer !== null || !currentQuestion) return;
       const correctIndex = currentQuestion.answers.findIndex(
         (ans) => ans.isCorrect
       );
       setSelectedAnswer(index);
       const newFeedbackStates = currentQuestion.answers.map((_, i) => {
-        // Usa nuevo nombre
         if (i === correctIndex) return "success";
         if (i === index && i !== correctIndex) return "error";
         return null;
       });
-      setFeedbackStates(newFeedbackStates); // Usa nuevo nombre
+      setFeedbackStates(newFeedbackStates);
       setTimeout(() => {
         gameRef.current.answerQuestion(index);
         const nextQ = gameRef.current.getCurrentQuestion();
@@ -181,7 +175,6 @@ export function GameWindow() {
 
   // --- Manejador para Obtener Pista ---
   const handleGetHint = useCallback(async () => {
-    // Lógica de pista (sin cambios funcionales)
     if (!currentQuestion || !chatCluesRef.current || hasUsedHint) return;
     chatCluesRef.current.addMessage("IA: Solicitando pista...");
     setHasUsedHint(true);
@@ -208,7 +201,6 @@ export function GameWindow() {
 
   // --- Manejador para Comodín 50/50 ---
   const handleFiftyFifty = () => {
-    // Lógica 50/50 (cambiar setFeedbackColors por setFeedbackStates)
     if (!currentQuestion || selectedAnswer !== null || hasUsedFiftyFifty)
       return;
     const correctIndex = currentQuestion.answers.findIndex(
@@ -221,18 +213,16 @@ export function GameWindow() {
       .sort(() => Math.random() - 0.5)
       .slice(0, 2);
     const newFeedbackStates = currentQuestion.answers.map((_, i) => {
-      // Usa nuevo nombre
       if (toRemove.includes(i)) return "eliminated";
       return null;
     });
-    setFeedbackStates(newFeedbackStates); // Usa nuevo nombre
+    setFeedbackStates(newFeedbackStates);
     setHasUsedFiftyFifty(true);
     gameRef.current.useFiftyFifty();
   };
 
   // --- Manejador para Pregunta IA ---
   const handleAskAI = () => {
-    // Lógica Ask AI (sin cambios funcionales)
     if (chatCluesRef.current && !hasUsedAskAI) {
       chatCluesRef.current.enableChat();
       gameRef.current.useAskAI();
@@ -357,24 +347,22 @@ export function GameWindow() {
             md={4}
             sx={{ display: "flex", justifyContent: "center" }}
           >
-            {/* Contenedor de la imagen: se adapta al ancho calculado en imageWidth */}
+            {/* Contenedor de la imagen */}
             <Box
               sx={{
                 height: 300, // Altura fija
-                // *** Lógica de ancho original restaurada ***
-                width: imageWidth ? `${imageWidth}px` : "100%", // Ancho del estado o 100%
-                maxWidth: "100%", // No exceder el contenedor grid
-                // --- Resto de estilos como en la versión oscura ---
+                width: imageWidth ? `${imageWidth}px` : "100%",
+                maxWidth: "100%",
                 position: "relative",
                 borderRadius: 4,
                 boxShadow: 6,
                 overflow: "hidden",
-                bgcolor: PALETTE.honoluluBlue, // Color de fondo de la paleta
+                bgcolor: PALETTE.honoluluBlue,
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                mx: "auto", // Centrado horizontal explícito (como en la versión oscura)
-                transition: "width 0.3s ease-in-out", // Suavizar cambio de ancho
+                mx: "auto", // Centrado horizontal explícito
+                transition: "width 0.3s ease-in-out",
               }}
             >
               {isImageActuallyLoading && questionImage && (
@@ -413,7 +401,6 @@ export function GameWindow() {
                   opacity: isImageActuallyLoading ? 0 : 1,
                   transition: "opacity 0.3s ease-in-out",
                 }}
-                // *** Handlers onLoad/onError originales restaurados ***
                 onLoad={(e) => {
                   setIsImageActuallyLoading(false);
                   const { naturalWidth, naturalHeight } = e.target;
@@ -421,9 +408,9 @@ export function GameWindow() {
                     const fixedHeight = 300;
                     const scaleFactor = fixedHeight / naturalHeight;
                     const scaledWidth = naturalWidth * scaleFactor;
-                    setImageWidth(scaledWidth); // Establece el ancho calculado
+                    setImageWidth(scaledWidth);
                   } else {
-                    setImageWidth(300); // Fallback si no hay altura
+                    setImageWidth(300);
                   }
                 }}
                 onError={(e) => {
@@ -572,8 +559,7 @@ export function GameWindow() {
           {/* Grid Respuestas */}
           <Grid container spacing={2} mt={1}>
             {currentQuestion?.answers.map((answer, index) => {
-              // Lógica de estilos basada en estado refactorizado
-              const feedbackState = feedbackStates[index]; // 'success', 'error', 'eliminated', null
+              const feedbackState = feedbackStates[index];
               const isSelected = selectedAnswer === index;
               const isDisabled =
                 selectedAnswer !== null || feedbackState === "eliminated";

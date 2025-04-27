@@ -98,7 +98,7 @@ const Navbar = () => {
           sx={{
             mr: 1,
             color: colors.lightCyan,
-            "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" }, // Hover claro sobre oscuro funciona bien
+            "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
           }}
         >
           <HomeIcon />

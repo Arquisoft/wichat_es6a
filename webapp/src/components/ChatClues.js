@@ -210,7 +210,6 @@ const ChatClues = forwardRef(({ actualQuestion, answers }, ref) => {
               color: PALETTE.lightCyan + "50", // Placeholder más tenue si disabled
               opacity: 1,
             },
-            // Color de texto deshabilitado
             "& .MuiInputBase-input.Mui-disabled": {
               WebkitTextFillColor: PALETTE.lightCyan + "70",
             },
