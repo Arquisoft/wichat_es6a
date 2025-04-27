@@ -427,7 +427,7 @@ async function generateQuestionForEntry(entry, apiKey, maxAttempts = 3) {
 
       // POST al servicio externo
       try {
-        const postResponse = await fetch("http://questionsservice:8005/addQuestion", {
+        const postResponse = await fetch("http://questionsservice:8000/addQuestion", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
