@@ -415,6 +415,41 @@ async function generateQuestionForEntry(entry, apiKey, maxAttempts = 3) {
         `[Attempt ${attempt}] Successfully generated text question for category ${entryCategory}.`
       );
 
+      // Convertimos al formato requerido para enviar al microservicio
+      const formattedQuestion = {
+        question: parsedResponse.question,
+        correctAnswer: parsedResponse.answers.find((a) => a.isCorrect).text,
+        incorrectAnswers: parsedResponse.answers
+          .filter((a) => !a.isCorrect)
+          .map((a) => a.text),
+        category: entryCategory,
+        imageUrl: imageUrlFromWikidata,
+      };
+
+      // POST al servicio externo
+      try {
+        const postResponse = await fetch("http://questionsservice:8005/addQuestion", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formattedQuestion),
+        });
+
+        if (!postResponse.ok) {
+          console.error(
+            "[generateQuestionForEntry] Error when sending endpoint package:",
+            await postResponse.text()
+          );
+        } else {
+          console.log(
+            `[generateQuestionForEntry] Successfully sent question to service for category ${entryCategory}.`
+          );
+        }
+      } catch (postError) {
+        console.error("[generateQuestionForEntry] Error fetching POST:", postError);
+      }
+
       // --- Devolver la pregunta (texto) junto con la imagen de Wikidata ---
       return {
         ...parsedResponse, // Contiene question y answers del LLM
