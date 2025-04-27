@@ -78,7 +78,7 @@ const Navbar = () => {
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Button
             color="inherit"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/home")}
             sx={{ padding: 0, textTransform: "none" }}
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
