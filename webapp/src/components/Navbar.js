@@ -2,15 +2,23 @@ import React, { useState, useEffect } from "react";
 import {
   AppBar,
   Toolbar,
-  IconButton,
-  Typography,
   Button,
+  Typography,
   Avatar,
   Box,
   Menu,
   MenuItem,
+  Tooltip,
 } from "@mui/material";
-import { Home as HomeIcon } from "@mui/icons-material";
+import {
+  Home as HomeIcon,
+  PlayArrow as PlayArrowIcon,
+  BarChart as BarChartIcon,
+  QuestionAnswer as QuestionAnswerIcon,
+  Login as LoginIcon,
+  Logout as LogoutIcon,
+  Settings as SettingsIcon,
+} from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -34,7 +42,7 @@ const Navbar = () => {
           setProfilePic(imageUrl);
         })
         .catch((error) => {
-          console.error("Error al obtener la imagen de perfil:", error);
+          console.error("Error fetching profile picture:", error);
         });
     }
   }, [userId]);
@@ -60,78 +68,133 @@ const Navbar = () => {
     navigate("/editProfile");
   };
 
+  const handleLogin = () => {
+    navigate("/login");
+  };
+
   return (
-    <AppBar position="static" sx={{ backgroundColor: "#1E90FF" }}>
-      <Toolbar>
-        <IconButton edge="start" color="inherit" onClick={() => navigate("/")}>
-          <HomeIcon />
-        </IconButton>
-        <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          Home Page
-        </Typography>
-        <Button color="inherit" onClick={() => navigate("/home")}>
-          Home
-        </Button>
-        <Button color="inherit" onClick={() => navigate("/game-options")}>
-          Jugar
-        </Button>
-        {username && (
-          <Button color="inherit" onClick={() => navigate("/statistics")}>
-            Stats
-          </Button>
-        )}
-        <Button color="inherit" onClick={() => navigate("/questions")}>
-          Questions
-        </Button>
-        {username && (
-          <Box
-            onClick={handleMenuOpen}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              backgroundColor: "#ffffff",
-              color: "#000000",
-              padding: "4px 10px",
-              borderRadius: "20px",
-              marginLeft: 2,
-              cursor: "pointer",
-            }}
-          >
-            <Typography
-              variant="body1"
-              sx={{ fontWeight: "bold", marginRight: 2 }}
-            >
-              {username}
-            </Typography>
-            <Avatar
-              src={profilePic ? profilePic : "/default-profile-img.jpg"}
-              alt={username}
-              sx={{ width: 32, height: 32 }}
-            />
-          </Box>
-        )}
-        {!username && (
+    <AppBar position="static" sx={{ backgroundColor: "#1E90FF", boxShadow: 3 }}>
+      <Toolbar sx={{ justifyContent: "space-between" }}>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
           <Button
             color="inherit"
-            onClick={() => {
-              navigate("/");
-              localStorage.removeItem("username");
-            }}
+            onClick={() => navigate("/")}
+            sx={{ padding: 0, textTransform: "none" }}
           >
-            Logout
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <img
+                src="/logo512.png"
+                alt="WICHAT_ES6A Logo"
+                style={{ width: 40, height: 40, marginRight: 8 }}
+              />
+              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                WICHAT_ES6A
+              </Typography>
+            </Box>
           </Button>
-        )}
+        </Box>
 
-          {/* Dropdown Menu */}
-          <Menu
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Tooltip title="Home">
+            <Button
+              color="inherit"
+              startIcon={<HomeIcon />}
+              onClick={() => navigate("/home")}
+              sx={{ textTransform: "none", fontWeight: "medium" }}
+            >
+              Home
+            </Button>
+          </Tooltip>
+          <Tooltip title="Play">
+            <Button
+              color="inherit"
+              startIcon={<PlayArrowIcon />}
+              onClick={() => navigate("/game-options")}
+              sx={{ textTransform: "none", fontWeight: "medium" }}
+            >
+              Play
+            </Button>
+          </Tooltip>
+          {username && (
+            <Tooltip title="Statistics">
+              <Button
+                color="inherit"
+                startIcon={<BarChartIcon />}
+                onClick={() => navigate("/statistics")}
+                sx={{ textTransform: "none", fontWeight: "medium" }}
+              >
+                Stats
+              </Button>
+            </Tooltip>
+          )}
+          <Tooltip title="Questions">
+            <Button
+              color="inherit"
+              startIcon={<QuestionAnswerIcon />}
+              onClick={() => navigate("/questions")}
+              sx={{ textTransform: "none", fontWeight: "medium" }}
+            >
+              Questions
+            </Button>
+          </Tooltip>
+          {username ? (
+            <Box
+              onClick={handleMenuOpen}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                backgroundColor: "#ffffff",
+                color: "#000000",
+                padding: "6px 12px",
+                borderRadius: "20px",
+                cursor: "pointer",
+                transition: "background-color 0.3s",
+                "&:hover": { backgroundColor: "#f0f0f0" },
+              }}
+            >
+              <Typography
+                variant="body1"
+                sx={{ fontWeight: "bold", marginRight: 1 }}
+              >
+                {username}
+              </Typography>
+              <Avatar
+                src={profilePic || "/default-profile-img.jpg"}
+                alt={username}
+                sx={{ width: 32, height: 32 }}
+              />
+            </Box>
+          ) : (
+            <>
+              <Tooltip title="Login">
+                <Button
+                  color="inherit"
+                  startIcon={<LoginIcon />}
+                  onClick={handleLogin}
+                  sx={{ textTransform: "none", fontWeight: "medium" }}
+                >
+                  Login
+                </Button>
+              </Tooltip>
+            </>
+          )}
+        </Box>
+
+        <Menu
           anchorEl={anchorEl}
           open={open}
           onClose={handleMenuClose}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-          >
-          <MenuItem onClick={handleSettings}>Configuración</MenuItem>
-          <MenuItem onClick={handleLogout}>Logout</MenuItem>
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <MenuItem onClick={handleSettings}>
+            <SettingsIcon sx={{ mr: 1 }} />
+            Settings
+          </MenuItem>
+          <MenuItem onClick={handleLogout}>
+            <LogoutIcon sx={{ mr: 1 }} />
+            Logout
+          </MenuItem>
         </Menu>
       </Toolbar>
     </AppBar>
