@@ -49,6 +49,9 @@ services:
     image: ghcr.io/arquisoft/wichat_es6a/llmservice:latest
     profiles: ["dev", "prod"]
     build: ./llmservice
+    depends_on:
+      - questionsservice
+      - wikidataservice
     env_file:
       - ./llmservice/.env
     ports:
@@ -63,7 +66,6 @@ services:
     build: ./users/questionsservice
     depends_on:
       - mongodb
-      - llmservice
     ports:
       - "8005:8005"
     networks:
