@@ -119,7 +119,7 @@ async init(category, difficulty) {
         ];
 
         const shuffledAnswers = answers.sort(() => Math.random() - 0.5);
-        return new Question(q.question, shuffledAnswers);
+        return new Question(q.question, shuffledAnswers, q.imageUrl || null);
       });
 
       console.log("Loaded questions from db:", this.questions);
