@@ -2,11 +2,10 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 const promBundle = require('express-prom-bundle');
-// Libraries required for OpenAPI-Swagger
 const swaggerUi = require('swagger-ui-express'); 
-const fs = require("fs")
+const fs = require("fs");
 const YAML = require('yaml');
-const { Counter, Gauge } = require('prom-client');  // Importar nuevas métricas
+const { Counter, Gauge } = require('prom-client');
 
 const app = express();
 const port = 8000;
@@ -32,15 +31,14 @@ const metricsMiddleware = promBundle({
 });
 app.use(metricsMiddleware);
 
-// **Nuevas métricas personalizadas**
-// Contador de fallos al contactar servicios
+// Custom metrics
 const failedRequestsCounter = new Counter({
   name: 'gateway_failed_requests_total',
   help: 'Número de fallos al contactar servicios',
   labelNames: ['service', 'endpoint', 'status']
 });
 
-// Estado de los servicios de backend
+// Service status gauges
 const authServiceUp = new Gauge({
   name: 'auth_service_up',
   help: 'Estado del servicio de autenticación (1 = OK, 0 = DOWN)',
@@ -53,13 +51,25 @@ const userServiceUp = new Gauge({
   name: 'user_service_up',
   help: 'Estado del servicio de usuarios (1 = OK, 0 = DOWN)',
 });
+const historyServiceUp = new Gauge({
+  name: 'history_service_up',
+  help: 'Estado del servicio de historial (1 = OK, 0 = DOWN)',
+});
+const questionServiceUp = new Gauge({
+  name: 'question_service_up',
+  help: 'Estado del servicio de preguntas (1 = OK, 0 = DOWN)',
+});
+const wikidataServiceUp = new Gauge({
+  name: 'wikidata_service_up',
+  help: 'Estado del servicio de Wikidata (1 = OK, 0 = DOWN)',
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'OK' });
 });
 
-// Revisa el estado de los servicios (cada 10 segundos)
+// Check the status of all services (every 10 seconds)
 async function checkServiceHealth() {
   try {
     await axios.get(`${authServiceUrl}/health`);
@@ -81,9 +91,28 @@ async function checkServiceHealth() {
   } catch {
     userServiceUp.set(0);
   }
+
+  try {
+    await axios.get(`${historyServiceUrl}/health`);
+    historyServiceUp.set(1);
+  } catch {
+    historyServiceUp.set(0);
+  }
+
+  try {
+    await axios.get(`${questionServiceUrl}/health`);
+    questionServiceUp.set(1);
+  } catch {
+    questionServiceUp.set(0);
+  }
+
+  try {
+    await axios.get(`${wikidataServiceUrl}/health`);
+    wikidataServiceUp.set(1);
+  } catch {
+    wikidataServiceUp.set(0);
+  }
 }
-setInterval(checkServiceHealth, 10000); // Cada 10 segundos
-// Endpoints de la aplicación
 
 /* ENDPOINTS DEL SERVICIO DE USUARIOS */
 
