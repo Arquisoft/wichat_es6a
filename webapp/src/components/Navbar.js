@@ -117,7 +117,7 @@ const Navbar = () => {
               />
               <Typography
                 variant="h6"
-                sx={{ fontWeight: "bold", color: colors.lightCyan }}
+                sx={{ fontWeight: "bold", color: "#FFFFFF" }}
               >
                 WIQ - ES6A
               </Typography>
@@ -135,7 +135,7 @@ const Navbar = () => {
               sx={{
                 textTransform: "none",
                 fontWeight: "medium",
-                color: colors.lightCyan,
+                color: "#FFFFFF",
                 "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
               }}
             >
@@ -151,7 +151,7 @@ const Navbar = () => {
               sx={{
                 textTransform: "none",
                 fontWeight: "medium",
-                color: colors.lightCyan,
+                color: "#FFFFFF",
                 "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
               }}
             >
@@ -168,7 +168,7 @@ const Navbar = () => {
                 sx={{
                   textTransform: "none",
                   fontWeight: "medium",
-                  color: colors.lightCyan,
+                  color: "#FFFFFF",
                   "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
                 }}
               >
@@ -185,7 +185,7 @@ const Navbar = () => {
               sx={{
                 textTransform: "none",
                 fontWeight: "medium",
-                color: colors.lightCyan,
+                color: "#FFFFFF",
                 "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
               }}
             >
@@ -199,15 +199,15 @@ const Navbar = () => {
               sx={{
                 display: "flex",
                 alignItems: "center",
-                backgroundColor: colors.honoluluBlue,
-                color: colors.federalBlue,
+                backgroundColor: "#FFFFFF", // Fondo blanco
+                color: colors.federalBlue,  // Texto azul
                 padding: "4px 8px 4px 12px",
                 borderRadius: "20px",
                 marginLeft: 2,
                 cursor: "pointer",
                 transition: "background-color 0.2s ease",
                 "&:hover": {
-                  backgroundColor: colors.pacificCyan,
+                  backgroundColor: colors.nonPhotoBlue,
                 },
               }}
             >
@@ -236,7 +236,7 @@ const Navbar = () => {
                 sx={{
                   textTransform: "none",
                   fontWeight: "medium",
-                  color: colors.lightCyan,
+                  color: "#FFFFFF",
                   "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
                 }}
               >
@@ -256,7 +256,7 @@ const Navbar = () => {
           PaperProps={{
             sx: {
               backgroundColor: colors.honoluluBlue,
-              color: colors.federalBlue,
+              color: "#FFFFFF", // Texto blanco en el menú
               borderRadius: "8px",
               mt: 1,
               boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
