@@ -67,7 +67,7 @@ export function GameWindow() {
   const isInitializedRef = useRef(false);
   const chatCluesRef = useRef(null);
   const [isImageActuallyLoading, setIsImageActuallyLoading] = useState(false);
-  const [imageWidth, setImageWidth] = useState(0); // Estado para el ancho calculado
+  const [imageWidth, setImageWidth] = useState(0);
 
   // --- Configuración de Endpoints y API Key ---
   const apiEndpoint =

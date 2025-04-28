@@ -18,10 +18,10 @@ mongoose.connection.once('open', () => {
   // Inicializar la base de datos con entradas si es necesario
   WikidataCacheService.isDatabaseInitialized().then(initialized => {
     if (!initialized) {
-      console.log('💾 Base de datos no inicializada, comenzando proceso de inicialización...');
+      console.log('Base de datos no inicializada, comenzando proceso de inicialización...');
       WikidataCacheService.initializeDatabase();
     } else {
-      console.log('💾 Base de datos ya inicializada con entradas de WikiData');
+      console.log('Base de datos ya inicializada con entradas de WikiData');
     }
   });
 });

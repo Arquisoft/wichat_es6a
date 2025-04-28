@@ -18,7 +18,7 @@ export async function consulta(query) {
     // Verificar caché antes de consultar a Wikidata
     const cachedResult = cache.get(query);
     if (cachedResult) {
-        console.log("✅ Resultado obtenido desde caché.");
+        console.log("Resultado obtenido desde caché.");
         return cachedResult;
     }
 
@@ -46,7 +46,7 @@ export async function consulta(query) {
             return resultados;
 
         } catch (error) {
-            console.error(`⚠️ Intento fallido (${4 - intentos}): ${error.message}`);
+            console.error(`Intento fallido (${4 - intentos}): ${error.message}`);
             intentos--;
             await new Promise(resolve => setTimeout(resolve, 2000)); // Espera 2 seg antes de reintentar
         }

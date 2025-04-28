@@ -34,6 +34,7 @@ const StatisticsWindow = () => {
   const [showMore, setShowMore] = useState(false); // State for Show More
   const navigate = useNavigate();
 
+  const servicesBaseUrl = "http://localhost:8000"; // Base URL for the services
   // Generar partículas (estrellas y trofeos)
   const particleCount = 20;
   const particles = Array.from({ length: particleCount }, (_, index) => ({
@@ -54,7 +55,7 @@ const StatisticsWindow = () => {
       return;
     }
 
-    fetch("http://localhost:8010/stats", {
+    fetch(servicesBaseUrl+ "/stats", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -99,7 +100,7 @@ const StatisticsWindow = () => {
     setStats((prev) => ({ ...prev, bestGames: [] }));
 
     // Call /getAllGames endpoint
-    fetch("http://localhost:8010/getAllGames", {
+    fetch(servicesBaseUrl + "/getAllGames", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -134,7 +135,7 @@ const StatisticsWindow = () => {
     setStats((prev) => ({ ...prev, bestGames: [] }));
 
     // Call /getBestGames endpoint
-    fetch("http://localhost:8010/getBestGames", {
+    fetch(servicesBaseUrl + "/getBestGames", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

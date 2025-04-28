@@ -28,7 +28,7 @@ app.use(
 
 app.post("/addQuestion", async (req, res) => {
   try {
-    const { question, correctAnswer, incorrectAnswers, category } = req.body;
+    const { question, correctAnswer, incorrectAnswers, category, imageUrl } = req.body;
 
     if (
       !question ||
@@ -37,7 +37,8 @@ app.post("/addQuestion", async (req, res) => {
       typeof correctAnswer !== "string" ||
       !Array.isArray(incorrectAnswers) ||
       !incorrectAnswers.every((ans) => typeof ans === "string") ||
-      typeof category !== "string"
+      typeof category !== "string" ||
+      (imageUrl && typeof imageUrl !== "string")
     ) {
       return res.status(400).json({
         error:
@@ -63,6 +64,7 @@ app.post("/addQuestion", async (req, res) => {
       correctAnswer: correctAnswer.trim(),
       incorrectAnswers: incorrectAnswers.map((ans) => ans.trim()),
       category: category.trim(),
+      imageUrl: imageUrl ? imageUrl.trim() : null, // <-- Añadido
     };
 
     await Questions.create(newQuestion);

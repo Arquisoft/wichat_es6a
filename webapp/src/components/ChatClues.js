@@ -23,8 +23,10 @@ const ChatClues = forwardRef(({ actualQuestion, answers }, ref) => {
   const [input, setInput] = useState("");
   const scrollRef = useRef(null);
   const apiEndpoint =
-    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8003";
-  const [inputEnabled, setInputEnabled] = useState(false); // Deshabilitado por defecto
+
+    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
+  const [inputEnabled, setInputEnabled] = useState(false);
+
 
   // Scroll automático
   useEffect(() => {
