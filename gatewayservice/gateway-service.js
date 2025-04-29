@@ -66,8 +66,10 @@ const wikidataServiceUp = new Gauge({
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.json({ status: 'OK' });
+  res.json({ status: 200 });
 });
+
+setInterval(checkServiceHealth, 10000);
 
 // Check the status of all services (every 10 seconds)
 async function checkServiceHealth() {
