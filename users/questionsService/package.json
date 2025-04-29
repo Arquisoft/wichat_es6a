@@ -5,7 +5,7 @@
   "main": "questions-history-service.js",
   "scripts": {
     "start": "node server.js",
-    "test": "cross-env NODE_ENV=test jest"
+    "test": "jest --coverage --verbose"
   },
   "repository": {
     "type": "git",
