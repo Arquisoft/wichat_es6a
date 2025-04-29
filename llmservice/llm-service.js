@@ -497,7 +497,6 @@ app.post("/generateQuestions", async (req, res) => {
       `[/generateQuestions] Requesting ${questionCount} questions for category: ${category}`
     );
 
-    // 1. Obtener Entradas de Wikidata
     let entries = [];
     if (category === "variado") {
       entries = await getMultipleRandomEntries(questionCount);
@@ -521,32 +520,19 @@ app.post("/generateQuestions", async (req, res) => {
         `[/generateQuestions] Could not retrieve ANY valid Wikidata entries for category: ${category}`
       );
       return res.status(503).json({
-        error: `No se pudieron obtener datos base para la categoría '${category}'.`,
+        error: "Failed to fetch data for the category '" + category + "'",
       });
     }
     console.log(
       `[/generateQuestions] Retrieved ${entries.length} entries from wikidata-service. Generating questions...`
     );
 
-    if (entries.length > 0) {
-      console.log(
-        "[/generateQuestions] First entry received from wikidata-service:",
-        JSON.stringify(entries[0], null, 2)
-      );
-    }
-
-    // 2. Generar Preguntas
     const questionPromises = entries.map((entry) =>
       generateQuestionForEntry(entry, apiKey)
     );
     const generatedResults = await Promise.all(questionPromises);
     const validQuestions = generatedResults.filter((q) => q !== null);
 
-    console.log(
-      `[/generateQuestions] Generation finished. Valid questions obtained: ${validQuestions.length} / ${entries.length} entries processed.`
-    );
-
-    // 3. Devolver Respuesta
     if (validQuestions.length > 0) {
       if (
         validQuestions.length < questionCount &&
@@ -556,28 +542,21 @@ app.post("/generateQuestions", async (req, res) => {
           `[/generateQuestions] Returning partial list: ${validQuestions.length}/${questionCount} requested questions were successfully generated.`
         );
       }
-      const responseObject = {
-        questions: validQuestions,
-      };
-      return res.json(responseObject);
+      return res.json({ questions: validQuestions });
     } else {
       console.error(
         "[/generateQuestions] Failed to generate ANY valid questions after all attempts."
       );
       return res
         .status(500)
-        .json({ error: "No se pudieron generar preguntas válidas." });
+        .json({ error: "LLM_ERROR: Failed to process request - External API error" });
     }
   } catch (error) {
-    console.error(
-      "[/generateQuestions] General Uncaught Error in Endpoint:",
-      error
-    );
-    res
-      .status(500)
-      .json({ error: "Error inesperado del servidor: " + error.message });
+    console.error("[/generateQuestions] General Uncaught Error in Endpoint:", error);
+    res.status(500).json({ error: "Error inesperado del servidor: " + error.message });
   }
 });
+
 
 app.post("/configureAssistant", (req, res) => {
   try {
@@ -721,6 +700,7 @@ const server = app.listen(port, () => {
 });
 
 module.exports = {
+  app,
   server,
   getWikidataForCategory,
   generateQuestionForEntry
