@@ -1,13 +1,8 @@
-let fetch;
+const fetch = require("node-fetch");
+const NodeCache = require("node-cache");
 
-async function loadFetch() {
-    // Cargar 'node-fetch' de forma dinámica
-    const module = await import('node-fetch');
-    fetch = module.default;
-}
-
-import NodeCache from 'node-cache';
 const cache = new NodeCache({ stdTTL: 1800 }); // Caché de 30 minutos
+
 
 // Asegurarse de que fetch esté disponible antes de hacer la consulta
 export async function consulta(query) {
@@ -50,8 +45,24 @@ export async function consulta(query) {
             intentos--;
             await new Promise(resolve => setTimeout(resolve, 2000)); // Espera 2 seg antes de reintentar
         }
-    }
+        return entry;
+      });
 
-    console.error("No se pudo completar la consulta tras múltiples intentos.");
-    return null;
+      // Almacenar en caché antes de devolver
+      cache.set(query, resultados);
+      console.log("Resultado obtenido de Wikidata y almacenado en caché.");
+      return resultados;
+    } catch (error) {
+      console.error(`Intento fallido (${4 - intentos}): ${error.message}`);
+      intentos--;
+      if (intentos > 0) {
+        await new Promise((resolve) => setTimeout(resolve, 2000)); // Espera 2 seg antes de reintentar
+      }
+    }
+  }
+
+  console.error(" No se pudo completar la consulta tras múltiples intentos.");
+  return null;
 }
+
+module.exports = { consulta };

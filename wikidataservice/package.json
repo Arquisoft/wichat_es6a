@@ -1,10 +1,8 @@
 {
     "name": "wikidata-quiz-service",
     "version": "1.0.0",
-    "description": "Servicio para generar preguntas de quiz basadas en datos de Wikidata",
-    "main": "wikidata-service.js",
-    "type": "module",
     "scripts": {
+
         "start": "node wikidata-service.js",
         "dev": "nodemon wikidata-service.js",
         "test": "jest --coverage --verbose"
@@ -19,11 +17,20 @@
         "node-fetch": "^3.3.0",
         "swagger-ui-express": "^5.0.1",
         "yaml": "^2.7.1"
+
     },
     "devDependencies": {
-        "nodemon": "^3.0.1"
+
+      "jest": "^29.7.0",
+      "supertest": "^7.0.0",
+      "nodemon": "^3.0.1"
+
     },
     "engines": {
-        "node": ">=16.0.0"
+      "node": ">=16.0.0"
+    },
+    "jest": {
+      "testEnvironment": "node",
+      "transform": {}
     }
-}
+  }
