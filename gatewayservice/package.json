@@ -5,7 +5,7 @@
     "main": "service.js",
     "scripts": {
         "start": "node gateway-service.js",
-        "test": "jest --coverage --verbose"
+        "test": "jest --coverage --verbose --detect-open-handles"
     },
     "repository": {
         "type": "git",

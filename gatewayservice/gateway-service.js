@@ -69,7 +69,11 @@ app.get('/health', (req, res) => {
   res.json({ status: 200 });
 });
 
-setInterval(checkServiceHealth, 10000);
+const intervalId = setInterval(checkServiceHealth, 10000);
+
+function stopHealthCheckInterval() {
+  clearInterval(intervalId);
+}
 
 // Check the status of all services (every 10 seconds)
 async function checkServiceHealth() {
@@ -454,4 +458,6 @@ const server = app.listen(port, () => {
   console.log(`Gateway Service listening at http://localhost:${port}`);
 });
 
-module.exports = server;
+
+
+module.exports = {server, stopHealthCheckInterval};
