@@ -171,6 +171,25 @@ services:
     volumes:
       - ./llmservice:/usr/src/llmservice 
 
+  # Servicio para pruebas E2E
+  e2e-tests:
+    build: ./e2e-tests 
+    container_name: e2e-tests-wichat_es6a
+    depends_on:
+      - webapp
+      - gatewayservice
+      - authservice
+      - userservice
+      - llmservice
+    networks:
+      - mynetwork
+    environment:
+      BASE_URL: "http://webapp:3000"  
+    command: ["npm", "run", "test:e2e"]  
+    volumes:
+      - ./e2e-tests:/usr/src/app  
+    profiles: ["dev", "prod"]  
+
 
 volumes:
   mongodb_data:
@@ -180,3 +199,4 @@ volumes:
 networks:
   mynetwork:
     driver: bridge
+

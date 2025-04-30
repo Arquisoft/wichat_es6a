@@ -1,0 +1,13 @@
+{
+    "name": "e2e-tests",
+    "version": "1.0.0",
+    "scripts": {
+      "test:e2e": "cucumber-js --format progress"
+    },
+    "dependencies": {
+      "cucumber": "^8.0.0",
+      "webdriverio": "^7.0.0", 
+      "chromedriver": "^95.0.0" 
+    }
+  }
+  
