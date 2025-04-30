@@ -6,9 +6,9 @@ const WikiQueries = require("./wikidataQueries");
 const WikidataCacheService = require("./wikidataCacheService");
 const connectDatabase = require("/usr/src/llmservice/config/database");
 
-import swaggerUi  from 'swagger-ui-express'; 
-import fs  from "fs"
-import YAML  from 'yaml';
+const swaggerUi  = require('swagger-ui-express'); 
+const fs = require("fs");
+const YAML   = require('yaml');
 
 const app = express();
 const port = 8020;
