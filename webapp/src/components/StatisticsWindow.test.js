@@ -204,4 +204,4 @@ describe("StatisticsWindow", () => {
     });
   });
 });
-w;
+
