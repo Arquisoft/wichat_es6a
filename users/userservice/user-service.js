@@ -8,11 +8,21 @@ const swaggerUi = require('swagger-ui-express');
 const fs = require("fs")
 const YAML = require('yaml');
 
-const connectDatabase = require('/usr/src/llmservice/config/database');
-connectDatabase(mongoose);
 
-const User = require("/usr/src/llmservice/models/user-model")(mongoose);
-const History = require("/usr/src/llmservice/models/history-model")(mongoose);
+let User; 
+let History; 
+
+try {
+  const connectDatabase = require("/usr/src/llmservice/config/database.js");
+  connectDatabase(mongoose);
+  User = require("/usr/src/llmservice/models/user-model")(mongoose);
+  History = require("/usr/src/llmservice/models/history-model")(mongoose);
+} catch (error) {
+  const connectDatabase = require("../../llmservice/config/database.js");
+  connectDatabase(mongoose);
+  User = require("../../llmservice/models/user-model")(mongoose);
+  History = require("../../llmservice/models/history-model")(mongoose);
+}
 
 const app = express();
 const port = 8001;
@@ -235,43 +245,6 @@ app.delete('/user/:id/profile-pic', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
-// 🗑️ Eliminar usuario, sus partidas y su imagen de perfil
-app.delete('/user/:id', async (req, res) => {
-  try {
-    const userId = req.params.id;
-
-    // Buscar al usuario
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    // Eliminar las partidas relacionadas con el usuario
-    await History.deleteMany({ username: user.username });
-
-    // Eliminar la imagen de perfil si existe
-    const imagePath = path.join(__dirname, 'uploads', 'profile_pics', `${userId}.png`);
-    fs.access(imagePath, fs.constants.F_OK, (err) => {
-      if (!err) {
-        // Si la imagen existe, eliminarla
-        fs.unlink(imagePath, (err) => {
-          if (err) {
-            return res.status(507).json({ error: 'Failed to delete the profile picture' });
-          }
-        });
-      }
-    });
-
-    // Eliminar el usuario
-    await user.remove();
-
-    res.status(200).json({ message: 'User and related data deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
 
 const server = app.listen(port, () => {
   console.log(`User Service listening at http://localhost:${port}`);

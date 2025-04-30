@@ -23,6 +23,7 @@ try{
   UserGame = require("../llmservice/models/history-model")(mongoose); 
 }
 
+
 const app = express();
 const port = process.env.PORT || 8010;
 
@@ -61,6 +62,10 @@ const mapGamesToResponse = (games) => {
     difficulty: normalizeDifficulty(game.difficulty)
   }));
 };
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK' });
+});
 
 // Endpoint to get the top 3 best games
 app.get("/getBestGames", async (req, res) => {
@@ -280,7 +285,14 @@ if (fs.existsSync(openapiPath)) {
   console.log("Not configuring OpenAPI. Configuration file not present.")
 }
 
-// Iniciar el servicio de Historia
-app.listen(port, () => {
-  console.log(`History Service running on port ${port}`);
-});
+
+// Exportar el objeto app para las pruebas
+module.exports = app;
+
+// Iniciar el servidor solo si el archivo se ejecuta directamente
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`History Service running on port ${port}`);
+  });
+}
+

@@ -5,7 +5,7 @@
   "main": "user-service.js",
   "scripts": {
     "start": "node user-service.js",
-    "test": "jest"
+    "test": "jest --coverage --verbose"
   },
   "repository": {
     "type": "git",

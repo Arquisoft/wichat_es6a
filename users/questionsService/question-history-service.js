@@ -30,6 +30,10 @@ app.use(
   })
 );
 
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK' });
+});
+
 app.post("/addQuestion", async (req, res) => {
   try {
     const { question, correctAnswer, incorrectAnswers, category, imageUrl } = req.body;

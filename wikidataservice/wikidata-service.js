@@ -97,6 +97,10 @@ app.get('/api/paises', async (req, res) => {
   }
 });
 
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK' });
+});
+
 app.get('/api/monumentos', async (req, res) => {
   try {
     // Intentar primero desde la caché

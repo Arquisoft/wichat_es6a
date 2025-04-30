@@ -7,18 +7,13 @@ const swaggerUi = require('swagger-ui-express');
 const fs = require("fs")
 const YAML = require('yaml');
 
-const connectDatabase = require('/usr/src/llmservice/config/database');
-connectDatabase(mongoose); // Connect to MongoDB using the centralized configuration
-
-const User = require("/usr/src/llmservice/models/user-model")(mongoose);
-
 const app = express();
-const port = 8002; 
+const port = 8002;
 
-// Middleware to parse JSON in request body
+const User = require("./auth-model");
+
 app.use(express.json());
 
-// Function to validate required fields in the request body
 function validateRequiredFields(req, requiredFields) {
     for (const field of requiredFields) {
         if (!(field in req.body)) {
@@ -28,41 +23,35 @@ function validateRequiredFields(req, requiredFields) {
 }
 
 app.get('/health', (req, res) => {
-  res.status(200).send('OK');
+    res.status(200).send('OK');
 });
 
-// Route for user login
-app.post('/login',  [
-  check('username').isLength({ min: 3 }).trim().escape(),
-  check('password').isLength({ min: 3 }).trim().escape()
+app.post('/login', [
+    check('username').isLength({ min: 3 }).trim().escape(),
+    check('password').isLength({ min: 3 }).trim().escape()
 ], async (req, res) => {
-  try {
-    // Check if required fields are present in the request body
-    validateRequiredFields(req, ['username', 'password']);
-  
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ error: errors.array().toString()});
+    try {
+        validateRequiredFields(req, ['username', 'password']);
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ error: errors.array().toString() });
+        }
+
+        const username = req.body.username.toString();
+        const password = req.body.password.toString();
+
+        const user = await User.findOne({ username });
+
+        if (user && await bcrypt.compare(password, user.password)) {
+            const token = jwt.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '1h' });
+            res.json({ token: token, userId: user._id, username: user.username });
+        } else {
+            res.status(401).json({ error: 'Invalid credentials' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-
-    let username = req.body.username.toString();
-    let password = req.body.password.toString();
-
-    // Find the user by username in the database
-    const user = await User.findOne({ username });
-
-    // Check if the user exists and verify the password
-    if (user && await bcrypt.compare(password, user.password)) {
-      // Generate a JWT token
-      const token = jwt.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '1h' });
-      // Respond with the token and user information
-      res.json({ token: token, userId: user._id, username: user.username });
-    } else {
-      res.status(401).json({ error: 'Invalid credentials' });
-    }
-  } catch (error) {
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
 });
 
 // **Configuración de Swagger**
@@ -75,9 +64,16 @@ if (fs.existsSync(openapiPath)) {
   console.log("Not configuring OpenAPI. Configuration file not present.")
 }
 
-// Start the server
-const server = app.listen(port, () => {
-  console.log(`Auth Service listening at http://localhost:${port}`);
-});
+// Only connect and start server if the file is run directly
+if (require.main === module) {
+    // Only connect to database if running the server normally
+    const connectDatabase = require('/usr/src/llmservice/config/database');
+    connectDatabase(mongoose);
 
-module.exports = server;
+    app.listen(port, () => {
+        console.log(`Auth Service listening at http://localhost:${port}`);
+    });
+}
+
+
+module.exports = app;
