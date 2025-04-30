@@ -56,6 +56,10 @@ const mapGamesToResponse = (games) => {
   }));
 };
 
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK' });
+});
+
 // Endpoint to get the top 3 best games
 app.get("/getBestGames", async (req, res) => {
   try {
