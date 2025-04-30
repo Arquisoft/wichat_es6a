@@ -1,6 +1,12 @@
-Feature: Login functionality
+Feature: The Internet Guinea Pig Website
 
-  Scenario: User can log in with valid credentials
+  Scenario Outline: As a user, I can log into the secure area
+
     Given I am on the login page
-    When I enter valid credentials
-    Then I should be redirected to the dashboard
+    When I login with <username> and <password>
+    Then I should see a flash message saying <message>
+
+    Examples:
+      | username | password             | message                        |
+      | tomsmith | SuperSecretPassword! | You logged into a secure area! |
+      | foobar   | barfoo               | Your username is invalid!      |
