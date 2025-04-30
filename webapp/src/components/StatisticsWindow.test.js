@@ -54,7 +54,6 @@ describe('StatisticsWindow component', () => {
       </MemoryRouter>
     );
 
-      screen.debug(undefined, Infinity);
 
     // Wait for the stats to be displayed
    expect(await screen.findByText((content, element) => 

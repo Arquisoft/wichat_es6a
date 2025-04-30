@@ -419,59 +419,7 @@ async init(category, difficulty) {
     }
   }
 
-  /* --- COMENTADO: parseQuestions  ---
-  // Parsea las preguntas desde el string JSON (útil si el backend devolviera un string)
-  parseQuestions(inputString) {
-    try {
-      // Limpieza básica inicial
-      const cleanedString = inputString
-        .replace(/^`+json/, "") // Quita ```json al inicio
-        .replace(/`+$/, "") // Quita ``` al final
-        .trim();
 
-      // Intentar parsear directamente como JSON
-      const data = JSON.parse(cleanedString);
-
-      // Validar la estructura esperada { questions: [...] }
-      if (!data || !Array.isArray(data.questions)) {
-        console.error(
-          "Parsed data does not contain a 'questions' array:",
-          data
-        );
-        throw new Error(
-          "Formato de datos inválido: falta el array 'questions'."
-        );
-      }
-
-      // Mapear a las clases Question y Answer
-      return data.questions
-        .map((qData) => {
-          if (!qData.question || !Array.isArray(qData.answers)) {
-            console.warn("Skipping invalid question structure:", qData);
-            return null; // O manejar el error de otra forma
-          }
-          const answers = qData.answers.map((aData) => {
-            // Asegurarse que 'isCorrect' sea booleano
-            const isCorrect =
-              typeof aData.isCorrect === "boolean"
-                ? aData.isCorrect
-                : String(aData.isCorrect).toLowerCase() === "true";
-            return new Answer(aData.text || "", isCorrect); // Usar "" si text falta
-          });
-          return new Question(qData.question, answers);
-        })
-        .filter((q) => q !== null); // Filtrar los nulos
-    } catch (error) {
-      console.error(
-        "Error parsing questions JSON:",
-        error,
-        "Input string:",
-        inputString
-      );
-      return []; // Devolver array vacío en caso de error de parseo
-    }
-  }
-  */
   
   useHint() {
     const current = this.getCurrentQuestion();
