@@ -32,6 +32,7 @@ afterAll(async () => {
 describe('User Service', () => {
   let userId;
 
+  //line
   it('should add a new user on POST /adduser', async () => {
     const newUser = { username: 'testuser', password: 'testpassword' };
     const response = await request(app).post('/adduser').send(newUser);
