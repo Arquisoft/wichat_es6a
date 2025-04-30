@@ -5,7 +5,7 @@
     "main": "service.js",
     "scripts": {
         "start": "node gateway-service.js",
-          "test": "jest --coverage --verbose"
+        "test": "jest --coverage --verbose"
     },
     "repository": {
         "type": "git",
@@ -26,6 +26,7 @@
         "express-prom-bundle": "^8.0.0",
         "stream": "^0.0.3",
         "swagger-ui-express": "^5.0.1",
+        "uuid": "^11.1.0",
         "yaml": "^2.7.0"
     },
     "devDependencies": {
