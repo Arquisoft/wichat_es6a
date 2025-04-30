@@ -3,6 +3,9 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator');
 const mongoose = require('mongoose');
+const swaggerUi = require('swagger-ui-express'); 
+const fs = require("fs")
+const YAML = require('yaml');
 
 const connectDatabase = require('/usr/src/llmservice/config/database');
 connectDatabase(mongoose); // Connect to MongoDB using the centralized configuration
@@ -61,6 +64,16 @@ app.post('/login',  [
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+// **Configuración de Swagger**
+openapiPath = './openapi.yaml'
+if (fs.existsSync(openapiPath)) {
+  const file = fs.readFileSync(openapiPath, 'utf8');
+  const swaggerDocument = YAML.parse(file);
+  app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+} else {
+  console.log("Not configuring OpenAPI. Configuration file not present.")
+}
 
 // Start the server
 const server = app.listen(port, () => {
