@@ -10,6 +10,10 @@ import Game from "./Game";
 import axios from "axios";
 import QuestionTimer from "./QuestionTimer";
 import { keyframes } from "@mui/system";
+import { darken } from '@mui/material/styles';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
+import BalanceIcon from '@mui/icons-material/Balance';
 // --- Paleta Azul ---
 const PALETTE = {
   federalBlue: "#03045eff", // Darkest Blue
@@ -231,23 +235,24 @@ export function GameWindow() {
   };
 
   // --- Estilos Comunes para Botones de Comodín ---
-  const lifelineButtonStyle = (used) => ({
+  const lifelineButtonStyle = (used, baseColor) => ({
     width: { xs: "80%", sm: "auto" },
     minWidth: "120px",
-    bgcolor: used ? PALETTE.federalBlue : PALETTE.pacificCyan,
-    color: used ? PALETTE.honoluluBlue : PALETTE.federalBlue,
+    bgcolor: used ? baseColor : baseColor,
+    color: used ? "#ffffff" : "#ffffff",
     opacity: used ? 0.6 : 1,
     transition: "background-color 0.3s, color 0.3s, opacity 0.3s",
     "&:hover": {
-      bgcolor: used ? PALETTE.federalBlue : PALETTE.nonPhotoBlue,
+      bgcolor: used ? baseColor : darken(baseColor, 0.15),
       opacity: used ? 0.6 : 1,
     },
     "&.Mui-disabled": {
-      bgcolor: used ? PALETTE.federalBlue : PALETTE.honoluluBlue,
-      color: used ? PALETTE.honoluluBlue : PALETTE.federalBlue,
+      bgcolor: baseColor,
+      color: "#ffffff",
       opacity: used ? 0.6 : 0.5,
     },
   });
+  
 
   // --- Estado de Carga Inicial ---
   if (isGameLoading) {
@@ -480,33 +485,32 @@ export function GameWindow() {
               )}
               <Button
                 onClick={handleGetHint}
-                disabled={
-                  selectedAnswer !== null || hasUsedHint || !currentQuestion
-                }
-                sx={lifelineButtonStyle(hasUsedHint)}
+                disabled={selectedAnswer !== null || hasUsedHint || !currentQuestion}
+                startIcon={<LightbulbIcon />}
+                sx={lifelineButtonStyle(hasUsedHint, '#2e7d32')}
               >
                 Pista
               </Button>
+
               <Button
                 onClick={handleAskAI}
-                disabled={
-                  selectedAnswer !== null || hasUsedAskAI || !currentQuestion
-                }
-                sx={lifelineButtonStyle(hasUsedAskAI)}
+                disabled={selectedAnswer !== null || hasUsedAskAI || !currentQuestion}
+                startIcon={<SmartToyIcon />}
+                sx={lifelineButtonStyle(hasUsedAskAI, '#1565c0')}
               >
                 Pregunta IA
               </Button>
+
               <Button
                 onClick={handleFiftyFifty}
-                disabled={
-                  selectedAnswer !== null ||
-                  hasUsedFiftyFifty ||
-                  !currentQuestion
-                }
-                sx={lifelineButtonStyle(hasUsedFiftyFifty)}
+                disabled={selectedAnswer !== null || hasUsedFiftyFifty || !currentQuestion}
+                startIcon={<BalanceIcon />}
+                sx={lifelineButtonStyle(hasUsedFiftyFifty, '#ef6c00')}
               >
                 50 / 50
               </Button>
+
+
             </Box>
           </Grid>
         </Grid>
