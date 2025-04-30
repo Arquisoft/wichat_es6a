@@ -3,17 +3,24 @@ const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const swaggerUi = require('swagger-ui-express'); 
+const fs = require("fs")
+const YAML = require('yaml');
 
-let UserGame; //IMPORTANTE: declararlo afuera sino falla
+let connectDatabase;
+let UserGame;
 
-try {
-  const connectDatabase = require("/usr/src/llmservice/config/database.js");
+try{
+  
+  connectDatabase = require("/usr/src/llmservice/config/database.js");
   connectDatabase(mongoose);
   UserGame = require("/usr/src/llmservice/models/history-model")(mongoose);
-} catch (error) {
-  const connectDatabase = require("../llmservice/config/database.js");
+}catch (error) {
+
+  connectDatabase = require("../llmservice/config/database.js");
   connectDatabase(mongoose);
-  UserGame = require("../llmservice/models/history-model")(mongoose);
+  
+  UserGame = require("../llmservice/models/history-model")(mongoose); 
 }
 
 
@@ -268,6 +275,17 @@ app.post("/addGame", async (req, res) => {
   }
 });
 
+// **Configuración de Swagger**
+openapiPath = './openapi.yaml'
+if (fs.existsSync(openapiPath)) {
+  const file = fs.readFileSync(openapiPath, 'utf8');
+  const swaggerDocument = YAML.parse(file);
+  app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+} else {
+  console.log("Not configuring OpenAPI. Configuration file not present.")
+}
+
+
 // Exportar el objeto app para las pruebas
 module.exports = app;
 
@@ -277,3 +295,4 @@ if (require.main === module) {
     console.log(`History Service running on port ${port}`);
   });
 }
+

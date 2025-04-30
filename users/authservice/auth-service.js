@@ -3,6 +3,9 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator');
 const mongoose = require('mongoose');
+const swaggerUi = require('swagger-ui-express'); 
+const fs = require("fs")
+const YAML = require('yaml');
 
 const app = express();
 const port = 8002;
@@ -51,6 +54,16 @@ app.post('/login', [
     }
 });
 
+// **Configuración de Swagger**
+openapiPath = './openapi.yaml'
+if (fs.existsSync(openapiPath)) {
+  const file = fs.readFileSync(openapiPath, 'utf8');
+  const swaggerDocument = YAML.parse(file);
+  app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+} else {
+  console.log("Not configuring OpenAPI. Configuration file not present.")
+}
+
 // Only connect and start server if the file is run directly
 if (require.main === module) {
     // Only connect to database if running the server normally
@@ -61,5 +74,6 @@ if (require.main === module) {
         console.log(`Auth Service listening at http://localhost:${port}`);
     });
 }
+
 
 module.exports = app;

@@ -1,0 +1,153 @@
+openapi: 3.0.0
+info:
+  title: Question History Service API
+  description: OpenAPI specification for the Question History Service, managing the storage and retrieval of quiz questions.
+  version: 0.1.0
+servers:
+  - url: http://localhost:8005
+    description: Development server
+  - url: http://questionhistoryservice:8005
+    description: Production server
+paths:
+  /addQuestion:
+    post:
+      summary: Add a new quiz question to the database.
+      operationId: addQuestion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - question
+                - correctAnswer
+                - incorrectAnswers
+                - category
+              properties:
+                question:
+                  type: string
+                  description: The quiz question text.
+                  example: ¿Cuál es la capital de España?
+                correctAnswer:
+                  type: string
+                  description: The correct answer to the question.
+                  example: Madrid
+                incorrectAnswers:
+                  type: array
+                  description: An array of three incorrect answer options.
+                  items:
+                    type: string
+                    description: An incorrect answer.
+                    example: Barcelona
+                  minItems: 3
+                  maxItems: 3
+                category:
+                  type: string
+                  description: The category of the question.
+                  example: paises
+                imageUrl:
+                  type: string
+                  description: Optional URL of an image related to the question.
+                  example: https://commons.wikimedia.org/wiki/File:Spain_flag.jpg
+                  nullable: true
+      responses:
+        "201":
+          description: Question saved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+                    example: Question saved successfully.
+        "200":
+          description: Question already exists and was not added.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message indicating the question was skipped.
+                    example: Question already exists. Skipped insertion.
+        "400":
+          description: Invalid input format.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message describing the invalid input.
+                    example: Invalid format. Required question (string), correctAnswer (string), incorrectAnswers (array of 3 strings), category (string).
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: Internal server error while saving question.
+  /questions:
+    get:
+      summary: Retrieve all quiz questions from the database.
+      operationId: getQuestions
+      responses:
+        "200":
+          description: Questions retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      description: Unique identifier for the question.
+                      example: 65f756db3fa22d227a4b7c7d
+                    question:
+                      type: string
+                      description: The quiz question text.
+                      example: ¿Cuál es la capital de España?
+                    correctAnswer:
+                      type: string
+                      description: The correct answer to the question.
+                      example: Madrid
+                    incorrectAnswers:
+                      type: array
+                      description: An array of three incorrect answer options.
+                      items:
+                        type: string
+                        description: An incorrect answer.
+                        example: Barcelona
+                      minItems: 3
+                      maxItems: 3
+                    category:
+                      type: string
+                      description: The category of the question.
+                      example: paises
+                    imageUrl:
+                      type: string
+                      description: URL of an image related to the question (if available).
+                      example: https://commons.wikimedia.org/wiki/File:Spain_flag.jpg
+                      nullable: true
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: Error fetching questions
