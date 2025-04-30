@@ -3,11 +3,26 @@ const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const swaggerUi = require('swagger-ui-express'); 
+const fs = require("fs")
+const YAML = require('yaml');
 
-const connectDatabase = require("/usr/src/llmservice/config/database.js");
-connectDatabase(mongoose);
+let connectDatabase;
+let UserGame;
 
-const UserGame = require("/usr/src/llmservice/models/history-model")(mongoose);
+try{
+  
+  connectDatabase = require("/usr/src/llmservice/config/database.js");
+  connectDatabase(mongoose);
+  UserGame = require("/usr/src/llmservice/models/history-model")(mongoose);
+}catch (error) {
+
+  connectDatabase = require("../llmservice/config/database.js");
+  connectDatabase(mongoose);
+  
+  UserGame = require("../llmservice/models/history-model")(mongoose); 
+}
+
 
 const app = express();
 const port = process.env.PORT || 8010;
@@ -47,6 +62,10 @@ const mapGamesToResponse = (games) => {
     difficulty: normalizeDifficulty(game.difficulty)
   }));
 };
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK' });
+});
 
 // Endpoint to get the top 3 best games
 app.get("/getBestGames", async (req, res) => {
@@ -256,7 +275,24 @@ app.post("/addGame", async (req, res) => {
   }
 });
 
-// Iniciar el servicio de Historia
-app.listen(port, () => {
-  console.log(`History Service running on port ${port}`);
-});
+// **Configuración de Swagger**
+openapiPath = './openapi.yaml'
+if (fs.existsSync(openapiPath)) {
+  const file = fs.readFileSync(openapiPath, 'utf8');
+  const swaggerDocument = YAML.parse(file);
+  app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+} else {
+  console.log("Not configuring OpenAPI. Configuration file not present.")
+}
+
+
+// Exportar el objeto app para las pruebas
+module.exports = app;
+
+// Iniciar el servidor solo si el archivo se ejecuta directamente
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`History Service running on port ${port}`);
+  });
+}
+

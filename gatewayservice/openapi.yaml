@@ -1,12 +1,12 @@
 openapi: 3.0.0
 info:
-  title: Gatewayservice API
-  description: Gateway OpenAPI specification.
+  title: GatewayService API
+  description: Gateway OpenAPI specification for user, authentication, LLM, history, question, and Wikidata services.
   version: 0.2.0
 servers:
   - url: http://localhost:8000
     description: Development server
-  - url: http://SOMEIP:8000
+  - url: http://gatewayservice:8000
     description: Production server
 paths:
   /adduser:
@@ -53,7 +53,7 @@ paths:
                     example: "2024-03-17T20:47:23.935Z"
                   ___v:
                     type: integer
-                    example: "0"
+                    example: 0
         "400":
           description: Failed to add user.
           content:
@@ -65,6 +65,17 @@ paths:
                     type: string
                     description: Error information.
                     example: getaddrinfo EAI_AGAIN mongodb
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
   /health:
     get:
       summary: Check the health status of the service.
@@ -129,8 +140,1113 @@ paths:
                 properties:
                   error:
                     type: string
-                    description: Shows the error info..
+                    description: Error information.
                     example: Invalid credentials
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /user/{id}:
+    get:
+      summary: Get user information by ID.
+      operationId: getUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: User ID.
+      responses:
+        "200":
+          description: User information retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    description: User ID.
+                  username:
+                    type: string
+                    description: Username.
+                  createdAt:
+                    type: string
+                    description: Creation date.
+        "404":
+          description: User not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: User not found
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /user/{id}/username:
+    put:
+      summary: Update user's username.
+      operationId: updateUsername
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: User ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: New username.
+                  example: new_student
+      responses:
+        "200":
+          description: Username updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    description: User ID.
+                  username:
+                    type: string
+                    description: Updated username.
+        "400":
+          description: Invalid username.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Invalid username
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /user/{id}/password:
+    put:
+      summary: Update user's password.
+      operationId: updatePassword
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: User ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  description: New password.
+                  example: new_pass
+      responses:
+        "200":
+          description: Password updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    description: User ID.
+                  password:
+                    type: string
+                    description: Hashed password.
+        "400":
+          description: Invalid password.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Invalid password
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /user/{id}/profile-pic:
+    post:
+      summary: Upload user's profile picture.
+      operationId: uploadProfilePic
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: User ID.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                profilePic:
+                  type: string
+                  format: binary
+                  description: Profile picture file.
+      responses:
+        "200":
+          description: Profile picture uploaded successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+                    example: Profile picture uploaded
+        "400":
+          description: Invalid file.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Invalid file
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+    get:
+      summary: Get user's profile picture.
+      operationId: getProfilePic
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: User ID.
+      responses:
+        "200":
+          description: Profile picture retrieved successfully.
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Profile picture not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Profile picture not found
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+    delete:
+      summary: Delete user's profile picture.
+      operationId: deleteProfilePic
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: User ID.
+      responses:
+        "200":
+          description: Profile picture deleted successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+                    example: Profile picture deleted
+        "404":
+          description: Profile picture not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Profile picture not found
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /generateQuestions:
+    post:
+      summary: Generate questions using LLM service.
+      operationId: generateQuestions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  type: string
+                  description: Context for question generation.
+                  example: History
+      responses:
+        "200":
+          description: Questions generated successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    question:
+                      type: string
+                      description: Generated question.
+                    answer:
+                      type: string
+                      description: Correct answer.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /configureAssistant:
+    post:
+      summary: Configure LLM assistant.
+      operationId: configureAssistant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                settings:
+                  type: object
+                  description: Assistant configuration settings.
+                  example: { "mode": "quiz" }
+      responses:
+        "200":
+          description: Assistant configured successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+                    example: Assistant configured
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /ask:
+    post:
+      summary: Ask a question to the LLM service.
+      operationId: askQuestion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+                  description: Question to ask.
+                  example: What is the capital of France?
+      responses:
+        "200":
+          description: Question answered successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer:
+                    type: string
+                    description: Answer to the question.
+                    example: The capital of France is Paris.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /getHint:
+    post:
+      summary: Get a hint for a question.
+      operationId: getHint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+                  description: Question to get hint for.
+                  example: What is the capital of France?
+      responses:
+        "200":
+          description: Hint retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hint:
+                    type: string
+                    description: Hint for the question.
+                    example: It starts with P.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /getHintWithQuery:
+    post:
+      summary: Get a hint with additional query context.
+      operationId: getHintWithQuery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+                  description: Question to get hint for.
+                  example: What is the capital of France?
+                query:
+                  type: string
+                  description: Additional query context.
+                  example: European capitals
+      responses:
+        "200":
+          description: Hint retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hint:
+                    type: string
+                    description: Hint for the question.
+                    example: It's a major European capital starting with P.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /getBestGames:
+    get:
+      summary: Get best games for a user.
+      operationId: getBestGames
+      parameters:
+        - name: username
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Username of the player.
+      responses:
+        "200":
+          description: Best games retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    gameId:
+                      type: string
+                      description: Game ID.
+                    score:
+                      type: number
+                      description: Game score.
+                    date:
+                      type: string
+                      description: Game date.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /getAllGames:
+    get:
+      summary: Get all games for a user.
+      operationId: getAllGames
+      parameters:
+        - name: username
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Username of the player.
+      responses:
+        "200":
+          description: All games retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    gameId:
+                      type: string
+                      description: Game ID.
+                    score:
+                      type: number
+                      description: Game score.
+                    date:
+                      type: string
+                      description: Game date.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /stats:
+    get:
+      summary: Get user game statistics.
+      operationId: getStats
+      parameters:
+        - name: username
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Username of the player.
+      responses:
+        "200":
+          description: Statistics retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalGames:
+                    type: number
+                    description: Total number of games played.
+                  averageScore:
+                    type: number
+                    description: Average game score.
+                  bestScore:
+                    type: number
+                    description: Best game score.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /addGame:
+    post:
+      summary: Add a new game record.
+      operationId: addGame
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                score:
+                  type: number
+                  description: Game score.
+                  example: 100
+                date:
+                  type: string
+                  description: Game date.
+                  example: "2024-03-17T20:47:23.935Z"
+      responses:
+        "201":
+          description: Game added successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  gameId:
+                    type: string
+                    description: Game ID.
+                  score:
+                    type: number
+                    description: Game score.
+                  date:
+                    type: string
+                    description: Game date.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /addQuestion:
+    post:
+      summary: Add a new question to the database.
+      operationId: addQuestion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+                  description: Question text.
+                  example: What is the capital of France?
+                answer:
+                  type: string
+                  description: Correct answer.
+                  example: Paris
+      responses:
+        "201":
+          description: Question added successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  questionId:
+                    type: string
+                    description: Question ID.
+                  question:
+                    type: string
+                    description: Question text.
+                  answer:
+                    type: string
+                    description: Correct answer.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /questions:
+    get:
+      summary: Get all questions.
+      operationId: getQuestions
+      responses:
+        "200":
+          description: Questions retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    questionId:
+                      type: string
+                      description: Question ID.
+                    question:
+                      type: string
+                      description: Question text.
+                    answer:
+                      type: string
+                      description: Correct answer.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /api/entries/random:
+    get:
+      summary: Get a random Wikidata entry.
+      operationId: getRandomEntry
+      responses:
+        "200":
+          description: Random entry retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Wikidata entry ID.
+                  label:
+                    type: string
+                    description: Entry label.
+                  description:
+                    type: string
+                    description: Entry description.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /api/entries/{category}:
+    get:
+      summary: Get Wikidata entries by category.
+      operationId: getEntriesByCategory
+      parameters:
+        - name: category
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Category of entries.
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          description: Number of entries to return.
+      responses:
+        "200":
+          description: Entries retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: Wikidata entry ID.
+                    label:
+                      type: string
+                      description: Entry label.
+                    description:
+                      type: string
+                      description: Entry description.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /api/entries/fetch/{category}:
+    post:
+      summary: Fetch Wikidata entries by category.
+      operationId: fetchEntriesByCategory
+      parameters:
+        - name: category
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Category of entries.
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          description: Number of entries to return.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filters:
+                  type: object
+                  description: Additional filters for fetching entries.
+                  example: { "country": "France" }
+      responses:
+        "200":
+          description: Entries fetched successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: Wikidata entry ID.
+                    label:
+                      type: string
+                      description: Entry label.
+                    description:
+                      type: string
+                      description: Entry description.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /api/paises:
+    get:
+      summary: Get list of countries from Wikidata.
+      operationId: getCountries
+      responses:
+        "200":
+          description: Countries retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: Wikidata country ID.
+                    label:
+                      type: string
+                      description: Country name.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /api/monumentos:
+    get:
+      summary: Get list of monuments from Wikidata.
+      operationId: getMonuments
+      responses:
+        "200":
+          description: Monuments retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: Wikidata monument ID.
+                    label:
+                      type: string
+                      description: Monument name.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /api/elementos:
+    get:
+      summary: Get list of chemical elements from Wikidata.
+      operationId: getElements
+      responses:
+        "200":
+          description: Chemical elements retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: Wikidata element ID.
+                    label:
+                      type: string
+                      description: Element name.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /api/peliculas:
+    get:
+      summary: Get list of movies from Wikidata.
+      operationId: getMovies
+      responses:
+        "200":
+          description: Movies retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: Wikidata movie ID.
+                    label:
+                      type: string
+                      description: Movie title.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /api/canciones:
+    get:
+      summary: Get list of songs from Wikidata.
+      operationId: getSongs
+      responses:
+        "200":
+          description: Songs retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: Wikidata song ID.
+                    label:
+                      type: string
+                      description: Song title.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /api/formula1:
+    get:
+      summary: Get Formula 1 data from Wikidata.
+      operationId: getFormula1
+      responses:
+        "200":
+          description: Formula 1 data retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: Wikidata Formula 1 ID.
+                    label:
+                      type: string
+                      description: Formula 1 entity name.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /api/pinturas:
+    get:
+      summary: Get list of paintings from Wikidata.
+      operationId: getPaintings
+      responses:
+        "200":
+          description: Paintings retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: Wikidata painting ID.
+                    label:
+                      type: string
+                      description: Painting title.
         "500":
           description: Internal server error.
           content:

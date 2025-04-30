@@ -1,5 +1,6 @@
 // wikidataservice/models/wikidata-entry-model.js
-import mongoose from "mongoose";
+
+const mongoose = require("mongoose");
 
 const wikidataEntrySchema = new mongoose.Schema({
   // Campos comunes para todos los tipos de entradas
@@ -25,6 +26,7 @@ const wikidataEntrySchema = new mongoose.Schema({
 
   // Monumentos
   monumentLabel: String,
+  // countryLabel ya está definido (común a monumentos y países)
 
   // Elementos químicos
   elementLabel: String,
@@ -48,7 +50,7 @@ const wikidataEntrySchema = new mongoose.Schema({
 
   imageUrl: {
     type: String, // Almacenará la URL de la imagen
-    required: false,
+    required: false, // Permitir entradas sin imagen si fuera necesario, aunque CacheService filtre
   },
   // ------------------------------------
 
@@ -67,6 +69,7 @@ const wikidataEntrySchema = new mongoose.Schema({
 // Índice compuesto para búsquedas rápidas por categoría
 wikidataEntrySchema.index({ category: 1, createdAt: -1 });
 
+// Crear el modelo
 const WikidataEntry = mongoose.model("WikidataEntry", wikidataEntrySchema);
 
-export default WikidataEntry;
+module.exports = WikidataEntry;
