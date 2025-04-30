@@ -5,6 +5,10 @@ const cors = require("cors");
 // GoogleGenAI se mantiene solo si se usa Gemini como proveedor de LLM para TEXTO
 const { GoogleGenAI } = require("@google/genai");
 
+const swaggerUi = require('swagger-ui-express'); 
+const fs = require("fs")
+const YAML = require('yaml');
+
 // Configuración inicial de Express y CORS
 const app = express();
 app.use(
@@ -719,6 +723,16 @@ const server = app.listen(port, () => {
     );
   }
 });
+
+// **Configuración de Swagger**
+openapiPath = './openapi.yaml'
+if (fs.existsSync(openapiPath)) {
+  const file = fs.readFileSync(openapiPath, 'utf8');
+  const swaggerDocument = YAML.parse(file);
+  app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+} else {
+  console.log("Not configuring OpenAPI. Configuration file not present.")
+}
 
 module.exports = {
   server,
