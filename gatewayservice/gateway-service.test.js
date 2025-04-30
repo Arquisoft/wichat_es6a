@@ -15,6 +15,8 @@ describe('Servicio Gateway', () => {
   const questionServiceUrl = 'http://localhost:8005';
   const wikidataServiceUrl = 'http://localhost:8020';
 
+  
+
   afterEach(() => {
     mock.reset(); // Resetea los mocks después de cada prueba
   });
