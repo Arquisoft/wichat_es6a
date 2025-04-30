@@ -15,6 +15,10 @@ try {
   Questions = require("../../llmservice/models/questions-model")(mongoose);
 }
 
+const swaggerUi = require('swagger-ui-express'); 
+const fs = require("fs")
+const YAML = require('yaml');
+
 const app = express();
 
 app.use(express.json());
@@ -86,6 +90,16 @@ app.get("/questions", async (req, res) => {
     res.status(500).json({ error: "Error fetching questions" });
   }
 });
+
+// **Configuración de Swagger**
+openapiPath = './openapi.yaml'
+if (fs.existsSync(openapiPath)) {
+  const file = fs.readFileSync(openapiPath, 'utf8');
+  const swaggerDocument = YAML.parse(file);
+  app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+} else {
+  console.log("Not configuring OpenAPI. Configuration file not present.")
+}
 
 module.exports = { app, mongoose };
 
