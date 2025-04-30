@@ -3,28 +3,35 @@ ifndef::imagesdir[:imagesdir: ../images]
 [[section-quality-scenarios]]
 == Quality Requirements
 
-The **WIChat** system prioritizes five critical quality attributes to ensure success:  
+The **WIChat** system prioritizes five critical quality attributes to ensure success:
 
 1. **Usability**:  
-   - Goal: An intuitive interface that allows users to play and access hints easily.  
+   - Goal: An intuitive interface that allows users to play, access hints, view/edit their profile, and inspect their game statistics with minimal friction.
 
 2. **Maintainability**:  
-   - Goal: Modular and well-documented code to facilitate updates.  
+   - Goal: Modular, well-documented codebase (separation of concerns, clear folder structure, descriptive comments) to facilitate onboarding and future feature additions (e.g., new quiz categories).
 
 3. **Performance**:  
-   - Goal: Low latency in critical operations:  
-     - Question generation.  
-     - LLM response.  
+   - Goal: Low latency in all interactive operations:  
+     - Quiz question generation (≤ 200 ms per request under normal load).  
+     - LLM prompt/response turnaround (≤ 500 ms).  
+     - Profile and statistics retrieval (≤ 150 ms).
 
 4. **Security**:  
-   - Goal: Data protection and resistance to attacks.  
+   - Goal: Robust protection of user credentials and session data, and resistance to common web attacks:  
+     - **Password hashing**: All passwords are salted and hashed with bcrypt before storage.  
+     - **Session tokens**: JWTs signed with strong secret and short TTL (1 h), transmitted via HTTPS; no use of opaque session IDs in URLs.  
+     - **No token reuse**: Tokens are checked on every request; unable to override identity by simply including a different token.
+     - **Input validation**: Every input field (e.g., login credentials) is validated 
 
 5. **Functionality**:  
-   - Goal: Reliably meeting key business requirements:  
-     - Automatic question/answer generation from Wikidata.  
-     - Conversational hints with hallucination mitigation (RAG).  
+   - Goal: Reliably satisfy core business workflows:  
+     - Automatic question/answer generation from Wikidata entries (with image support).  
+     - Conversational hint service with RAG-based hallucination mitigation.  
+     - Accurate user statistics tracking and retrieval.  
+     - User profile editing (username, password, avatar) with immediate effect.
 
-These requirements guide technical decisions and ensure the system meets both RTVE's expectations and the end-user experience.  
+These quality requirements guide every architectural and implementation decision, ensuring WIChat meets stakeholder expectations and delivers a seamless, secure user experience.
 
 === Quality Tree
 
@@ -33,23 +40,23 @@ These requirements guide technical decisions and ensure the system meets both RT
 | Quality Attribute | Goal/Description | Associated Scenarios
 
 | *Usability*
-| Intuitive interface for gameplay and hint access
+| Intuitive UI for gameplay, hints, stats viewing, and profile editing
 | <<SC-4>>
 
 | *Maintainability*
-| Modular and well-documented code for updates
+| Modular, documented code; clear separation of services and helpers
 | <<SC-5>>
 
 | *Performance*
-| Low latency in question generation and LLM responses
+| Low-latency in question generation, LLM calls, and user data access
 | <<SC-2>>
 
 | *Security*
-| Data protection and resistance to attacks
+| Bcrypt-hashed passwords, JWT auth, input validation
 | <<SC-3>>
 
 | *Functionality*
-| Reliable question/answer generation with hallucination mitigation (RAG)
+| End-to-end quiz flows, hints with RAG, user stats and profile management
 | <<SC-1>>
 |===
 
@@ -57,34 +64,35 @@ These requirements guide technical decisions and ensure the system meets both RT
 
 [cols="1,2,2,2,2", options="header"]
 |===
-| Scenario | Stimulus/Source | Environment | Artifact | Expected Response 
-| SC-1: Accurate question generation 
-| System needs a new question 
-| Normal load 
-| Wikidata Service 
-| Question generated with verified data (no hallucinations) 
+| Scenario                                 | Stimulus / Source                        | Environment   | Artifact                   | Expected Response
 
-| SC-2: Performance under load 
-| 500 users start a game simultaneously 
-| Peak demand 
-| Question API 
-| Low generation latency
+| [[SC-1]] SC-1: Accurate question generation
+| System requests N new quiz questions     
+| Normal load   
+| Wikidata Service & LLM     
+| All questions match real data; no hallucinations  
 
-| SC-3: User data protection 
-| Unauthorized attempt to access sensitive data
-| Brute force attack
-| Database 
-| Encryption of sensitive data
+| [[SC-2]] SC-2: Performance under concurrent load  
+| 20 users simultaneously start quizzes   
+| Peak demand   
+| Quiz API                   
+| Average response ≤ 200 ms  
 
-| SC-4: Intuitive hint access 
-| New user tries to get a hint 
+| [[SC-3]] SC-3: Secure credential handling         
+| Malicious login attempts (brute-force)   
+| Internet      
+| Auth Service + Database    
+| Passwords hashed with bcrypt; input validated; JWT sessions managed securely  
+
+| [[SC-4]] SC-4: Intuitive user interactions        
+| New user navigates to hints, stats, profile 
 | First use 
-| User interface 
-| Hint accessible 
+| Frontend UI                
+| Hints, stats, profile pages load in ≤ 150 ms; clear labels & error feedback  
 
-| SC-5: Maintainability of topics 
-| Developer adds "European History" topic 
-| Development environment 
-| Codebase 
-| Topic integrated quickly
+| [[SC-5]] SC-5: Rapid maintainability              
+| Developer adds “Art History” category    
+| Dev environment 
+| Codebase                  
+| Module and tests added in ≤ 2 hours 
 |===
