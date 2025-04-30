@@ -6,6 +6,10 @@ const WikiQueries = require("./wikidataQueries");
 const WikidataCacheService = require("./wikidataCacheService");
 const connectDatabase = require("/usr/src/llmservice/config/database");
 
+import swaggerUi  from 'swagger-ui-express'; 
+import fs  from "fs"
+import YAML  from 'yaml';
+
 const app = express();
 const port = 8020;
 
@@ -18,12 +22,12 @@ mongoose.connection.once("open", () => {
   // Inicializar la base de datos con entradas si es necesario
   WikidataCacheService.isDatabaseInitialized().then((initialized) => {
     if (!initialized) {
-      console.log(
-        "💾 Base de datos no inicializada, comenzando proceso de inicialización..."
-      );
+
+      console.log('Base de datos no inicializada, comenzando proceso de inicialización...');
       WikidataCacheService.initializeDatabase();
     } else {
-      console.log("💾 Base de datos ya inicializada con entradas de WikiData");
+      console.log('Base de datos ya inicializada con entradas de WikiData');
+
     }
   });
 });
@@ -108,7 +112,13 @@ app.get("/api/paises", async (req, res) => {
   }
 });
 
-app.get("/api/monumentos", async (req, res) => {
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK' });
+});
+
+app.get('/api/monumentos', async (req, res) => {
+
   try {
     // Intentar primero desde la caché
     const cachedEntries = await WikidataCacheService.getEntriesForCategory(
@@ -222,8 +232,18 @@ app.get("/api/pinturas", async (req, res) => {
   }
 });
 
+// **Configuración de Swagger**
+let openapiPath = './openapi.yaml'
+if (fs.existsSync(openapiPath)) {
+  const file = fs.readFileSync(openapiPath, 'utf8');
+  const swaggerDocument = YAML.parse(file);
+  app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+} else {
+  console.log("Not configuring OpenAPI. Configuration file not present.")
+}
+
 const server = app.listen(port, () => {
-  console.log(`🚀 WikiData Service corriendo en http://localhost:${port}`);
+  console.log(`WikiData Service corriendo en http://localhost:${port}`);
 });
 
 module.exports = { server };

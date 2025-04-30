@@ -1,0 +1,340 @@
+openapi: 3.0.0
+info:
+  title: LLM Service API
+  description: OpenAPI specification for the LLM Service, providing quiz question generation, assistant configuration, and hint functionalities.
+  version: 0.1.0
+servers:
+  - url: http://localhost:8003
+    description: Development server
+  - url: http://llmservice:8003
+    description: Production server
+paths:
+  /health:
+    get:
+      summary: Check the health status of the LLM service.
+      operationId: checkHealth
+      responses:
+        "200":
+          description: Service is healthy.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: OK
+  /generateQuestions:
+    post:
+      summary: Generate quiz questions based on Wikidata entries.
+      operationId: generateQuestions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                questionCount:
+                  type: integer
+                  description: Number of questions to generate (default is 4).
+                  example: 4
+                category:
+                  type: string
+                  description: Category for the questions (e.g., 'paises', 'monumentos', 'variado' for random).
+                  example: paises
+                apiKey:
+                  type: string
+                  description: API key for the LLM provider (optional if set in environment).
+                  example: your-api-key
+      responses:
+        "200":
+          description: Questions generated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  questions:
+                    type: array
+                    description: List of generated questions.
+                    items:
+                      type: object
+                      properties:
+                        question:
+                          type: string
+                          description: The quiz question.
+                          example: ¿Cuál es la capital de España?
+                        answers:
+                          type: array
+                          description: Four answer options, one correct.
+                          items:
+                            type: object
+                            properties:
+                              text:
+                                type: string
+                                description: Answer text.
+                                example: Madrid
+                              isCorrect:
+                                type: boolean
+                                description: Indicates if the answer is correct.
+                                example: true
+                          minItems: 4
+                          maxItems: 4
+                        imageUrl:
+                          type: string
+                          description: URL of an image related to the question (optional).
+                          example: https://commons.wikimedia.org/wiki/File:Spain_flag.jpg
+        "500":
+          description: Failed to generate valid questions.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: No se pudieron generar preguntas válidas.
+        "503":
+          description: Could not retrieve Wikidata entries.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: No se pudieron obtener datos base para la categoría 'paises'.
+  /configureAssistant:
+    post:
+      summary: Configure the moderation prompt for the LLM assistant.
+      operationId: configureAssistant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - moderation
+              properties:
+                moderation:
+                  type: string
+                  description: The new moderation prompt for the LLM.
+                  example: You are a friendly quiz game assistant.
+      responses:
+        "200":
+          description: Moderation prompt updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+                    example: Moderation prompt updated
+        "400":
+          description: Invalid or missing moderation prompt.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: Missing or invalid required field 'moderation'
+  /ask:
+    post:
+      summary: Ask a general question to the LLM.
+      operationId: askQuestion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - question
+              properties:
+                question:
+                  type: string
+                  description: The question to ask the LLM.
+                  example: What is the capital of France?
+                apiKey:
+                  type: string
+                  description: API key for the LLM provider (optional if set in environment).
+                  example: your-api-key
+      responses:
+        "200":
+          description: Question answered successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer:
+                    type: string
+                    description: The LLM's answer to the question.
+                    example: The capital of France is Paris.
+        "400":
+          description: Missing or invalid question.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: Missing or invalid required field 'question'
+        "500":
+          description: Failed to get an answer from the LLM.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: LLM_ERROR Failed to process request - API key invalid
+  /getHint:
+    post:
+      summary: Get a hint for a quiz question.
+      operationId: getHint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - question
+                - answers
+              properties:
+                question:
+                  type: string
+                  description: The quiz question.
+                  example: ¿Cuál es la capital de España?
+                answers:
+                  type: array
+                  description: List of answer options.
+                  items:
+                    type: object
+                    properties:
+                      text:
+                        type: string
+                        description: Answer text.
+                        example: Madrid
+                  minItems: 1
+                apiKey:
+                  type: string
+                  description: API key for the LLM provider (optional if set in environment).
+                  example: your-api-key
+      responses:
+        "200":
+          description: Hint generated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hint:
+                    type: string
+                    description: A short hint for the question.
+                    example: Es una ciudad importante en la península ibérica.
+        "400":
+          description: Invalid or missing input.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: Invalid input types for question or answers.
+        "500":
+          description: Failed to generate a hint.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: LLM_ERROR Failed to process request - API key invalid
+  /getHintWithQuery:
+    post:
+      summary: Get a hint for a quiz question based on a user query.
+      operationId: getHintWithQuery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - question
+                - answers
+                - userQuery
+              properties:
+                question:
+                  type: string
+                  description: The quiz question.
+                  example: ¿Cuál es la capital de España?
+                answers:
+                  type: array
+                  description: List of answer options.
+                  items:
+                    type: object
+                    properties:
+                      text:
+                        type: string
+                        description: Answer text.
+                        example: Madrid
+                  minItems: 1
+                userQuery:
+                  type: string
+                  description: User's query to guide the hint.
+                  example: Tell me about Spanish geography.
+                apiKey:
+                  type: string
+                  description: API key for the LLM provider (optional if set in environment).
+                  example: your-api-key
+      responses:
+        "200":
+          description: Hint generated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  hint:
+                    type: string
+                    description: A short hint based on the user's query.
+                    example: La capital de España es una ciudad central con gran importancia histórica.
+        "400":
+          description: Invalid or missing input.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: Missing or invalid required field userQuery
+        "500":
+          description: Failed to generate a hint.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: Failed to generate chat hint LLM provider unavailable

@@ -25,7 +25,7 @@ import {
   ExpandLess as ExpandLessIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import './AnimatedBackground.css';
+import "./AnimatedBackground.css";
 
 const StatisticsWindow = () => {
   const [stats, setStats] = useState(null);
@@ -34,11 +34,12 @@ const StatisticsWindow = () => {
   const [showMore, setShowMore] = useState(false); // State for Show More
   const navigate = useNavigate();
 
+  const servicesBaseUrl = "http://localhost:8000"; // Base URL for the services
   // Generar partículas (estrellas y trofeos)
   const particleCount = 20;
   const particles = Array.from({ length: particleCount }, (_, index) => ({
     id: index,
-    type: index % 2 === 0 ? 'star' : 'trophy',
+    type: index % 2 === 0 ? "star" : "trophy",
     left: Math.random() * 100,
     top: Math.random() * 100,
   }));
@@ -54,11 +55,11 @@ const StatisticsWindow = () => {
       return;
     }
 
-    fetch("http://localhost:8010/stats", {
+    fetch(servicesBaseUrl+ "/stats", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "username": username,
+        username: username,
       },
     })
       .then((res) => {
@@ -82,9 +83,9 @@ const StatisticsWindow = () => {
 
   // Define difficulty colors
   const difficultyColors = {
-    'Fácil': '#4CAF50', // Green
-    'Medio': '#FF9800', // Orange
-    'Difícil': '#F44336' // Red
+    Fácil: "#4CAF50", // Green
+    Medio: "#FF9800", // Orange
+    Difícil: "#F44336", // Red
   };
 
   // Function to show all games
@@ -99,11 +100,11 @@ const StatisticsWindow = () => {
     setStats((prev) => ({ ...prev, bestGames: [] }));
 
     // Call /getAllGames endpoint
-    fetch("http://localhost:8010/getAllGames", {
+    fetch(servicesBaseUrl + "/getAllGames", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "username": username,
+        username: username,
       },
     })
       .then((res) => {
@@ -134,11 +135,11 @@ const StatisticsWindow = () => {
     setStats((prev) => ({ ...prev, bestGames: [] }));
 
     // Call /getBestGames endpoint
-    fetch("http://localhost:8010/getBestGames", {
+    fetch(servicesBaseUrl + "/getBestGames", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "username": username,
+        username: username,
       },
     })
       .then((res) => {
@@ -179,7 +180,7 @@ const StatisticsWindow = () => {
                 top: `${particle.top}%`,
               }}
             >
-              {particle.type === 'star' ? '⭐' : '🏆'}
+              {particle.type === "star" ? "⭐" : "🏆"}
             </span>
           ))}
         </div>
@@ -225,7 +226,10 @@ const StatisticsWindow = () => {
                       </IconButton>
                     </Tooltip>
                     <Tooltip title="Back">
-                      <IconButton onClick={() => navigate(-1)} color="secondary">
+                      <IconButton
+                        onClick={() => navigate(-1)}
+                        color="secondary"
+                      >
                         <BackIcon />
                       </IconButton>
                     </Tooltip>
@@ -358,11 +362,7 @@ const StatisticsWindow = () => {
                                     ? new Date(game.date).toLocaleDateString()
                                     : "N/A"}
                                 </Typography>
-                                <Box
-                                  display="flex"
-                                  alignItems="center"
-                                  mt={1}
-                                >
+                                <Box display="flex" alignItems="center" mt={1}>
                                   <CategoryIcon
                                     fontSize="small"
                                     color="action"
@@ -373,11 +373,7 @@ const StatisticsWindow = () => {
                                     {game.category || "N/A"}
                                   </Typography>
                                 </Box>
-                                <Box
-                                  display="flex"
-                                  alignItems="center"
-                                  mt={1}
-                                >
+                                <Box display="flex" alignItems="center" mt={1}>
                                   <TimeIcon
                                     fontSize="small"
                                     color="action"
@@ -390,11 +386,7 @@ const StatisticsWindow = () => {
                                       : "N/A"}
                                   </Typography>
                                 </Box>
-                                <Box
-                                  display="flex"
-                                  alignItems="center"
-                                  mt={1}
-                                >
+                                <Box display="flex" alignItems="center" mt={1}>
                                   <Typography variant="body2">
                                     Difficulty:{" "}
                                   </Typography>
@@ -404,9 +396,9 @@ const StatisticsWindow = () => {
                                       ml: 1,
                                       bgcolor:
                                         difficultyColors[game.difficulty] ||
-                                        '#757575',
-                                      color: 'white',
-                                      fontSize: '0.75rem',
+                                        "#757575",
+                                      color: "white",
+                                      fontSize: "0.75rem",
                                     }}
                                     size="small"
                                   />

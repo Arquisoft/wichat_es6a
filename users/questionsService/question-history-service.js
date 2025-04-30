@@ -15,6 +15,10 @@ try {
   Questions = require("../../llmservice/models/questions-model")(mongoose);
 }
 
+const swaggerUi = require('swagger-ui-express'); 
+const fs = require("fs")
+const YAML = require('yaml');
+
 const app = express();
 
 app.use(express.json());
@@ -26,9 +30,13 @@ app.use(
   })
 );
 
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK' });
+});
+
 app.post("/addQuestion", async (req, res) => {
   try {
-    const { question, correctAnswer, incorrectAnswers, category } = req.body;
+    const { question, correctAnswer, incorrectAnswers, category, imageUrl } = req.body;
 
     if (
       !question ||
@@ -37,7 +45,8 @@ app.post("/addQuestion", async (req, res) => {
       typeof correctAnswer !== "string" ||
       !Array.isArray(incorrectAnswers) ||
       !incorrectAnswers.every((ans) => typeof ans === "string") ||
-      typeof category !== "string"
+      typeof category !== "string" ||
+      (imageUrl && typeof imageUrl !== "string")
     ) {
       return res.status(400).json({
         error:
@@ -63,6 +72,7 @@ app.post("/addQuestion", async (req, res) => {
       correctAnswer: correctAnswer.trim(),
       incorrectAnswers: incorrectAnswers.map((ans) => ans.trim()),
       category: category.trim(),
+      imageUrl: imageUrl ? imageUrl.trim() : null, // <-- Añadido
     };
 
     await Questions.create(newQuestion);
@@ -84,6 +94,16 @@ app.get("/questions", async (req, res) => {
     res.status(500).json({ error: "Error fetching questions" });
   }
 });
+
+// **Configuración de Swagger**
+openapiPath = './openapi.yaml'
+if (fs.existsSync(openapiPath)) {
+  const file = fs.readFileSync(openapiPath, 'utf8');
+  const swaggerDocument = YAML.parse(file);
+  app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+} else {
+  console.log("Not configuring OpenAPI. Configuration file not present.")
+}
 
 module.exports = { app, mongoose };
 

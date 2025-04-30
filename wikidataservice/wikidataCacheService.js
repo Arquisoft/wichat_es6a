@@ -201,7 +201,7 @@ class WikidataCacheService {
       }
 
       console.log(
-        `💾 Guardadas ${savedEntries.length} nuevas entradas CON IMAGEN en caché para ${category}.`
+        `Guardadas ${savedEntries.length} nuevas entradas CON IMAGEN en caché para ${category}.`
       );
       return savedEntries; // Devuelve las entradas que se guardaron exitosamente
     } catch (error) {
@@ -235,7 +235,7 @@ class WikidataCacheService {
       const threshold = Math.min(50, this.minEntriesPerCategory); // Umbral mínimo
       if (count < threshold) {
         console.log(
-          `⚠️ La categoría ${category} tiene solo ${count} entradas (necesita ~${threshold}). Se considera NO inicializada.`
+          ` La categoría ${category} tiene solo ${count} entradas (necesita ~${threshold}). Se considera NO inicializada.`
         );
         return false; // Si una categoría no cumple, la BD no está inicializada
       }
@@ -246,7 +246,8 @@ class WikidataCacheService {
   // Intenta llenar la BD hasta minEntriesPerCategory para cada categoría
   async initializeDatabase() {
     console.log(
-      "🔄 Inicializando/Verificando base de datos de WikiData (asegurando entradas con imagen)..."
+
+
     );
 
     // Itera sobre cada categoría definida
@@ -257,19 +258,21 @@ class WikidataCacheService {
 
       if (neededEntries > 0) {
         console.log(
-          `📚 Obteniendo hasta ${neededEntries} entradas NUEVAS CON IMAGEN para la categoría: ${category}...`
+          `Obteniendo hasta ${neededEntries} entradas NUEVAS CON IMAGEN para la categoría: ${category}...`
         );
         // Llama a fetchAndSaveEntries para obtener las entradas faltantes
         await this.fetchAndSaveEntries(category, neededEntries);
       } else {
         console.log(
-          `✅ La categoría ${category} ya tiene suficientes entradas (${count}).`
+          `La categoría ${category} ya tiene suficientes entradas (${count}).`
         );
       }
     }
 
     console.log(
-      "🏁 Inicialización/Verificación de la base de datos completada!"
+
+      "Inicialización/Verificación de la base de datos completada!"
+
     );
   }
 }

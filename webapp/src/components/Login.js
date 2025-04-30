@@ -7,6 +7,7 @@ import {
   TextField,
   Button,
   Snackbar,
+  Box,
 } from "@mui/material";
 
 const Login = () => {
@@ -26,12 +27,12 @@ const Login = () => {
         password,
       });
 
-      console.log(response.data); 
+      console.log(response.data);
 
       // Almacenar el username en localStorage después de un login exitoso
-      localStorage.setItem("username", username);  // Guardar el username
+      localStorage.setItem("username", username);
       localStorage.setItem("_id", response.data.userId);
-      localStorage.setItem("token", response.data.token); //Guarda el token de identificacion
+      localStorage.setItem("token", response.data.token);
 
       setOpenSnackbar(true);
 
@@ -44,43 +45,87 @@ const Login = () => {
   };
 
   return (
-    <Container component="main" maxWidth="xs" sx={{ marginTop: 4 }}>
-      <Typography component="h1" variant="h5">
+    <Container
+      component="main"
+      maxWidth="xs"
+      sx={{
+        marginTop: 2,
+        backgroundColor: "#f4f6f8",
+        padding: 4,
+        borderRadius: 2,
+        boxShadow: 3,
+      }}
+    >
+      <Typography
+        component="h1"
+        variant="h5"
+        align="center"
+        sx={{ marginBottom: 2, fontWeight: "bold" }}
+      >
         Login
       </Typography>
-      <TextField
-        margin="normal"
-        fullWidth
-        label="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <TextField
-        margin="normal"
-        fullWidth
-        label="Password"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <Button variant="contained" color="primary" onClick={loginUser}>
-        Login
-      </Button>
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        message="Login successful!"
-      />
-      {message && (
-        <Snackbar open={!!message} autoHideDuration={6000} message={message} />
-      )}
-      {error && (
-        <Snackbar
-          open={!!error}
-          autoHideDuration={6000}
-          message={`Error: ${error}`}
+
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+        <TextField
+          margin="normal"
+          fullWidth
+          label="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          sx={{
+            marginBottom: 1,
+            backgroundColor: "#fff",
+            borderRadius: 1,
+            boxShadow: 1,
+          }}
         />
-      )}
+        <TextField
+          margin="normal"
+          fullWidth
+          label="Password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          sx={{
+            marginBottom: 2,
+            backgroundColor: "#fff",
+            borderRadius: 1,
+            boxShadow: 1,
+          }}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={loginUser}
+          sx={{
+            marginBottom: 2,
+            backgroundColor: "#1976d2",
+            "&:hover": { backgroundColor: "#1565c0" },
+          }}
+        >
+          Login
+        </Button>
+
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={6000}
+          message="Login successful!"
+        />
+        {message && (
+          <Snackbar
+            open={!!message}
+            autoHideDuration={6000}
+            message={message}
+          />
+        )}
+        {error && (
+          <Snackbar
+            open={!!error}
+            autoHideDuration={6000}
+            message={`Error: ${error}`}
+          />
+        )}
+      </Box>
     </Container>
   );
 };
