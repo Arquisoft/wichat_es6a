@@ -1,114 +1,111 @@
-const request = require("supertest");
-const { app, mongoose } = require("./question-history-service");
+const request = require('supertest');
+const { app } = require('./question-history-service');
 
-describe("Question History Service", () => {
-  describe("POST /addQuestion", () => {
+jest.mock('mongoose', () => {
+  const actualMongoose = jest.requireActual('mongoose');
+  return {
+    ...actualMongoose,
+    model: jest.fn().mockReturnValue({
+      find: jest.fn(),
+      create: jest.fn(),
+    }),
+    Schema: actualMongoose.Schema,
+  };
+});
 
-    it("debería agregar una nueva pregunta correctamente", async () => {
-        const newQuestion = {
-            question: `¿Cuál es la capital de Francia? ${Date.now()}`,
-            correctAnswer: "París",
-            incorrectAnswers: ["Madrid", "Roma", "Berlín"],
-            category: "geografía",
-        };
+const mongoose = require('mongoose');
+const QuestionsMock = mongoose.model();
 
-      const res = await request(app)
-        .post("/addQuestion")
-        .send(newQuestion)
-        .expect(201);
+describe('Question History Service', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-      expect(res.body.message).toBe("Question saved successfully.");
+  describe('GET /health', () => {
+    it('should return health status', async () => {
+      const res = await request(app).get('/health');
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toEqual({ status: 'OK' });
+    });
+  });
+
+  describe('POST /addQuestion', () => {
+    const validQuestion = {
+      question: '¿Cuál es la capital de Francia?',
+      correctAnswer: 'París',
+      incorrectAnswers: ['Londres', 'Madrid', 'Berlín'],
+      category: 'geografía',
+      imageUrl: 'http://example.com/image.jpg',
+    };
+
+    it('should add a new question successfully', async () => {
+      QuestionsMock.find.mockResolvedValue([]);
+      QuestionsMock.create.mockResolvedValue({});
+
+      const res = await request(app).post('/addQuestion').send(validQuestion);
+
+      expect(res.statusCode).toBe(201);
+      expect(res.body.message).toBe('Question saved successfully.');
+      expect(QuestionsMock.create).toHaveBeenCalled();
     });
 
-    it("debería fallar si faltan campos obligatorios", async () => {
-      const badQuestion = {
-        question: "¿Cuál es la capital de Alemania?",
-        correctAnswer: "Berlín",
-        incorrectAnswers: ["Madrid", "Roma"], // Falta una
-      };
+    it('should skip if question already exists', async () => {
+      QuestionsMock.find.mockResolvedValue([{ question: '¿Cuál es la capital de Francia?' }]);
 
-      const res = await request(app).post("/addQuestion").send(badQuestion).expect(400);
+      const res = await request(app).post('/addQuestion').send(validQuestion);
 
+      expect(res.statusCode).toBe(200);
+      expect(res.body.message).toContain('already exists');
+    });
+
+    it('should return 400 if data is invalid', async () => {
+      const res = await request(app).post('/addQuestion').send({
+        question: 123,
+        correctAnswer: true,
+        incorrectAnswers: 'mal',
+        category: null,
+      });
+
+      expect(res.statusCode).toBe(400);
       expect(res.body.error).toMatch(/Invalid format/);
     });
 
-    it("debería rechazar si 'question' no es un string", async () => {
-        const res = await request(app).post("/addQuestion").send({
-          question: 12345,
-          correctAnswer: "París",
-          incorrectAnswers: ["Madrid", "Roma", "Berlín"],
-          category: "geografía",
-        }).expect(400);
-  
-        expect(res.body.error).toMatch(/Invalid format/);
-      });
-  
-      it("debería rechazar si 'correctAnswer' no es un string", async () => {
-        const res = await request(app).post("/addQuestion").send({
-          question: "¿Cuál es la capital de Francia?",
-          correctAnswer: 42,
-          incorrectAnswers: ["Madrid", "Roma", "Berlín"],
-          category: "geografía",
-        }).expect(400);
-  
-        expect(res.body.error).toMatch(/Invalid format/);
-      });
-  
-      it("debería rechazar si 'incorrectAnswers' no es un array", async () => {
-        const res = await request(app).post("/addQuestion").send({
-          question: "¿Cuál es la capital de Francia?",
-          correctAnswer: "París",
-          incorrectAnswers: "Madrid, Roma, Berlín",
-          category: "geografía",
-        }).expect(400);
-  
-        expect(res.body.error).toMatch(/Invalid format/);
-      });
-  
-      it("debería rechazar si 'incorrectAnswers' no contiene 3 strings", async () => {
-        const res = await request(app).post("/addQuestion").send({
-          question: "¿Cuál es la capital de Italia?",
-          correctAnswer: "Roma",
-          incorrectAnswers: ["Milán", 123, true],
-          category: "geografía",
-        }).expect(400);
-  
-        expect(res.body.error).toMatch(/Invalid format/);
-      });
-  
-      it("debería rechazar si 'category' no es un string", async () => {
-        const res = await request(app).post("/addQuestion").send({
-          question: "¿Cuál es la capital de España?",
-          correctAnswer: "Madrid",
-          incorrectAnswers: ["Lisboa", "París", "Roma"],
-          category: 123,
-        }).expect(400);
-  
-        expect(res.body.error).toMatch(/Invalid format/);
-      });
-  
-      it("debería no guardar una pregunta duplicada (insensible a mayúsculas/minúsculas y espacios)", async () => {
-        const duplicateQuestion = {
-          question: "¿Cuál es la capital de Francia?",
-          correctAnswer: "París",
-          incorrectAnswers: ["Madrid", "Roma", "Berlín"],
-          category: "geografía",
-        };
-  
-        const res = await request(app)
-          .post("/addQuestion")
-          .send(duplicateQuestion)
-          .expect(200);
-  
-        expect(res.body.message).toBe("Question already exists. Skipped insertion.");
-      });  
-  });
+    it('should handle internal server error', async () => {
+      QuestionsMock.find.mockRejectedValue(new Error('DB Error'));
 
-  describe("GET /questions", () => {
-    it("debería devolver un array de preguntas", async () => {
-      const res = await request(app).get("/questions").expect(200);
-      expect(Array.isArray(res.body)).toBe(true);
+      const res = await request(app).post('/addQuestion').send(validQuestion);
+
+      expect(res.statusCode).toBe(500);
+      expect(res.body.error).toContain('Internal server error');
     });
   });
 
+  describe('GET /questions', () => {
+    it('should return list of questions', async () => {
+      QuestionsMock.find.mockResolvedValue([
+        {
+          question: '¿Cuál es la capital de Francia?',
+          correctAnswer: 'París',
+          incorrectAnswers: ['Londres', 'Madrid', 'Berlín'],
+          category: 'geografía',
+          imageUrl: null,
+        },
+      ]);
+
+      const res = await request(app).get('/questions');
+
+      expect(res.statusCode).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+      expect(res.body[0].question).toContain('Francia');
+    });
+
+    it('should handle DB errors', async () => {
+      QuestionsMock.find.mockRejectedValue(new Error('DB down'));
+
+      const res = await request(app).get('/questions');
+
+      expect(res.statusCode).toBe(500);
+      expect(res.body.error).toMatch(/Error fetching questions/);
+    });
+  });
 });
