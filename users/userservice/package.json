@@ -5,7 +5,7 @@
   "main": "user-service.js",
   "scripts": {
     "start": "node user-service.js",
-    "test": "jest --coverage --verbose"
+    "test": "jest --coverage --verbose --detectOpenHandles"
   },
   "repository": {
     "type": "git",

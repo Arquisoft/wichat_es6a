@@ -26,6 +26,7 @@ beforeAll(async () => {
 afterAll(async () => {
   await mongoose.connection.close();
   await mongoServer.stop();
+  await app.close();
 });
 
 describe('User Service', () => {
@@ -114,14 +115,4 @@ describe('User Service', () => {
     const response = await request(app).delete(`/user/${userId}/profile-pic`);
     expect(response.status).toBe(200);
   });
-
-  /*
-  it('should delete user and related data on DELETE /user/:id', async () => {
-    const response = await request(app).delete(`/user/${userId}`);
-    expect(response.status).toBe(200);
-
-    const deletedUser = await User.findById(userId);
-    expect(deletedUser).toBeNull();
-  });
-  */
 });
