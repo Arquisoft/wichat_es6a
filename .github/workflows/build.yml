@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - coverage-bug
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
