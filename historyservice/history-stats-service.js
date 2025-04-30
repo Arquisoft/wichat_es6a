@@ -4,10 +4,18 @@ const cors = require("cors");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-const connectDatabase = require("/usr/src/llmservice/config/database.js");
-connectDatabase(mongoose);
+let UserGame; //IMPORTANTE: declararlo afuera sino falla
 
-const UserGame = require("/usr/src/llmservice/models/history-model")(mongoose);
+try {
+  const connectDatabase = require("/usr/src/llmservice/config/database.js");
+  connectDatabase(mongoose);
+  UserGame = require("/usr/src/llmservice/models/history-model")(mongoose);
+} catch (error) {
+  const connectDatabase = require("../llmservice/config/database.js");
+  connectDatabase(mongoose);
+  UserGame = require("../llmservice/models/history-model")(mongoose);
+}
+
 
 const app = express();
 const port = process.env.PORT || 8010;
@@ -256,7 +264,12 @@ app.post("/addGame", async (req, res) => {
   }
 });
 
-// Iniciar el servicio de Historia
-app.listen(port, () => {
-  console.log(`History Service running on port ${port}`);
-});
+// Exportar el objeto app para las pruebas
+module.exports = app;
+
+// Iniciar el servidor solo si el archivo se ejecuta directamente
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`History Service running on port ${port}`);
+  });
+}
