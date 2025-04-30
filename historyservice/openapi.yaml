@@ -1,0 +1,417 @@
+openapi: 3.0.0
+info:
+  title: History Service API
+  description: OpenAPI specification for the History Service, managing user game records and statistics.
+  version: 0.1.0
+servers:
+  - url: http://localhost:8010
+    description: Development server
+  - url: http://historyservice:8010
+    description: Production server
+paths:
+  /getBestGames:
+    get:
+      summary: Get the top 3 best games for a user.
+      operationId: getBestGames
+      parameters:
+        - name: username
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Username of the player.
+      responses:
+        "200":
+          description: Best games retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: Game ID.
+                      example: game123
+                    points:
+                      type: number
+                      description: Game score.
+                      example: 150
+                    date:
+                      type: string
+                      description: Date the game was recorded.
+                      example: "2024-03-17T20:47:23.935Z"
+                    category:
+                      type: string
+                      description: Game category.
+                      example: History
+                    timeTaken:
+                      type: number
+                      description: Time taken to complete the game (in seconds).
+                      example: 300
+                    totalQuestions:
+                      type: number
+                      description: Total number of questions in the game.
+                      example: 10
+                    correctQuestions:
+                      type: number
+                      description: Number of correctly answered questions.
+                      example: 8
+                    difficulty:
+                      type: string
+                      description: Game difficulty level.
+                      example: Fácil
+        "400":
+          description: Username is required.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message.
+                    example: Username is required
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message.
+                    example: Error fetching best games
+                  error:
+                    type: string
+                    description: Detailed error information.
+                    example: Database connection failed
+  /getAllGames:
+    get:
+      summary: Get all games for a user.
+      operationId: getAllGames
+      parameters:
+        - name: username
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Username of the player.
+      responses:
+        "200":
+          description: All games retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: Game ID.
+                      example: game123
+                    points:
+                      type: number
+                      description: Game score.
+                      example: 150
+                    date:
+                      type: string
+                      description: Date the game was recorded.
+                      example: "2024-03-17T20:47:23.935Z"
+                    category:
+                      type: string
+                      description: Game category.
+                      example: History
+                    timeTaken:
+                      type: number
+                      description: Time taken to complete the game (in seconds).
+                      example: 300
+                    totalQuestions:
+                      type: number
+                      description: Total number of questions in the game.
+                      example: 10
+                    correctQuestions:
+                      type: number
+                      description: Number of correctly answered questions.
+                      example: 8
+                    difficulty:
+                      type: string
+                      description: Game difficulty level.
+                      example: Fácil
+        "400":
+          description: Username is required.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message.
+                    example: Username is required
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message.
+                    example: Error fetching all games
+                  error:
+                    type: string
+                    description: Detailed error information.
+                    example: Database connection failed
+  /stats:
+    get:
+      summary: Get user game statistics.
+      operationId: getStats
+      parameters:
+        - name: username
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Username of the player.
+      responses:
+        "200":
+          description: Statistics retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    description: Username of the player.
+                    example: student
+                  gamesPlayed:
+                    type: number
+                    description: Total number of games played.
+                    example: 10
+                  totalPoints:
+                    type: number
+                    description: Total points earned across all games.
+                    example: 1500
+                  pointsPerGame:
+                    type: number
+                    description: Average points per game.
+                    example: 150
+                  wins:
+                    type: number
+                    description: Number of games won (correct answers >= 50% of total questions).
+                    example: 7
+                  losses:
+                    type: number
+                    description: Number of games lost.
+                    example: 3
+                  bestGames:
+                    type: array
+                    description: Top 3 best games.
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: Game ID.
+                          example: game123
+                        points:
+                          type: number
+                          description: Game score.
+                          example: 150
+                        date:
+                          type: string
+                          description: Date the game was recorded.
+                          example: "2024-03-17T20:47:23.935Z"
+                        category:
+                          type: string
+                          description: Game category.
+                          example: History
+                        timeTaken:
+                          type: number
+                          description: Time taken to complete the game (in seconds).
+                          example: 300
+                        totalQuestions:
+                          type: number
+                          description: Total number of questions in the game.
+                          example: 10
+                        correctQuestions:
+                          type: number
+                          description: Number of correctly answered questions.
+                          example: 8
+                        difficulty:
+                          type: string
+                          description: Game difficulty level.
+                          example: Fácil
+                  mostPlayedCategory:
+                    type: string
+                    description: Most frequently played game category.
+                    example: History
+                  averageGameTime:
+                    type: number
+                    description: Average time taken per game (in seconds).
+                    example: 250
+        "400":
+          description: Username is required.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message.
+                    example: Username is required
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message.
+                    example: Error fetching stats
+                  error:
+                    type: string
+                    description: Detailed error information.
+                    example: Database connection failed
+  /addGame:
+    post:
+      summary: Add a new game record.
+      operationId: addGame
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - score
+                - correctQuestions
+                - gameId
+                - totalQuestions
+                - difficulty
+              properties:
+                username:
+                  type: string
+                  description: Username of the player.
+                  example: student
+                score:
+                  type: number
+                  description: Game score (non-negative).
+                  example: 150
+                correctQuestions:
+                  type: number
+                  description: Number of correctly answered questions (non-negative).
+                  example: 8
+                gameId:
+                  type: string
+                  description: Unique game identifier.
+                  example: game123
+                category:
+                  type: string
+                  description: Game category (optional).
+                  example: History
+                timeTaken:
+                  type: number
+                  description: Time taken to complete the game in seconds (optional, non-negative).
+                  example: 300
+                totalQuestions:
+                  type: number
+                  description: Total number of questions in the game (non-negative).
+                  example: 10
+                difficulty:
+                  type: string
+                  description: Game difficulty level (Fácil, Medio, Difícil).
+                  example: Fácil
+      responses:
+        "201":
+          description: Game added successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+                    example: Game successfully added
+                  game:
+                    type: object
+                    properties:
+                      username:
+                        type: string
+                        description: Username of the player.
+                        example: student
+                      score:
+                        type: number
+                        description: Game score.
+                        example: 150
+                      correctQuestions:
+                        type: number
+                        description: Number of correctly answered questions.
+                        example: 8
+                      gameId:
+                        type: string
+                        description: Game ID.
+                        example: game123
+                      recordedAt:
+                        type: string
+                        description: Date the game was recorded.
+                        example: "2024-03-17T20:47:23.935Z"
+                      category:
+                        type: string
+                        description: Game category.
+                        example: History
+                      timeTaken:
+                        type: number
+                        description: Time taken to complete the game (in seconds).
+                        example: 300
+                      totalQuestions:
+                        type: number
+                        description: Total number of questions in the game.
+                        example: 10
+                      difficulty:
+                        type: string
+                        description: Game difficulty level.
+                        example: Fácil
+        "400":
+          description: Validation failed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message.
+                    example: Validation failed
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    description: List of validation errors.
+                    example: ["Username is required", "Score must be a number"]
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message.
+                    example: Internal server error
+                  error:
+                    type: string
+                    description: Detailed error information.
+                    example: Database connection failed
