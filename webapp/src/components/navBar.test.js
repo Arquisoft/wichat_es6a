@@ -36,14 +36,14 @@ describe('Navbar', () => {
 
     // Comprobar los botones visibles
     expect(screen.getByText('Home')).toBeInTheDocument();
-    expect(screen.getByText('Jugar')).toBeInTheDocument();
+    expect(screen.getByText('Play')).toBeInTheDocument();
     expect(screen.getByText('Questions')).toBeInTheDocument();
 
     // Verificar que el botón 'Stats' no está visible
     expect(screen.queryByText('Stats')).not.toBeInTheDocument();
 
     // Verificar que el botón 'Logout' está visible
-    expect(screen.getByText('Logout')).toBeInTheDocument();
+    expect(screen.getByText('Login')).toBeInTheDocument();
   });
 
   test('renders navbar with stats button and user options when user is logged in', () => {
@@ -56,7 +56,7 @@ describe('Navbar', () => {
 
     // Comprobar los botones visibles
     expect(screen.getByText('Home')).toBeInTheDocument();
-    expect(screen.getByText('Jugar')).toBeInTheDocument();
+    expect(screen.getByText('Play')).toBeInTheDocument();
     expect(screen.getByText('Questions')).toBeInTheDocument();
 
     // Verificar que el botón 'Stats' está visible

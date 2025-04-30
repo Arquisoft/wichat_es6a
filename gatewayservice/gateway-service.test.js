@@ -1,7 +1,7 @@
 const request = require('supertest');
 const axios = require('axios');
 const MockAdapter = require('axios-mock-adapter');
-const app = require('./gateway-service'); 
+const {server, stopHealthCheckInterval} = require('./gateway-service'); 
 const { v4: uuidv4 } = require('uuid');
 const { Readable } = require('stream');
 
@@ -15,18 +15,21 @@ describe('Servicio Gateway', () => {
   const questionServiceUrl = 'http://localhost:8005';
   const wikidataServiceUrl = 'http://localhost:8020';
 
+  
+
   afterEach(() => {
     mock.reset(); // Resetea los mocks después de cada prueba
   });
 
   afterAll(async () => {
-    await new Promise((resolve) => app.close(resolve)); // Cierra el servidor después de todas las pruebas
+    server.close();
+    stopHealthCheckInterval();
   });
 
   // Endpoint de Salud
   describe('GET /health', () => {
     it('debería devolver el estado OK', async () => {
-      const response = await request(app).get('/health');
+      const response = await request(server).get('/health');
       expect(response.status).toBe(200);
     });
   });
@@ -39,7 +42,7 @@ describe('Servicio Gateway', () => {
         const userData = { id: userId, username: 'testuser' };
         mock.onGet(`${userServiceUrl}/user/${userId}`).reply(200, userData);
 
-        const response = await request(app).get(`/user/${userId}`);
+        const response = await request(server).get(`/user/${userId}`);
         expect(response.status).toBe(200);
         expect(response.body).toEqual(userData);
       });
@@ -48,7 +51,7 @@ describe('Servicio Gateway', () => {
         const userId = '999';
         mock.onGet(`${userServiceUrl}/user/${userId}`).reply(404, { error: 'Usuario no encontrado' });
 
-        const response = await request(app).get(`/user/${userId}`);
+        const response = await request(server).get(`/user/${userId}`);
         expect(response.status).toBe(404);
         expect(response.body).toEqual({ error: 'Usuario no encontrado' });
       });
@@ -60,7 +63,7 @@ describe('Servicio Gateway', () => {
         const newUsername = { username: 'nuevousuario' };
         mock.onPut(`${userServiceUrl}/user/${userId}/username`).reply(200, { success: true });
 
-        const response = await request(app)
+        const response = await request(server)
           .put(`/user/${userId}/username`)
           .send(newUsername);
         expect(response.status).toBe(200);
@@ -71,7 +74,7 @@ describe('Servicio Gateway', () => {
         const userId = '123';
         mock.onPut(`${userServiceUrl}/user/${userId}/username`).reply(400, { error: 'Nombre de usuario inválido' });
 
-        const response = await request(app)
+        const response = await request(server)
           .put(`/user/${userId}/username`)
           .send({ username: '' });
         expect(response.status).toBe(400);
@@ -85,7 +88,7 @@ describe('Servicio Gateway', () => {
         const newPassword = { password: 'nuevacontraseña123' };
         mock.onPut(`${userServiceUrl}/user/${userId}/password`).reply(200, { success: true });
 
-        const response = await request(app)
+        const response = await request(server)
           .put(`/user/${userId}/password`)
           .send(newPassword);
         expect(response.status).toBe(200);
@@ -96,7 +99,7 @@ describe('Servicio Gateway', () => {
         const userId = '123';
         mock.onPut(`${userServiceUrl}/user/${userId}/password`).reply(400, { error: 'Contraseña demasiado débil' });
 
-        const response = await request(app)
+        const response = await request(server)
           .put(`/user/${userId}/password`)
           .send({ password: 'débil' });
         expect(response.status).toBe(400);
@@ -109,7 +112,7 @@ describe('Servicio Gateway', () => {
         const userId = '123';
         mock.onPost(`${userServiceUrl}/user/${userId}/profile-pic`).reply(200, { success: true });
 
-        const response = await request(app)
+        const response = await request(server)
           .post(`/user/${userId}/profile-pic`)
           .attach('file', Buffer.from('test'), 'test.jpg');
         expect(response.status).toBe(200);
@@ -120,7 +123,7 @@ describe('Servicio Gateway', () => {
         const userId = '123';
         mock.onPost(`${userServiceUrl}/user/${userId}/profile-pic`).reply(400, { error: 'Formato de archivo inválido' });
 
-        const response = await request(app)
+        const response = await request(server)
           .post(`/user/${userId}/profile-pic`)
           .send({});
         expect(response.status).toBe(400);
@@ -142,7 +145,7 @@ describe('Servicio Gateway', () => {
           return [200, stream, { 'content-type': 'image/jpeg' }];
         });
     
-        const response = await request(app)
+        const response = await request(server)
           .get(`/user/${userId}/profile-pic`)
           .buffer()
           .parse((res, callback) => {
@@ -159,7 +162,7 @@ describe('Servicio Gateway', () => {
         const userId = '123';
         mock.onGet(`${userServiceUrl}/user/${userId}/profile-pic`).reply(404, { error: 'Foto de perfil no encontrada' });
 
-        const response = await request(app).get(`/user/${userId}/profile-pic`);
+        const response = await request(server).get(`/user/${userId}/profile-pic`);
         expect(response.status).toBe(404);
         expect(response.body).toEqual({ error: 'Foto de perfil no encontrada' });
       });
@@ -170,7 +173,7 @@ describe('Servicio Gateway', () => {
         const userId = '123';
         mock.onDelete(`${userServiceUrl}/user/${userId}/profile-pic`).reply(200, { success: true });
 
-        const response = await request(app).delete(`/user/${userId}/profile-pic`);
+        const response = await request(server).delete(`/user/${userId}/profile-pic`);
         expect(response.status).toBe(200);
         expect(response.body).toEqual({ success: true });
       });
@@ -179,7 +182,7 @@ describe('Servicio Gateway', () => {
         const userId = '123';
         mock.onDelete(`${userServiceUrl}/user/${userId}/profile-pic`).reply(404, { error: 'Foto de perfil no encontrada' });
 
-        const response = await request(app).delete(`/user/${userId}/profile-pic`);
+        const response = await request(server).delete(`/user/${userId}/profile-pic`);
         expect(response.status).toBe(404);
         expect(response.body).toEqual({ error: 'Foto de perfil no encontrada' });
       });
@@ -190,7 +193,7 @@ describe('Servicio Gateway', () => {
         const userData = { username: 'nuevousuario', password: 'contraseña123' };
         mock.onPost(`${userServiceUrl}/adduser`).reply(200, { id: '123', ...userData });
 
-        const response = await request(app).post('/adduser').send(userData);
+        const response = await request(server).post('/adduser').send(userData);
         expect(response.status).toBe(200);
         expect(response.body).toEqual({ id: '123', ...userData });
       });
@@ -198,7 +201,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver 400 para datos de usuario inválidos', async () => {
         mock.onPost(`${userServiceUrl}/adduser`).reply(400, { error: 'Datos de usuario inválidos' });
 
-        const response = await request(app).post('/adduser').send({ username: '' });
+        const response = await request(server).post('/adduser').send({ username: '' });
         expect(response.status).toBe(400);
         expect(response.body).toEqual({ error: 'Datos de usuario inválidos' });
       });
@@ -212,7 +215,7 @@ describe('Servicio Gateway', () => {
         const loginData = { username: 'testuser', password: 'contraseña123' };
         mock.onPost(`${authServiceUrl}/login`).reply(200, { token: 'mockedToken' });
 
-        const response = await request(app).post('/login').send(loginData);
+        const response = await request(server).post('/login').send(loginData);
         expect(response.status).toBe(200);
         expect(response.body).toEqual({ token: 'mockedToken' });
       });
@@ -220,7 +223,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver 401 para credenciales inválidas', async () => {
         mock.onPost(`${authServiceUrl}/login`).reply(401, { error: 'Credenciales inválidas' });
 
-        const response = await request(app).post('/login').send({ username: 'testuser', password: 'incorrecta' });
+        const response = await request(server).post('/login').send({ username: 'testuser', password: 'incorrecta' });
         expect(response.status).toBe(401);
         expect(response.body).toEqual({ error: 'Credenciales inválidas' });
       });
@@ -234,7 +237,7 @@ describe('Servicio Gateway', () => {
         const questionData = { topic: 'historia' };
         mock.onPost(`${llmServiceUrl}/generateQuestions`).reply(200, { questions: ['pregunta1', 'pregunta2'] });
 
-        const response = await request(app).post('/generateQuestions').send(questionData);
+        const response = await request(server).post('/generateQuestions').send(questionData);
         expect(response.status).toBe(200);
         expect(response.body).toEqual({ questions: ['pregunta1', 'pregunta2'] });
       });
@@ -242,7 +245,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver 400 para datos inválidos', async () => {
         mock.onPost(`${llmServiceUrl}/generateQuestions`).reply(400, { error: 'Datos inválidos' });
 
-        const response = await request(app).post('/generateQuestions').send({});
+        const response = await request(server).post('/generateQuestions').send({});
         expect(response.status).toBe(400);
         expect(response.body).toEqual({ error: 'Datos inválidos' });
       });
@@ -253,7 +256,7 @@ describe('Servicio Gateway', () => {
         const configData = { model: 'gemini' };
         mock.onPost(`${llmServiceUrl}/configureAssistant`).reply(200, { success: true });
 
-        const response = await request(app).post('/configureAssistant').send(configData);
+        const response = await request(server).post('/configureAssistant').send(configData);
         expect(response.status).toBe(200);
         expect(response.body).toEqual({ success: true });
       });
@@ -261,7 +264,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver 400 para configuración inválida', async () => {
         mock.onPost(`${llmServiceUrl}/configureAssistant`).reply(400, { error: 'Configuración inválida' });
 
-        const response = await request(app).post('/configureAssistant').send({});
+        const response = await request(server).post('/configureAssistant').send({});
         expect(response.status).toBe(400);
         expect(response.body).toEqual({ error: 'Configuración inválida' });
       });
@@ -272,7 +275,7 @@ describe('Servicio Gateway', () => {
         const questionData = { question: '¿Qué es la gravedad?' };
         mock.onPost(`${llmServiceUrl}/ask`).reply(200, { answer: 'La gravedad es...' });
 
-        const response = await request(app).post('/ask').send(questionData);
+        const response = await request(server).post('/ask').send(questionData);
         expect(response.status).toBe(200);
         expect(response.body).toEqual({ answer: 'La gravedad es...' });
       });
@@ -280,7 +283,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver 400 para pregunta inválida', async () => {
         mock.onPost(`${llmServiceUrl}/ask`).reply(400, { error: 'Pregunta inválida' });
 
-        const response = await request(app).post('/ask').send({ question: '' });
+        const response = await request(server).post('/ask').send({ question: '' });
         expect(response.status).toBe(400);
         expect(response.body).toEqual({ error: 'Pregunta inválida' });
       });
@@ -291,7 +294,7 @@ describe('Servicio Gateway', () => {
         const hintData = { questionId: '123' };
         mock.onPost(`${llmServiceUrl}/getHint`).reply(200, { hint: 'Pista útil' });
 
-        const response = await request(app).post('/getHint').send(hintData);
+        const response = await request(server).post('/getHint').send(hintData);
         expect(response.status).toBe(200);
         expect(response.body).toEqual({ hint: 'Pista útil' });
       });
@@ -299,7 +302,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver 400 para datos inválidos', async () => {
         mock.onPost(`${llmServiceUrl}/getHint`).reply(400, { error: 'Datos inválidos' });
 
-        const response = await request(app).post('/getHint').send({});
+        const response = await request(server).post('/getHint').send({});
         expect(response.status).toBe(400);
         expect(response.body).toEqual({ error: 'Datos inválidos' });
       });
@@ -310,7 +313,7 @@ describe('Servicio Gateway', () => {
         const hintData = { query: 'capital de Francia' };
         mock.onPost(`${llmServiceUrl}/getHintWithQuery`).reply(200, { hint: 'Es una ciudad famosa' });
 
-        const response = await request(app).post('/getHintWithQuery').send(hintData);
+        const response = await request(server).post('/getHintWithQuery').send(hintData);
         expect(response.status).toBe(200);
         expect(response.body).toEqual({ hint: 'Es una ciudad famosa' });
       });
@@ -318,7 +321,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver 400 para consulta inválida', async () => {
         mock.onPost(`${llmServiceUrl}/getHintWithQuery`).reply(400, { error: 'Consulta inválida' });
 
-        const response = await request(app).post('/getHintWithQuery').send({ query: '' });
+        const response = await request(server).post('/getHintWithQuery').send({ query: '' });
         expect(response.status).toBe(400);
         expect(response.body).toEqual({ error: 'Consulta inválida' });
       });
@@ -332,7 +335,7 @@ describe('Servicio Gateway', () => {
         const username = 'testuser';
         mock.onGet(`${historyServiceUrl}/getBestGames`).reply(200, { games: [{ id: '1', score: 100 }] });
 
-        const response = await request(app)
+        const response = await request(server)
           .get('/getBestGames')
           .set('username', username);
         expect(response.status).toBe(200);
@@ -343,7 +346,7 @@ describe('Servicio Gateway', () => {
         const username = 'testuser';
         mock.onGet(`${historyServiceUrl}/getBestGames`).reply(404, { error: 'No se encontraron partidas' });
 
-        const response = await request(app)
+        const response = await request(server)
           .get('/getBestGames')
           .set('username', username);
         expect(response.status).toBe(404);
@@ -356,7 +359,7 @@ describe('Servicio Gateway', () => {
         const username = 'testuser';
         mock.onGet(`${historyServiceUrl}/getAllGames`).reply(200, { games: [{ id: '1' }, { id: '2' }] });
 
-        const response = await request(app)
+        const response = await request(server)
           .get('/getAllGames')
           .set('username', username);
         expect(response.status).toBe(200);
@@ -367,7 +370,7 @@ describe('Servicio Gateway', () => {
         const username = 'testuser';
         mock.onGet(`${historyServiceUrl}/getAllGames`).reply(404, { error: 'No se encontraron partidas' });
 
-        const response = await request(app)
+        const response = await request(server)
           .get('/getAllGames')
           .set('username', username);
         expect(response.status).toBe(404);
@@ -380,7 +383,7 @@ describe('Servicio Gateway', () => {
         const username = 'testuser';
         mock.onGet(`${historyServiceUrl}/stats`).reply(200, { stats: { totalGames: 10, averageScore: 80 } });
 
-        const response = await request(app)
+        const response = await request(server)
           .get('/stats')
           .set('username', username);
         expect(response.status).toBe(200);
@@ -391,7 +394,7 @@ describe('Servicio Gateway', () => {
         const username = 'testuser';
         mock.onGet(`${historyServiceUrl}/stats`).reply(404, { error: 'No se encontraron estadísticas' });
 
-        const response = await request(app)
+        const response = await request(server)
           .get('/stats')
           .set('username', username);
         expect(response.status).toBe(404);
@@ -404,7 +407,7 @@ describe('Servicio Gateway', () => {
         const gameData = { score: 100, date: '2023-10-01' };
         mock.onPost(`${historyServiceUrl}/addGame`).reply(201, { id: '123', ...gameData });
 
-        const response = await request(app).post('/addGame').send(gameData);
+        const response = await request(server).post('/addGame').send(gameData);
         expect(response.status).toBe(201);
         expect(response.body).toEqual({ id: '123', ...gameData });
       });
@@ -412,7 +415,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver 400 para datos de partida inválidos', async () => {
         mock.onPost(`${historyServiceUrl}/addGame`).reply(400, { error: 'Datos de partida inválidos' });
 
-        const response = await request(app).post('/addGame').send({});
+        const response = await request(server).post('/addGame').send({});
         expect(response.status).toBe(400);
         expect(response.body).toEqual({ error: 'Datos de partida inválidos' });
       });
@@ -426,7 +429,7 @@ describe('Servicio Gateway', () => {
         const questionData = { question: '¿Cuál es la capital de Francia?', answer: 'París' };
         mock.onPost(`${questionServiceUrl}/addQuestion`).reply(201, { id: '123', ...questionData });
 
-        const response = await request(app).post('/addQuestion').send(questionData);
+        const response = await request(server).post('/addQuestion').send(questionData);
         expect(response.status).toBe(201);
         expect(response.body).toEqual({ id: '123', ...questionData });
       });
@@ -434,7 +437,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver 400 para pregunta inválida', async () => {
         mock.onPost(`${questionServiceUrl}/addQuestion`).reply(400, { error: 'Pregunta inválida' });
 
-        const response = await request(app).post('/addQuestion').send({ question: '' });
+        const response = await request(server).post('/addQuestion').send({ question: '' });
         expect(response.status).toBe(400);
         expect(response.body).toEqual({ error: 'Pregunta inválida' });
       });
@@ -444,7 +447,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver todas las preguntas correctamente', async () => {
         mock.onGet(`${questionServiceUrl}/questions`).reply(200, { questions: [{ id: '1', question: 'Pregunta 1' }] });
 
-        const response = await request(app).get('/questions');
+        const response = await request(server).get('/questions');
         expect(response.status).toBe(200);
         expect(response.body).toEqual({ questions: [{ id: '1', question: 'Pregunta 1' }] });
       });
@@ -452,7 +455,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver 404 si no hay preguntas', async () => {
         mock.onGet(`${questionServiceUrl}/questions`).reply(404, { error: 'No se encontraron preguntas' });
 
-        const response = await request(app).get('/questions');
+        const response = await request(server).get('/questions');
         expect(response.status).toBe(404);
         expect(response.body).toEqual({ error: 'No se encontraron preguntas' });
       });
@@ -465,7 +468,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver una entrada aleatoria correctamente', async () => {
         mock.onGet(`${wikidataServiceUrl}/api/entries/random`).reply(200, { entry: { id: 'Q123', name: 'Entrada' } });
 
-        const response = await request(app).get('/api/entries/random');
+        const response = await request(server).get('/api/entries/random');
         expect(response.status).toBe(200);
         expect(response.body).toEqual({ entry: { id: 'Q123', name: 'Entrada' } });
       });
@@ -473,7 +476,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver 500 si el servicio falla', async () => {
         mock.onGet(`${wikidataServiceUrl}/api/entries/random`).reply(500, { error: 'Error del servidor' });
 
-        const response = await request(app).get('/api/entries/random');
+        const response = await request(server).get('/api/entries/random');
         expect(response.status).toBe(500);
         expect(response.body).toEqual({ error: 'Error del servidor' });
       });
@@ -484,7 +487,7 @@ describe('Servicio Gateway', () => {
         const category = 'paises';
         mock.onGet(`${wikidataServiceUrl}/api/entries/${category}`).reply(200, { entries: [{ id: 'Q1', name: 'País' }] });
 
-        const response = await request(app).get(`/api/entries/${category}`);
+        const response = await request(server).get(`/api/entries/${category}`);
         expect(response.status).toBe(200);
         expect(response.body).toEqual({ entries: [{ id: 'Q1', name: 'País' }] });
       });
@@ -493,7 +496,7 @@ describe('Servicio Gateway', () => {
         const category = 'invalida';
         mock.onGet(`${wikidataServiceUrl}/api/entries/${category}`).reply(404, { error: 'Categoría no encontrada' });
 
-        const response = await request(app).get(`/api/entries/${category}`);
+        const response = await request(server).get(`/api/entries/${category}`);
         expect(response.status).toBe(404);
         expect(response.body).toEqual({ error: 'Categoría no encontrada' });
       });
@@ -505,7 +508,7 @@ describe('Servicio Gateway', () => {
         const fetchData = { limit: 10 };
         mock.onPost(`${wikidataServiceUrl}/api/entries/fetch/${category}`).reply(200, { entries: [{ id: 'Q1', name: 'País' }] });
 
-        const response = await request(app)
+        const response = await request(server)
           .post(`/api/entries/fetch/${category}`)
           .send(fetchData);
         expect(response.status).toBe(200);
@@ -516,7 +519,7 @@ describe('Servicio Gateway', () => {
         const category = 'paises';
         mock.onPost(`${wikidataServiceUrl}/api/entries/fetch/${category}`).reply(400, { error: 'Datos inválidos' });
 
-        const response = await request(app)
+        const response = await request(server)
           .post(`/api/entries/fetch/${category}`)
           .send({});
         expect(response.status).toBe(400);
@@ -528,7 +531,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver países correctamente', async () => {
         mock.onGet(`${wikidataServiceUrl}/api/paises`).reply(200, { countries: [{ id: 'Q1', name: 'País' }] });
 
-        const response = await request(app).get('/api/paises');
+        const response = await request(server).get('/api/paises');
         expect(response.status).toBe(200);
         expect(response.body).toEqual({ countries: [{ id: 'Q1', name: 'País' }] });
       });
@@ -536,7 +539,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver 500 si el servicio falla', async () => {
         mock.onGet(`${wikidataServiceUrl}/api/paises`).reply(500, { error: 'Error del servidor' });
 
-        const response = await request(app).get('/api/paises');
+        const response = await request(server).get('/api/paises');
         expect(response.status).toBe(500);
         expect(response.body).toEqual({ error: 'Error del servidor' });
       });
@@ -546,7 +549,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver monumentos correctamente', async () => {
         mock.onGet(`${wikidataServiceUrl}/api/monumentos`).reply(200, { monuments: [{ id: 'Q2', name: 'Monumento' }] });
 
-        const response = await request(app).get('/api/monumentos');
+        const response = await request(server).get('/api/monumentos');
         expect(response.status).toBe(200);
         expect(response.body).toEqual({ monuments: [{ id: 'Q2', name: 'Monumento' }] });
       });
@@ -554,7 +557,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver 500 si el servicio falla', async () => {
         mock.onGet(`${wikidataServiceUrl}/api/monumentos`).reply(500, { error: 'Error del servidor' });
 
-        const response = await request(app).get('/api/monumentos');
+        const response = await request(server).get('/api/monumentos');
         expect(response.status).toBe(500);
         expect(response.body).toEqual({ error: 'Error del servidor' });
       });
@@ -564,7 +567,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver elementos correctamente', async () => {
         mock.onGet(`${wikidataServiceUrl}/api/elementos`).reply(200, { elements: [{ id: 'Q3', name: 'Elemento' }] });
 
-        const response = await request(app).get('/api/elementos');
+        const response = await request(server).get('/api/elementos');
         expect(response.status).toBe(200);
         expect(response.body).toEqual({ elements: [{ id: 'Q3', name: 'Elemento' }] });
       });
@@ -572,7 +575,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver 500 si el servicio falla', async () => {
         mock.onGet(`${wikidataServiceUrl}/api/elementos`).reply(500, { error: 'Error del servidor' });
 
-        const response = await request(app).get('/api/elementos');
+        const response = await request(server).get('/api/elementos');
         expect(response.status).toBe(500);
         expect(response.body).toEqual({ error: 'Error del servidor' });
       });
@@ -582,7 +585,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver películas correctamente', async () => {
         mock.onGet(`${wikidataServiceUrl}/api/peliculas`).reply(200, { movies: [{ id: 'Q4', name: 'Película' }] });
 
-        const response = await request(app).get('/api/peliculas');
+        const response = await request(server).get('/api/peliculas');
         expect(response.status).toBe(200);
         expect(response.body).toEqual({ movies: [{ id: 'Q4', name: 'Película' }] });
       });
@@ -590,7 +593,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver 500 si el servicio falla', async () => {
         mock.onGet(`${wikidataServiceUrl}/api/peliculas`).reply(500, { error: 'Error del servidor' });
 
-        const response = await request(app).get('/api/peliculas');
+        const response = await request(server).get('/api/peliculas');
         expect(response.status).toBe(500);
         expect(response.body).toEqual({ error: 'Error del servidor' });
       });
@@ -600,7 +603,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver canciones correctamente', async () => {
         mock.onGet(`${wikidataServiceUrl}/api/canciones`).reply(200, { songs: [{ id: 'Q5', name: 'Canción' }] });
 
-        const response = await request(app).get('/api/canciones');
+        const response = await request(server).get('/api/canciones');
         expect(response.status).toBe(200);
         expect(response.body).toEqual({ songs: [{ id: 'Q5', name: 'Canción' }] });
       });
@@ -608,7 +611,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver 500 si el servicio falla', async () => {
         mock.onGet(`${wikidataServiceUrl}/api/canciones`).reply(500, { error: 'Error del servidor' });
 
-        const response = await request(app).get('/api/canciones');
+        const response = await request(server).get('/api/canciones');
         expect(response.status).toBe(500);
         expect(response.body).toEqual({ error: 'Error del servidor' });
       });
@@ -618,7 +621,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver datos de Fórmula 1 correctamente', async () => {
         mock.onGet(`${wikidataServiceUrl}/api/formula1`).reply(200, { formula1: [{ id: 'Q6', name: 'Piloto' }] });
 
-        const response = await request(app).get('/api/formula1');
+        const response = await request(server).get('/api/formula1');
         expect(response.status).toBe(200);
         expect(response.body).toEqual({ formula1: [{ id: 'Q6', name: 'Piloto' }] });
       });
@@ -626,7 +629,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver 500 si el servicio falla', async () => {
         mock.onGet(`${wikidataServiceUrl}/api/formula1`).reply(500, { error: 'Error del servidor' });
 
-        const response = await request(app).get('/api/formula1');
+        const response = await request(server).get('/api/formula1');
         expect(response.status).toBe(500);
         expect(response.body).toEqual({ error: 'Error del servidor' });
       });
@@ -636,7 +639,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver pinturas correctamente', async () => {
         mock.onGet(`${wikidataServiceUrl}/api/pinturas`).reply(200, { paintings: [{ id: 'Q7', name: 'Pintura' }] });
 
-        const response = await request(app).get('/api/pinturas');
+        const response = await request(server).get('/api/pinturas');
         expect(response.status).toBe(200);
         expect(response.body).toEqual({ paintings: [{ id: 'Q7', name: 'Pintura' }] });
       });
@@ -644,7 +647,7 @@ describe('Servicio Gateway', () => {
       it('debería devolver 500 si el servicio falla', async () => {
         mock.onGet(`${wikidataServiceUrl}/api/pinturas`).reply(500, { error: 'Error del servidor' });
 
-        const response = await request(app).get('/api/pinturas');
+        const response = await request(server).get('/api/pinturas');
         expect(response.status).toBe(500);
         expect(response.body).toEqual({ error: 'Error del servidor' });
       });
