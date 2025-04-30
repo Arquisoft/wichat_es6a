@@ -5,6 +5,10 @@ import WikiQueries from './wikidataQueries.js';
 import WikidataCacheService from './wikidataCacheService.js';
 import connectDatabase from '/usr/src/llmservice/config/database.js';
 
+import swaggerUi  from 'swagger-ui-express'; 
+import fs  from "fs"
+import YAML  from 'yaml';
+
 const app = express();
 const port = 8020;
 
@@ -189,8 +193,18 @@ app.get('/api/pinturas', async (req, res) => {
   }
 });
 
+// **Configuración de Swagger**
+let openapiPath = './openapi.yaml'
+if (fs.existsSync(openapiPath)) {
+  const file = fs.readFileSync(openapiPath, 'utf8');
+  const swaggerDocument = YAML.parse(file);
+  app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+} else {
+  console.log("Not configuring OpenAPI. Configuration file not present.")
+}
+
 const server = app.listen(port, () => {
-  console.log(`🚀 WikiData Service corriendo en http://localhost:${port}`);
+  console.log(`WikiData Service corriendo en http://localhost:${port}`);
 });
 
 export { server };

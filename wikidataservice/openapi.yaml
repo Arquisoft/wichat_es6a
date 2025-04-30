@@ -1,0 +1,499 @@
+openapi: 3.0.0
+info:
+  title: Wikidata Service API
+  description: OpenAPI specification for the Wikidata Service, providing access to cached and real-time Wikidata entries for various categories.
+  version: 0.1.0
+servers:
+  - url: http://localhost:8020
+    description: Development server
+  - url: http://wikidataservice:8020
+    description: Production server
+paths:
+  /api/entries/random:
+    get:
+      summary: Get a random Wikidata entry from any category.
+      operationId: getRandomEntry
+      responses:
+        "200":
+          description: Random entry retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    description: Unique identifier for the entry.
+                    example: 1234567890abcdef
+                  category:
+                    type: string
+                    description: Category of the entry.
+                    example: paises
+                  itemLabel:
+                    type: string
+                    description: Label of the Wikidata item.
+                    example: España
+                  additionalData:
+                    type: object
+                    description: Additional data specific to the category (e.g., capital, symbol).
+                    example:
+                      capitalLabel: Madrid
+                  imageUrl:
+                    type: string
+                    description: URL of an image related to the entry (if available).
+                    example: https://commons.wikimedia.org/wiki/File:Spain_flag.jpg
+        "404":
+          description: No entries found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: No se encontraron entradas
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: Error al recuperar entrada aleatoria
+  /api/entries/{category}:
+    get:
+      summary: Get Wikidata entries for a specific category.
+      operationId: getEntriesByCategory
+      parameters:
+        - name: category
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Category of entries (e.g., paises, monumentos, elementos, peliculas, canciones, formula1, pinturas).
+          example: paises
+        - name: count
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Number of entries to retrieve.
+          example: 5
+      responses:
+        "200":
+          description: Entries retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      description: Unique identifier for the entry.
+                      example: 1234567890abcdef
+                    category:
+                      type: string
+                      description: Category of the entry.
+                      example: paises
+                    itemLabel:
+                      type: string
+                      description: Label of the Wikidata item.
+                      example: España
+                    additionalData:
+                      type: object
+                      description: Additional data specific to the category (e.g., capital, symbol).
+                      example:
+                        capitalLabel: Madrid
+                    imageUrl:
+                      type: string
+                      description: URL of an image related to the entry (if available).
+                      example: https://commons.wikimedia.org/wiki/File:Spain_flag.jpg
+        "404":
+          description: No entries found for the category.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: No se encontraron entradas para la categoría paises
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: Error al recuperar entradas
+  /api/entries/fetch/{category}:
+    post:
+      summary: Fetch and cache new Wikidata entries for a specific category.
+      operationId: fetchEntriesByCategory
+      parameters:
+        - name: category
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Category of entries to fetch (e.g., paises, monumentos, elementos, peliculas, canciones, formula1, pinturas).
+          example: paises
+        - name: count
+          in: query
+          schema:
+            type: integer
+            default: 5
+          description: Number of entries to fetch and cache.
+          example: 10
+      responses:
+        "200":
+          description: Entries fetched and cached successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates if the operation was successful.
+                    example: true
+                  count:
+                    type: integer
+                    description: Number of entries fetched.
+                    example: 10
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: Error al obtener nuevas entradas
+  /api/paises:
+    get:
+      summary: Get a list of countries and their capitals.
+      operationId: getCountries
+      responses:
+        "200":
+          description: Countries retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      description: Unique identifier for the entry.
+                      example: 1234567890abcdef
+                    category:
+                      type: string
+                      description: Category of the entry.
+                      example: paises
+                    countryLabel:
+                      type: string
+                      description: Name of the country.
+                      example: España
+                    capitalLabel:
+                      type: string
+                      description: Name of the capital city.
+                      example: Madrid
+                    imageUrl:
+                      type: string
+                      description: URL of an image related to the country (if available).
+                      example: https://commons.wikimedia.org/wiki/File:Spain_flag.jpg
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: Error al obtener los países
+  /api/monumentos:
+    get:
+      summary: Get a list of monuments and their countries.
+      operationId: getMonuments
+      responses:
+        "200":
+          description: Monuments retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      description: Unique identifier for the entry.
+                      example: 1234567890abcdef
+                    category:
+                      type: string
+                      description: Category of the entry.
+                      example: monumentos
+                    monumentLabel:
+                      type: string
+                      description: Name of the monument.
+                      example: Torre Eiffel
+                    countryLabel:
+                      type: string
+                      description: Name of the country.
+                      example: Francia
+                    imageUrl:
+                      type: string
+                      description: URL of an image related to the monument (if available).
+                      example: https://commons.wikimedia.org/wiki/File:Eiffel_Tower.jpg
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: Error al obtener los monumentos
+  /api/elementos:
+    get:
+      summary: Get a list of chemical elements and their symbols.
+      operationId: getElements
+      responses:
+        "200":
+          description: Chemical elements retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      description: Unique identifier for the entry.
+                      example: 1234567890abcdef
+                    category:
+                      type: string
+                      description: Category of the entry.
+                      example: elementos
+                    elementLabel:
+                      type: string
+                      description: Name of the chemical element.
+                      example: Oro
+                    symbol:
+                      type: string
+                      description: Chemical symbol of the element.
+                      example: Au
+                    imageUrl:
+                      type: string
+                      description: URL of an image related to the element (if available).
+                      example: https://commons.wikimedia.org/wiki/File:Gold_element.jpg
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: Error al obtener los elementos químicos
+  /api/peliculas:
+    get:
+      summary: Get a list of movies and their directors.
+      operationId: getMovies
+      responses:
+        "200":
+          description: Movies retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      description: Unique identifier for the entry.
+                      example: 1234567890abcdef
+                    category:
+                      type: string
+                      description: Category of the entry.
+                      example: peliculas
+                    peliculaLabel:
+                      type: string
+                      description: Title of the movie.
+                      example: El Padrino
+                    directorLabel:
+                      type: string
+                      description: Name of the director.
+                      example: Francis Ford Coppola
+                    imageUrl:
+                      type: string
+                      description: URL of an image related to the movie (if available).
+                      example: https://commons.wikimedia.org/wiki/File:Godfather_poster.jpg
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: Error al obtener las películas
+  /api/canciones:
+    get:
+      summary: Get a list of songs and their artists.
+      operationId: getSongs
+      responses:
+        "200":
+          description: Songs retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      description: Unique identifier for the entry.
+                      example: 1234567890abcdef
+                    category:
+                      type: string
+                      description: Category of the entry.
+                      example: canciones
+                    songLabel:
+                      type: string
+                      description: Title of the song.
+                      example: Bohemian Rhapsody
+                    artistLabel:
+                      type: string
+                      description: Name of the artist.
+                      example: Queen
+                    imageUrl:
+                      type: string
+                      description: URL of an image related to the song (if available).
+                      example: https://commons.wikimedia.org/wiki/File:Queen_logo.jpg
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: Error al obtener las canciones
+  /api/formula1:
+    get:
+      summary: Get a list of Formula 1 championship years and winners.
+      operationId: getFormula1
+      responses:
+        "200":
+          description: Formula 1 data retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      description: Unique identifier for the entry.
+                      example: 1234567890abcdef
+                    category:
+                      type: string
+                      description: Category of the entry.
+                      example: formula1
+                    year:
+                      type: string
+                      description: Year of the championship.
+                      example: 2023
+                    winnerLabel:
+                      type: string
+                      description: Name of the winner.
+                      example: Max Verstappen
+                    imageUrl:
+                      type: string
+                      description: URL of an image related to the Formula 1 event (if available).
+                      example: https://commons.wikimedia.org/wiki/File:F1_logo.jpg
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: Error al obtener los datos de Fórmula 1
+  /api/pinturas:
+    get:
+      summary: Get a list of paintings and their artists.
+      operationId: getPaintings
+      responses:
+        "200":
+          description: Paintings retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      description: Unique identifier for the entry.
+                      example: 1234567890abcdef
+                    category:
+                      type: string
+                      description: Category of the entry.
+                      example: pinturas
+                    paintingLabel:
+                      type: string
+                      description: Title of the painting.
+                      example: La Noche Estrellada
+                    artistLabel:
+                      type: string
+                      description: Name of the artist.
+                      example: Vincent van Gogh
+                    imageUrl:
+                      type: string
+                      description: URL of an image of the painting (if available).
+                      example: https://commons.wikimedia.org/wiki/File:Starry_Night.jpg
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: Error al obtener las pinturas
