@@ -232,7 +232,7 @@ const AllQuestionsWindow = () => {
                           />
                         </ListItem>
                         {/* Incorrect Answers */}
-                        {q.incorrectAnswers.map((ans, i) => (
+                        {q.incorrectAnswers?.map((ans, i) => (
                           <ListItem key={i} sx={{ paddingLeft: 0 }}>
                             <ListItemIcon
                               sx={{ minWidth: "30px", color: "text.secondary" }}
