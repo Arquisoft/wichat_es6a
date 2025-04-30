@@ -43,6 +43,8 @@ const ChatClues = forwardRef(({ actualQuestion, answers }, ref) => {
       const userMessage = `Tú: ${userQuery}`; // Mensaje usuario en español
       setMessages((prevMessages) => [...prevMessages, userMessage]); // Mostrar mensaje usuario inmediatamente
       setInput(""); // Limpiar input
+      setInputEnabled(false); // Se deshabilita el input para controlar el uso de una sola pregunta (boton Pregunta IA)
+
 
       try {
         const response = await axios.post(`${apiEndpoint}/getHintWithQuery`, {
