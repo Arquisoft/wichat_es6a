@@ -215,6 +215,11 @@ const GameOptions = () => {
                   <Button
                     key={category.endpoint}
                     onClick={() => handleCategoryButtonClick(category)}
+                    data-testid={
+                      category.name === "Variado"
+                        ? "category-mixed"
+                        : "category-select"
+                    }
                     sx={{
                       display: "flex",
                       flexDirection: "column",
@@ -346,6 +351,7 @@ const GameOptions = () => {
                         : "outlined"
                     }
                     onClick={() => setSelectedDifficulty(difficulty)}
+                    data-testid={`difficulty-${difficulty.name.toLowerCase()}`}
                     sx={{
                       // Estilos basados en el color semántico de la dificultad
                       fontWeight: "bold",
@@ -425,6 +431,7 @@ const GameOptions = () => {
               <Button
                 variant="contained"
                 size="large"
+                data-testid="start-game-button"
                 startIcon={<PlayArrowIcon />}
                 onClick={handlePlayClick}
                 disabled={!selectedCategory} // Deshabilitado si no hay categoría
