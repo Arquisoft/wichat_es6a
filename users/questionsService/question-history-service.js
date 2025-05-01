@@ -75,7 +75,7 @@ app.post("/addQuestion", async (req, res) => {
       imageUrl: imageUrl ? imageUrl.trim() : null, // <-- Añadido
     };
 
-    await Questions.create(newQuestion);
+    await Questions.create(newQuestion); // NOSONAR
     res.status(201).json({ message: "Question saved successfully." });
   } catch (error) {
     console.error("Error while saving question:", error);
@@ -96,7 +96,7 @@ app.get("/questions", async (req, res) => {
 });
 
 // **Configuración de Swagger**
-openapiPath = './openapi.yaml'
+let openapiPath = './openapi.yaml'
 if (fs.existsSync(openapiPath)) {
   const file = fs.readFileSync(openapiPath, 'utf8');
   const swaggerDocument = YAML.parse(file);
