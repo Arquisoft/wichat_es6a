@@ -1,25 +1,22 @@
 ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-design-decisions]]
-== Architecture decisions
+# Architecture Decisions
 
-- These decisions are not final and may change as the project evolves. They represent our current approach based on the available information and team expertise, but adjustments might be necessary as we gain more experience and face new challenges.
+To document the architectural decisions of the project, we have created individual pages in the GitHub Wiki. This approach allows us to provide a detailed explanation of each decision without cluttering the main documentation. Each page includes the rationale behind the decision, as well as its advantages and disadvantages.
 
-[options="header",cols="1,2,3"]
-|===
-|Decision |Reasons |Disagvantanges
-| JavaScript
-| We have decided to develop the application using JavaScript because, in addition to having some prior knowledge, working with the provided template encourages us to do so, avoiding unnecessary complexity in the initial development phase.
-| It is a complex language that can cause us problems while other simpler languages could make our work easier.
+## Technology Decisions
 
-| React.js
-| It is the most popular JavaScript framework, with extensive documentation available.
-| None of us in the team have worked with it before, so we will all need to learn how to use it.
+- https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-Javascript[JavaScript]
+- https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-Node.js[Node.js]
+- https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-React[React]
+- https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-MongoDB[MongoDB]
+- https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-Docker[Docker]
+- https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-Grafana-and-Prometheus[Grafana and Prometheus]
+- https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-Gemini[Gemini]
 
-| MongoDB
-| As a non-relational database, it offers ease of use. Additionally, it is widely adopted by major telecommunications companies.
-| Non-relational databases are the ones with which we have the least experience.
-|===
+Each decision was made based on the project requirements, the team’s prior experience, and the technologies provided in the base template.
+
 
 
 
