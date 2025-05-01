@@ -19,6 +19,10 @@ image::../images/sequence-answering-question.png[Diagrama de respuesta a una pre
 ==== Ask for a hint to the AI Chat
 image::../images/sequence-ask-hint.png[Diagrama de preguna a la IA]
 
+==== User Password Change
+image::../images/sequence-password-change.png[Diagrama de cambio de contraseña]
+
+
 ifdef::arc42help[]
 [role="arc42help"]
 ****
