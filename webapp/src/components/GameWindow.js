@@ -238,8 +238,8 @@ export function GameWindow({ gameInstance }) {
   const lifelineButtonStyle = (used, baseColor) => ({
     width: { xs: "80%", sm: "auto" },
     minWidth: "120px",
-    bgcolor: used ? baseColor : baseColor,
-    color: used ? "#ffffff" : "#ffffff",
+    bgcolor: baseColor,
+    color:  "#ffffff",
     opacity: used ? 0.6 : 1,
     transition: "background-color 0.3s, color 0.3s, opacity 0.3s",
     "&:hover": {

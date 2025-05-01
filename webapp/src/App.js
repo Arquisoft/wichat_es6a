@@ -13,7 +13,7 @@ import Statistics from "./components/StatisticsWindow";
 import EndGame from "./components/EndGameWindow";
 import GameOptions from "./components/GameOptions";
 import Navbar from "./components/Navbar"; 
-import EditProfile from "./editProfileWindow";
+import EditProfile from "./components/editProfileWindow";
 import AllQuestionsWindow from "./components/AllQuestionsWindow";
 
 function App() {

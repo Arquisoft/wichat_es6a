@@ -1,35 +1,55 @@
 import React, { useEffect, useState } from "react";
-import { Container, Typography, Box, Paper, Grid, Button, CircularProgress } from "@mui/material";
+import {
+  Container,
+  Typography,
+  Box,
+  Paper,
+  Grid,
+  Button,
+  CircularProgress,
+} from "@mui/material";
 
 const QuestionHistoryWindow = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
+  const apiEndpoint =
+    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
 
   useEffect(() => {
-  const fetchQuestions = async () => {
-    try {
-      const response = await fetch(`${apiEndpoint}/user/questions`);
-      if (!response.ok) throw new Error("Failed to fetch questions");
-      const data = await response.json();
-      setQuestions(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const fetchUserQuestions = async () => {
+      try {
+        const response = await fetch(`${apiEndpoint}/user/questions`);
+        if (!response.ok) throw new Error("Failed to fetch questions");
+        const data = await response.json();
+        setUserData(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
     fetchUserQuestions();
-  }, []);
+  }, [apiEndpoint]);
 
-  if (loading) return <Container><CircularProgress /></Container>;
-  if (error) return <Container><Typography color="error">{error}</Typography></Container>;
+  if (loading)
+    return (
+      <Container>
+        <CircularProgress role="progressbar" />
+      </Container>
+    );
+  if (error)
+    return (
+      <Container>
+        <Typography color="error">{error}</Typography>
+      </Container>
+    );
   if (!userData) return null;
 
-  const { username, dni, questions, correctAnswers, incorrectAnswers } = userData;
+  const { username, dni, questions, correctAnswers, incorrectAnswers } =
+    userData;
 
   return (
     <Container component="main" maxWidth="md">
