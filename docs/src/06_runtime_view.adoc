@@ -7,7 +7,8 @@ ifndef::imagesdir[:imagesdir: ../images]
 ==== User Registration
 image::../images/sequence-user-registration.png[User Registration Diagram]
 
-
+==== User Login
+image::../images/sequence-user-login.png[User Login Diagram]
 
 ifdef::arc42help[]
 [role="arc42help"]
