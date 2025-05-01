@@ -96,6 +96,7 @@ const EditProfile = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
+  const [image, setImage] = useState(null);
   const [profilePic, setProfilePic] = useState(null);
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
