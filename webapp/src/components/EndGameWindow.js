@@ -7,8 +7,7 @@ import {
   Divider,
   Chip,
   Avatar,
-  LinearProgress,
-  useTheme
+  LinearProgress
 } from "@mui/material";
 import {
   EmojiEvents,
@@ -19,15 +18,13 @@ import {
   Home,
   Replay,
   BarChart,
-  Cancel, 
-  Star
+  Cancel
 } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export default function FullScreenScoreWindow() {
   const navigate = useNavigate();
   const location = useLocation();
-  const theme = useTheme();
 
   // Extraer valores del estado
   const {
@@ -42,22 +39,13 @@ export default function FullScreenScoreWindow() {
 
   const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
   const averageTimePerQuestion = totalQuestions > 0 ? (timeTaken / totalQuestions).toFixed(1) : 0;
-  const win = correctAnswers >= totalQuestions/2;
-
-  // Define difficulty colors
-  const difficultyColors = {
-    Fácil: '#4CAF50', // Green
-    Medio: '#FF9800', // Orange
-    Difícil: '#F44336' // Red
-  };
+  const win = correctAnswers >= totalQuestions / 2;
 
   return (
     <Box sx={{
       minHeight: '100vh',
-      background: theme.palette.mode === 'dark' 
-        ? 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)'
-        : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      color: theme.palette.common.white,
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      color: '#ffffff',
       p: 3,
       display: 'flex',
       flexDirection: 'column'
@@ -80,11 +68,10 @@ export default function FullScreenScoreWindow() {
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 2 }}>
           <Chip
             label={`Categoría: ${category}`}
-            color="secondary"
             icon={<Category />}
             sx={{ 
               bgcolor: 'rgba(255,255,255,0.15)',
-              color: 'white',
+              color: '#ffffff',
               fontSize: '1rem',
               py: 1.5
             }}
@@ -92,8 +79,8 @@ export default function FullScreenScoreWindow() {
           <Chip
             label={`Dificultad: ${difficulty}`}
             sx={{ 
-              bgcolor: difficultyColors[difficulty] || 'rgba(255,255,255,0.15)',
-              color: 'white',
+              bgcolor: '#FF9800',
+              color: '#ffffff',
               fontSize: '1rem',
               py: 1.5
             }}
@@ -118,9 +105,7 @@ export default function FullScreenScoreWindow() {
           </Typography>
           <Typography variant="h1" fontWeight="bold" sx={{ 
             fontSize: '5rem',
-            background: 'linear-gradient(90deg, #f6d365 0%, #fda085 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
+            color: '#fda085',
             textShadow: '0 0 20px rgba(255,255,255,0.3)'
           }}>
             {score}
@@ -146,13 +131,13 @@ export default function FullScreenScoreWindow() {
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
-                  mb: 3,
+                  mb: 3
                 }}
               >
                 {win ? (
-                  <CheckCircle color="success" sx={{ mr: 2, fontSize: '2rem' }} />
+                  <CheckCircle  data-testid = "CheckCircleIcon" sx={{ mr: 2, fontSize: '2rem', color: '#4CAF50' }} />
                 ) : (
-                  <Cancel color="error" sx={{ mr: 2, fontSize: '2rem' }} />
+                  <Cancel  data-testid = "CancelIcon" sx={{ mr: 2, fontSize: '2rem', color: '#F44336' }} />
                 )}
                 Rendimiento
               </Typography>
@@ -171,9 +156,9 @@ export default function FullScreenScoreWindow() {
                     bgcolor: 'rgba(255,255,255,0.2)',
                     '& .MuiLinearProgress-bar': {
                       borderRadius: 6,
+                      backgroundColor: '#4CAF50'
                     }
                   }}
-                  color={accuracy > 70 ? "success" : accuracy > 40 ? "warning" : "error"}
                 />
               </Box>
 
@@ -186,7 +171,7 @@ export default function FullScreenScoreWindow() {
                     textAlign: 'center',
                     border: '1px solid rgba(76, 175, 80, 0.3)'
                   }}>
-                    <Typography variant="h3" fontWeight="bold" color="success.light">
+                    <Typography variant="h3" fontWeight="bold" sx={{ color: '#4CAF50' }}>
                       {correctAnswers}
                     </Typography>
                     <Typography variant="body1">Correctas</Typography>
@@ -200,7 +185,7 @@ export default function FullScreenScoreWindow() {
                     textAlign: 'center',
                     border: '1px solid rgba(244, 67, 54, 0.3)'
                   }}>
-                    <Typography variant="h3" fontWeight="bold" color="error.light">
+                    <Typography variant="h3" fontWeight="bold" sx={{ color: '#F44336' }}>
                       {totalQuestions - correctAnswers}
                     </Typography>
                     <Typography variant="body1">Incorrectas</Typography>
@@ -230,11 +215,11 @@ export default function FullScreenScoreWindow() {
 
               <Box sx={{ mb: 3 }}>
                 <Box display="flex" alignItems="center" mb={2}>
-                  <Whatshot color="warning" sx={{ mr: 2, fontSize: '2rem' }} />
+                  <Whatshot sx={{ mr: 2, fontSize: '2rem', color: '#FF9800' }} />
                   <Box>
                     <Typography variant="body1">Mejor racha</Typography>
                     <Typography variant="h4" fontWeight="bold">
-                      {streak} 
+                      {streak}
                     </Typography>
                   </Box>
                 </Box>
@@ -242,7 +227,7 @@ export default function FullScreenScoreWindow() {
 
               <Box sx={{ mb: 3 }}>
                 <Box display="flex" alignItems="center" mb={2}>
-                  <Schedule color="info" sx={{ mr: 2, fontSize: '2rem' }} />
+                  <Schedule sx={{ mr: 2, fontSize: '2rem', color: '#2196F3' }} />
                   <Box>
                     <Typography variant="body1">Tiempo total</Typography>
                     <Typography variant="h4" fontWeight="bold">
@@ -254,7 +239,7 @@ export default function FullScreenScoreWindow() {
 
               <Box sx={{ mb: 3 }}>
                 <Box display="flex" alignItems="center" mb={2}>
-                  <Schedule color="info" sx={{ mr: 2, fontSize: '2rem' }} />
+                  <Schedule sx={{ mr: 2, fontSize: '2rem', color: '#2196F3' }} />
                   <Box>
                     <Typography variant="body1">Tiempo por pregunta</Typography>
                     <Typography variant="h4" fontWeight="bold">
@@ -277,7 +262,6 @@ export default function FullScreenScoreWindow() {
         }}>
           <Button
             variant="contained"
-            color="primary"
             startIcon={<Replay />}
             onClick={() => navigate("/game-options")}
             sx={{
@@ -285,10 +269,10 @@ export default function FullScreenScoreWindow() {
               py: 1.5,
               fontSize: '1.1rem',
               borderRadius: 50,
-              bgcolor: 'rgba(255,255,255,0.9)',
-              color: theme.palette.primary.dark,
+              bgcolor: '#ffffff',
+              color: '#1976D2',
               '&:hover': {
-                bgcolor: 'rgba(255,255,255,1)',
+                bgcolor: '#f5f5f5',
                 transform: 'translateY(-2px)'
               },
               transition: 'all 0.3s ease'
@@ -298,7 +282,6 @@ export default function FullScreenScoreWindow() {
           </Button>
           <Button
             variant="outlined"
-            color="secondary"
             startIcon={<BarChart />}
             onClick={() => navigate("/statistics")}
             sx={{
@@ -307,10 +290,10 @@ export default function FullScreenScoreWindow() {
               fontSize: '1.1rem',
               borderRadius: 50,
               borderColor: 'rgba(255,255,255,0.5)',
-              color: 'white',
+              color: '#ffffff',
               '&:hover': {
                 bgcolor: 'rgba(255,255,255,0.1)',
-                borderColor: 'white'
+                borderColor: '#ffffff'
               }
             }}
           >
@@ -318,7 +301,6 @@ export default function FullScreenScoreWindow() {
           </Button>
           <Button
             variant="text"
-            color="inherit"
             startIcon={<Home />}
             onClick={() => navigate("/home")}
             sx={{
@@ -328,7 +310,7 @@ export default function FullScreenScoreWindow() {
               borderRadius: 50,
               color: 'rgba(255,255,255,0.8)',
               '&:hover': {
-                color: 'white',
+                color: '#ffffff',
                 bgcolor: 'rgba(255,255,255,0.05)'
               }
             }}

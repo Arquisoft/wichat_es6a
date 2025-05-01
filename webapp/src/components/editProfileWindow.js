@@ -9,6 +9,89 @@ import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 
+// Definimos las funciones fuera del componente
+export const handleImageChange = async (event, user_Id, setProfilePic, setImage) => {
+  const file = event.target.files[0];
+  if (file) {
+    const formData = new FormData();
+    formData.append("profilePic", file);
+    try {
+      await axios.post(`http://localhost:8000/user/${user_Id}/profile-pic`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const imageUrl = URL.createObjectURL(file);
+      setProfilePic(imageUrl);
+      setImage(file);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error al cargar la imagen:", error);
+    }
+  }
+};
+
+export const handleDeleteImage = async (user_Id, setImage, setProfilePic) => {
+  try {
+    await axios.delete(`http://localhost:8000/user/${user_Id}/profile-pic`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    });
+    setImage(null);
+    setProfilePic(null);
+    localStorage.removeItem("profilePic");
+    window.location.reload();
+  } catch (error) {
+    console.error("Error al eliminar la imagen:", error);
+  }
+};
+
+export const handleSaveUsername = (newUsername, setUsernameError, setPasswordSuccess, user_Id) => {
+  if (!newUsername) {
+    setUsernameError("El nombre de usuario no puede estar vacío.");
+    return;
+  }
+  axios.put(`http://localhost:8000/user/${user_Id}/username`, { username: newUsername }, {
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+  })
+    .then(() => {
+      setUsernameError("");
+      setPasswordSuccess("Nombre de usuario actualizado con éxito.");
+      localStorage.setItem("username", newUsername);
+      window.location.reload();
+    })
+    .catch(error => {
+      console.error("Error al guardar el nombre de usuario:", error);
+      setUsernameError(error.response?.data?.error || "Error inesperado.");
+    });
+};
+
+export const handleSavePassword = (currentPassword, newPassword, repeatPassword, setPasswordError, setPasswordSuccess, user_Id) => {
+  if (newPassword !== repeatPassword) {
+    setPasswordError("Las nuevas contraseñas no coinciden.");
+    return;
+  }
+  if (!currentPassword) {
+    setPasswordError("Por favor, ingresa tu contraseña actual.");
+    return;
+  }
+  axios.put(`http://localhost:8000/user/${user_Id}/password`, {
+    currentPassword,
+    newPassword,
+    confirmPassword: repeatPassword
+  }, {
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+  })
+    .then(() => {
+      setPasswordError("");
+      setPasswordSuccess("Contraseña actualizada con éxito.");
+    })
+    .catch(error => {
+      console.error("Error al guardar la contraseña:", error);
+      setPasswordError("Error al cambiar la contraseña.");
+    });
+};
+
 const EditProfile = () => {
   const navigate = useNavigate();
   const [newUsername, setNewUsername] = useState("");
@@ -21,7 +104,7 @@ const EditProfile = () => {
   const [passwordSuccess, setPasswordSuccess] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [loading, setLoading] = useState(true);
-  
+
   const baseURL = "http://localhost:8000/";
   const user_Id = localStorage.getItem("_id");
 
@@ -49,105 +132,6 @@ const EditProfile = () => {
       })
       .catch(error => console.error("Error al cargar la imagen de perfil:", error));
   }, []);
-
-  const handleImageChange = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const formData = new FormData();
-      formData.append("profilePic", file);
-      try {
-        await axios.post(baseURL + `user/${user_Id}/profile-pic`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        const imageUrl = URL.createObjectURL(file);
-        setProfilePic(imageUrl);
-        setImage(file);
-        window.location.reload();
-      } catch (error) {
-        console.error("Error al cargar la imagen:", error);
-      }
-    }
-  };
-
-  const handleDeleteImage = async () => {
-    try {
-      await axios.delete(baseURL + `user/${user_Id}/profile-pic`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      setImage(null);
-      setProfilePic(null);
-      localStorage.removeItem("profilePic");
-      window.location.reload();
-    } catch (error) {
-      console.error("Error al eliminar la imagen:", error);
-    }
-  };
-
-  const handleSaveUsername = () => {
-    if (!newUsername) {
-      setUsernameError("El nombre de usuario no puede estar vacío.");
-      return;
-    }
-    axios.put(baseURL + 'user/' + user_Id + '/username', { username: newUsername }, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-    })
-      .then(() => {
-        setUsernameError("");
-        setPasswordSuccess("Nombre de usuario actualizado con éxito.");
-        localStorage.setItem("username", newUsername);
-        window.location.reload();
-      })
-      .catch(error => {
-        console.error("Error al guardar el nombre de usuario:", error);
-        setUsernameError(error.response?.data?.error || "Error inesperado.");
-      });
-  };
-
-  const handleSavePassword = () => {
-    if (newPassword !== repeatPassword) {
-      setPasswordError("Las nuevas contraseñas no coinciden.");
-      return;
-    }
-    if (!currentPassword) {
-      setPasswordError("Por favor, ingresa tu contraseña actual.");
-      return;
-    }
-    axios.put(baseURL + 'user/' + user_Id + '/password', {
-      currentPassword,
-      newPassword,
-      confirmPassword: repeatPassword
-    }, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-    })
-      .then(() => {
-        setPasswordError("");
-        setPasswordSuccess("Contraseña actualizada con éxito.");
-      })
-      .catch(error => {
-        console.error("Error al guardar la contraseña:", error);
-        setPasswordError("Error al cambiar la contraseña.");
-      });
-  };
-
-  const handleDeleteAccount = () => {
-    const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar tu cuenta? Esta acción es irreversible.");
-    if (!confirmDelete) return;
-    axios.delete(baseURL + 'user/' + user_Id, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-    })
-      .then(() => {
-        localStorage.clear();
-        navigate("/");
-        alert("Tu cuenta ha sido eliminada con éxito.");
-      })
-      .catch(error => {
-        console.error("Error al eliminar el perfil:", error);
-        alert("Hubo un problema al eliminar tu cuenta.");
-      });
-  };
 
   if (loading) {
     return (
@@ -219,7 +203,7 @@ const EditProfile = () => {
                   accept="image/*"
                   style={{ display: "none" }}
                   id="profile-pic-input"
-                  onChange={handleImageChange}
+                  onChange={(e) => handleImageChange(e, user_Id, setProfilePic, setImage)}
                 />
                 <Tooltip title="Cambiar imagen">
                   <IconButton
@@ -232,7 +216,7 @@ const EditProfile = () => {
                 </Tooltip>
                 {profilePic && (
                   <Tooltip title="Eliminar imagen">
-                    <IconButton color="error" onClick={handleDeleteImage} size="large">
+                    <IconButton color="error" onClick={() => handleDeleteImage(user_Id, setImage, setProfilePic)} size="large">
                       <DeleteIcon fontSize="large" />
                     </IconButton>
                   </Tooltip>
@@ -262,7 +246,7 @@ const EditProfile = () => {
                   color="primary"
                   startIcon={<SaveIcon />}
                   fullWidth
-                  onClick={handleSaveUsername}
+                  onClick={() => handleSaveUsername(newUsername, setUsernameError, setPasswordSuccess, user_Id)}
                   size="large"
                 >
                   Guardar Nombre
@@ -312,7 +296,7 @@ const EditProfile = () => {
                   color="primary"
                   startIcon={<SaveIcon />}
                   fullWidth
-                  onClick={handleSavePassword}
+                  onClick={() => handleSavePassword(currentPassword, newPassword, repeatPassword, setPasswordError, setPasswordSuccess, user_Id)}
                   size="large"
                 >
                   Guardar Contraseña
