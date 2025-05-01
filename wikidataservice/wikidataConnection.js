@@ -1,24 +1,16 @@
-let fetch;
-
-async function loadFetch() {
-    // Cargar 'node-fetch' de forma dinámica
-    const module = await import('node-fetch');
-    fetch = module.default;
-}
-
-import NodeCache from 'node-cache';
+const fetch = require('node-fetch'); // Carga directa de node-fetch
+const NodeCache = require('node-cache');
 const cache = new NodeCache({ stdTTL: 1800 }); // Caché de 30 minutos
 
-// Asegurarse de que fetch esté disponible antes de hacer la consulta
-export async function consulta(query) {
-    await loadFetch();  // Espera a que `fetch` esté disponible
+// Función principal para hacer consultas SPARQL a Wikidata
+async function consulta(query) {
     const apiUrl = `https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}&format=json`;
     console.log("Ejecutando consulta SPARQL:", query);
 
-    // Verificar caché antes de consultar a Wikidata
+    // Verificar si el resultado ya está en caché
     const cachedResult = cache.get(query);
     if (cachedResult) {
-        console.log("✅ Resultado obtenido desde caché.");
+        console.log("Resultado obtenido desde caché.");
         return cachedResult;
     }
 
@@ -44,17 +36,18 @@ export async function consulta(query) {
                 );
             });
 
-            // Almacenar en caché antes de devolver
             cache.set(query, resultados);
             console.log("Resultado obtenido de Wikidata y almacenado en caché.");
             return resultados;
 
         } catch (error) {
-            console.error(`⚠️ Intento fallido (${4 - intentos}): ${error.message}`);
+            console.error(`Intento fallido (${4 - intentos}): ${error.message}`);
             intentos--;
-            await new Promise(resolve => setTimeout(resolve, 2000)); // Espera 2 seg antes de reintentar
+            await new Promise(resolve => setTimeout(resolve, 2000));
         }
     }
     console.error("No se pudo completar la consulta tras múltiples intentos.");
     return null;
 }
+
+module.exports = { consulta };
