@@ -725,7 +725,7 @@ const server = app.listen(port, () => {
 });
 
 // **Configuración de Swagger**
-openapiPath = './openapi.yaml'
+let openapiPath = './openapi.yaml'
 if (fs.existsSync(openapiPath)) {
   const file = fs.readFileSync(openapiPath, 'utf8');
   const swaggerDocument = YAML.parse(file);
