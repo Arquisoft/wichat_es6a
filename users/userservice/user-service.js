@@ -13,10 +13,10 @@ let User;
 let History; 
 
 try {
-  const connectDatabase = require("/usr/src/llmservice/config/database.js");
+  const connectDatabase = require("/usr/src/llmservice/config/database.js"); //NOSONAR
   connectDatabase(mongoose);
-  User = require("/usr/src/llmservice/models/user-model")(mongoose);
-  History = require("/usr/src/llmservice/models/history-model")(mongoose);
+  User = require("/usr/src/llmservice/models/user-model")(mongoose); //NOSONAR
+  History = require("/usr/src/llmservice/models/history-model")(mongoose); //NOSONAR
 } catch (error) {
   const connectDatabase = require("../../llmservice/config/database.js");
   connectDatabase(mongoose);

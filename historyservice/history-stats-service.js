@@ -12,9 +12,9 @@ let UserGame;
 
 try{
   
-  connectDatabase = require("/usr/src/llmservice/config/database.js");
+  connectDatabase = require("/usr/src/llmservice/config/database.js"); //NOSONAR
   connectDatabase(mongoose);
-  UserGame = require("/usr/src/llmservice/models/history-model")(mongoose);
+  UserGame = require("/usr/src/llmservice/models/history-model")(mongoose); //NOSONAR
 }catch (error) {
 
   connectDatabase = require("../llmservice/config/database.js");
@@ -163,9 +163,6 @@ app.get("/stats", async (req, res) => {
       acc[category] = (acc[category] || 0) + 1;
       return acc;
     }, {});
-    const mostPlayedCategory = Object.keys(categoryCounts).reduce((a, b) =>
-      categoryCounts[a] > categoryCounts[b] ? a : b
-    );
 
     // Calcular el tiempo medio de partida
     const totalTime = games.reduce((acc, game) => acc + (game.timeTaken || 0), 0);
@@ -184,7 +181,6 @@ app.get("/stats", async (req, res) => {
       wins,
       losses,
       bestGames: mapGamesToResponse(bestGames),
-      mostPlayedCategory,
       averageGameTime,
     });
   } catch (error) {

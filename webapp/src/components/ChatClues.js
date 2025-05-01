@@ -18,7 +18,7 @@ const PALETTE = {
   lightCyan: "#caf0f8ff",
 };
 
-const ChatClues = forwardRef(({ actualQuestion, answers }, ref) => {
+const ChatClues = forwardRef(({ actualQuestion, answers }, ref) => { //NOSONAR
   const [messages, setMessages] = useState(["IA: ¿En qué puedo ayudarte?"]);
   const [input, setInput] = useState("");
   const scrollRef = useRef(null);

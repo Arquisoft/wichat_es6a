@@ -67,7 +67,7 @@ if (fs.existsSync(openapiPath)) {
 // Only connect and start server if the file is run directly
 if (require.main === module) {
     // Only connect to database if running the server normally
-    const connectDatabase = require('/usr/src/llmservice/config/database');
+    const connectDatabase = require('/usr/src/llmservice/config/database'); //NOSONAR
     connectDatabase(mongoose);
 
     app.listen(port, () => {

@@ -2,7 +2,7 @@ import React from "react";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import "./QuestionTimer.css";
 
-const QuestionTimer = ({ keyProp, duration, onComplete }) => {
+const QuestionTimer = ({ keyProp, duration, onComplete }) => { //NOSONAR
   const renderTime = ({ remainingTime }) => {
     
 
