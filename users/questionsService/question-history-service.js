@@ -15,9 +15,9 @@ try {
   Questions = require("../../llmservice/models/questions-model")(mongoose);
 }
 
-const swaggerUi = require('swagger-ui-express'); 
-const fs = require("fs")
-const YAML = require('yaml');
+const swaggerUi = require("swagger-ui-express");
+const fs = require("fs");
+const YAML = require("yaml");
 
 const app = express();
 
@@ -30,13 +30,14 @@ app.use(
   })
 );
 
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK' });
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "OK" });
 });
 
 app.post("/addQuestion", async (req, res) => {
   try {
-    const { question, correctAnswer, incorrectAnswers, category, imageUrl } = req.body;
+    const { question, correctAnswer, incorrectAnswers, category, imageUrl } =
+      req.body;
 
     if (
       !question ||
@@ -53,11 +54,11 @@ app.post("/addQuestion", async (req, res) => {
           "Invalid format. Required: question (string), correctAnswer (string), incorrectAnswers (array of 3 strings), category (string).",
       });
     }
-    
+
     const questions = await Questions.find();
 
     const exists = questions.some(
-        (q) => q.question.trim().toLowerCase() === question.trim().toLowerCase()
+      (q) => q.question.trim().toLowerCase() === question.trim().toLowerCase()
     );
 
     if (exists) {
@@ -87,7 +88,19 @@ app.post("/addQuestion", async (req, res) => {
 
 app.get("/questions", async (req, res) => {
   try {
-    const questions = await Questions.find();
+    const category = req.query.category;
+    let filter = {};
+    if (category && category.toLowerCase() !== "variado") {
+      filter = { category: new RegExp(`^${category}$`, "i") };
+      console.log(`Filtrando preguntas por categoría: ${category}`);
+    } else {
+      console.log(
+        "Obteniendo preguntas de todas las categorías (Variado o sin filtro)."
+      );
+    }
+
+    const questions = await Questions.find(filter);
+
     res.json(questions);
   } catch (error) {
     console.error("Error fetching questions:", error);
@@ -96,16 +109,13 @@ app.get("/questions", async (req, res) => {
 });
 
 // **Configuración de Swagger**
-openapiPath = './openapi.yaml'
+openapiPath = "./openapi.yaml";
 if (fs.existsSync(openapiPath)) {
-  const file = fs.readFileSync(openapiPath, 'utf8');
+  const file = fs.readFileSync(openapiPath, "utf8");
   const swaggerDocument = YAML.parse(file);
-  app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  app.use("/api-doc", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 } else {
-  console.log("Not configuring OpenAPI. Configuration file not present.")
+  console.log("Not configuring OpenAPI. Configuration file not present.");
 }
 
 module.exports = { app, mongoose };
-
-
-     
