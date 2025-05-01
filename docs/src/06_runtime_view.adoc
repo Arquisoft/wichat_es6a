@@ -3,59 +3,10 @@ ifndef::imagesdir[:imagesdir: ../images]
 [[section-runtime-view]]
 == Runtime View
 
-- For now, the following section will be updated as we gain a clearer understanding of how different components interact in real-time.
 
 ==== User Registration
+image::../images/sequence-user-registration.png[User Registration Diagram]
 
-User registration in the application is managed through the user microservice (userservice).
-
-During registration, the user enters a name and password. If the registration is successful, a confirmation message is displayed. Otherwise, an error message is shown.
-
-----
-Usuario-> Aplicación: registrarUsuario(usuario, contraseña)
-Aplicación-> BBDD: validarDatos(usuario,contraseña)
-BBDD--> Aplicación: confirmarValidez()
-Aplicación-> BBDD: crearUsuario(usuario, contraseña)
-BBDD--> Aplicación: confirmarRegistro()
-Aplicación--> Usuario: mostrarMensajeExito()
-----
-
-==== Login
-
-User authentication in the application is managed through the authentication microservice (*authservice*).  
-
-To log in, the user enters their credentials. If the information is valid, the application displays the available options.
-
-----
-User-> Application: login(username, password)
-Application-> Database: validateUser(username, password)
-Database--> Application: confirmData()
-Application--> User: displayHome()
-----
-
-=== View History
-A user wants to view their game history.
-----
-User-> Application: viewGameHistory()
-Application-> Database: fetchHistory(user)
-Database--> Application: returnHistory()
-Application--> User: displayHistory(history)
-----
-
-=== Play and Question Generation
-A user starts a game, questions are generated, and then the game begins.
-[plantuml,"Play",png]
-----
-User-> Application: play()
-loop Generate Questions
-  Application-> Wikidata: generateQuestion()
-  Wikidata-> Application: questionGenerated
-  User-> Application: answer(question, response)
-  Application--> User: displayResult(result)
-end
-Application-> User: displayFinalResults()
-Application-> Database: saveGame()
-----
 
 
 ifdef::arc42help[]
