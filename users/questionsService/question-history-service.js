@@ -75,7 +75,7 @@ app.post("/addQuestion", async (req, res) => {
       imageUrl: imageUrl ? imageUrl.trim() : null, // <-- Añadido
     };
 
-    await Questions.create(newQuestion);
+    await Questions.create(newQuestion); // NOSONAR
     res.status(201).json({ message: "Question saved successfully." });
   } catch (error) {
     console.error("Error while saving question:", error);

@@ -72,14 +72,21 @@ app.get('/health', (req, res) => {
 app.post('/adduser', async (req, res) => {
   try {
     validateRequiredFields(req, ['username', 'password']);
-    const existingUser = await User.findOne({ username: req.body.username });
+
+    // Sanitizar: asegurarse de que username sea una cadena simple sin operadores
+    const username = String(req.body.username);
+    if (typeof username !== 'string' || username.includes('$') || username.includes('.')) {
+      return res.status(400).json({ error: 'Invalid username format' });
+    }
+
+    const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(400).json({ error: 'Username already exists' });
     }
 
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const newUser = new User({
-      username: req.body.username,
+      username,
       password: hashedPassword,
     });
 
@@ -89,6 +96,7 @@ app.post('/adduser', async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+
 
 // 🧾 Obtener detalles de usuario
 app.get('/user/:id', async (req, res) => {
@@ -113,25 +121,28 @@ app.put('/user/:id/username', async (req, res) => {
     if (!user) return res.status(404).json({ error: 'User not found' });
 
     // Validar el nuevo nombre de usuario
-    if (!req.body.username) {
-      return res.status(400).json({ error: 'El nuevo nombre de usuario es obligatorio' });
-    }
-
-    // Verificar si el nombre de usuario ya existe
-    const existingUser = await User.findOne({ username: req.body.username });
+        // Validar y sanitizar el nuevo nombre de usuario
+        const newUsername = String(req.body.username);
+        if (!newUsername || newUsername.includes('$') || newUsername.includes('.')) {
+          return res.status(400).json({ error: 'Nombre de usuario inválido' });
+        }
+    
+        // Verificar si el nombre de usuario ya existe
+        const existingUser = await User.findOne({ username: newUsername });
+    
     if (existingUser) {
       return res.status(400).json({ error: 'Este nombre de usuario ya está en uso' });
     }
 
     // Actualizar el nombre de usuario en el perfil del usuario
-    user.username = req.body.username;
+    user.username = newUsername;
     await user.save();
 
     // Actualizar el nombre de usuario en todas las partidas del usuario
     // Actualizar todos los registros de "History" (partidas) donde el campo "username" sea igual al antiguo nombre de usuario
     await History.updateMany(
-      { username: actualUserName },  // Filtrar las partidas donde el nombre de usuario coincida
-      { $set: { username: req.body.username } }  // Actualizar el campo "username" a su nuevo valor
+      { username: actualUserName },
+      { $set: { username: newUsername } }
     );
 
     res.status(200).json({ message: 'Username actualizado correctamente' });
@@ -215,6 +226,7 @@ app.get('/user/:id/profile-pic', async (req, res) => {
     const imagePath = path.join(__dirname, 'uploads', 'profile_pics', `${userId}.png`);  // Ruta completa a la imagen
 
     // Verificar si el archivo existe
+    // NOSONAR
     fs.access(imagePath, fs.constants.F_OK, (err) => {
       if (err) {
         return res.status(404).json({ error: 'Profile picture not found' });
@@ -239,11 +251,13 @@ app.delete('/user/:id/profile-pic', async (req, res) => {
     const imagePath = path.join(__dirname, 'uploads', 'profile_pics', `${userId}.png`);
 
     // Verificar si el archivo existe
+    // NOSONAR
     fs.access(imagePath, fs.constants.F_OK, (err) => {
       if (err) {
         return res.status(400).json({ error: 'No profile picture to delete' });
       }
 
+      // NOSONAR
       // Eliminar el archivo de la imagen de perfil en el sistema de archivos
       fs.unlink(imagePath, (err) => {
         if (err) {

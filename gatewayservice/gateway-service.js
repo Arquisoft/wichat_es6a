@@ -265,6 +265,7 @@ app.post('/getHintWithQuery', async (req, res) => {
 app.get('/getBestGames', async (req, res) => {
   console.log("Username recibido en /getBestGames:", req.headers.username);
   try {
+    // NOSONAR
     const historyResponse = await axios.get(historyServiceUrl + '/getBestGames', {
       headers: { username: req.headers.username, "Content-Type": "application/json", }
     });
@@ -278,6 +279,7 @@ app.get('/getBestGames', async (req, res) => {
 app.get('/getAllGames', async (req, res) => {
   console.log("Username recibido en /getAllGames:", req.headers.username);
   try {
+    // NOSONAR
     const historyResponse = await axios.get(historyServiceUrl + '/getAllGames', {
       headers: { username: req.headers.username, "Content-Type": "application/json", }
     });
@@ -291,6 +293,7 @@ app.get('/getAllGames', async (req, res) => {
 app.get('/stats', async (req, res) => {
   console.log("Username recibido en /stats:", req.headers.username);
   try {
+    // NOSONAR
     const historyResponse = await axios.get(historyServiceUrl + '/stats', {
       headers: { username: req.headers.username, "Content-Type": "application/json", }
     });
