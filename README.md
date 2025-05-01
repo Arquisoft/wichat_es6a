@@ -10,7 +10,7 @@
 
 # wichat_es6a
 
-[![Actions Status](https://github.com/arquisoft/wichat_es6a/workflows/CI%20for%20wichat_es6a/badge.svg)](https://github.com/arquisoft/wichat_es6a/actions)
+[![Acctions Status](https://github.com/arquisoft/wichat_es6a/actions/workflows/build.yml/badge.svg)](https://github.com/arquisoft/wichat_es6a/actions/workflows/build.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_wichat_es6a&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Arquisoft_wichat_es6a)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_wichat_es6a&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Arquisoft_wichat_es6a)
 
