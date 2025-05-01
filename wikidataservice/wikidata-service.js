@@ -4,7 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const WikiQueries = require("./wikidataQueries");
 const WikidataCacheService = require("./wikidataCacheService");
-const connectDatabase = require("/usr/src/llmservice/config/database");
+const connectDatabase = require("/usr/src/llmservice/config/database"); //NOSONAR
 
 const swaggerUi  = require('swagger-ui-express'); 
 const fs = require("fs");

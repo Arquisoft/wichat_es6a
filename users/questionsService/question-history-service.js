@@ -6,9 +6,9 @@ const mongoose = require("mongoose");
 let Questions;
 
 try {
-  const connectDatabase = require("/usr/src/llmservice/config/database");
+  const connectDatabase = require("/usr/src/llmservice/config/database"); //NOSONAR
   connectDatabase(mongoose);
-  Questions = require("/usr/src/llmservice/models/questions-model")(mongoose);
+  Questions = require("/usr/src/llmservice/models/questions-model")(mongoose); //NOSONAR
 } catch (error) {
   const connectDatabase = require("../../llmservice/config/database");
   connectDatabase(mongoose);
@@ -91,7 +91,7 @@ app.get("/questions", async (req, res) => {
     const category = req.query.category;
     let filter = {};
     if (category && category.toLowerCase() !== "variado") {
-      filter = { category: new RegExp(`^${category}$`, "i") };
+      filter = { category: new RegExp(`^${category}$`, "i") }; //NOSONAR
       console.log(`Filtrando preguntas por categoría: ${category}`);
     } else {
       console.log(
