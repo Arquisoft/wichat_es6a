@@ -737,5 +737,11 @@ if (fs.existsSync(openapiPath)) {
 module.exports = {
   server,
   getWikidataForCategory,
-  generateQuestionForEntry
+  generateQuestionForEntry,
+  validateRequiredFields,
+  sendQuestionToLLM,
+  getWikidataRandomEntry,
+  getMultipleRandomEntries,
+  formatEntryInfo,
+  parseJsonResponse,
 };
