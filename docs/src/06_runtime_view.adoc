@@ -3,6 +3,9 @@ ifndef::imagesdir[:imagesdir: ../images]
 [[section-runtime-view]]
 == Runtime View
 
+The Runtime View illustrates how the different components of the system interact at runtime to fulfill specific use cases. It focuses on the dynamic behavior of the system, describing the communication between the frontend, gateway, and backend microservices. Each diagram represents a specific user action or system event, highlighting the sequence of requests, validations, and data flows involved.
+
+These diagrams help clarify how responsibilities are distributed across services and how data moves through the architecture during key operations such as user registration, login, password changes, and question generation.
 
 ==== User Registration
 image::../images/sequence-user-registration.png[User Registration Diagram]
