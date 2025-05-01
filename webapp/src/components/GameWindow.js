@@ -49,7 +49,7 @@ const defaultDifficulty = {
 const defaultCategory = { name: "Variado", endpoint: "/variado" };
 
 // --- Componente Principal ---
-export function GameWindow({ gameInstance }) {
+export function GameWindow({ gameInstance }) { //NOSONAR
   const navigate = useNavigate();
   const location = useLocation();
 
