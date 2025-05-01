@@ -22,12 +22,12 @@ describe("GameOptions component", () => {
 
     // Hay 8 nombres de categoría en el DOM
     const categoryNames = [
-      "Países",
+      "Paises",
       "Monumentos",
       "Elementos",
-      "Películas",
+      "Peliculas",
       "Canciones",
-      "Fórmula 1",
+      "Formula1",
       "Pinturas",
       "Variado",
     ];
@@ -52,7 +52,7 @@ describe("GameOptions component", () => {
     render(<GameOptions />);
 
     // Hacemos click en el texto "Países"
-    const paisesLabel = screen.getByText("Países");
+    const paisesLabel = screen.getByText("Paises");
     fireEvent.click(paisesLabel.closest("button"));
 
     // Ahora Jugar está habilitado
