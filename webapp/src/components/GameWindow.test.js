@@ -192,6 +192,40 @@ describe('GameWindow Tests', () => {
   });
   
   
-
+  test('muestra la imagen correcta para la pregunta', async () => {
+    const game = new Game(() => {});
+    // Forzamos una pregunta con imagen
+    game.questions = [
+      {
+        questionText: '¿Qué imagen se muestra?',
+        answers: [
+          { text: 'A', isCorrect: true },
+          { text: 'B', isCorrect: false },
+          { text: 'C', isCorrect: false },
+          { text: 'D', isCorrect: false },
+        ],
+        imageUrl: '/WichatAmigos.png',
+      },
+    ];
+    game.questionIndex = 0;
+    game.getCurrentQuestion = function () {
+      return this.questions[this.questionIndex];
+    };
+    game.getCurrentQuestionImageUrl = function () {
+      return this.questions[this.questionIndex].imageUrl;
+    };
+    game.init = async () => {}; // evitar sobrescritura
+  
+    render(
+      <MemoryRouter>
+        <GameWindow gameInstance={game} />
+      </MemoryRouter>
+    );
+  
+    const image = await screen.findByRole('img', { name: /imagen/i });
+  
+    expect(image).toHaveAttribute('src', '/WichatAmigos.png');
+  });
+  
 
 });
