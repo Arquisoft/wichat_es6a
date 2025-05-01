@@ -162,6 +162,7 @@ const Navbar = () => {
           {username && (
             <Tooltip title="Statistics">
               <Button
+                data-testid="navbar-stats-link"
                 color="inherit"
                 startIcon={<BarChartIcon />}
                 onClick={() => navigate("/statistics")}
@@ -179,6 +180,7 @@ const Navbar = () => {
 
           <Tooltip title="Questions">
             <Button
+              data-testid="navbar-questions-link"
               color="inherit"
               startIcon={<QuestionAnswerIcon />}
               onClick={() => navigate("/questions")}

@@ -74,7 +74,7 @@ export default function FullScreenScoreWindow() {
         }}>
           <EmojiEvents sx={{ fontSize: 50 }} />
         </Avatar>
-        <Typography variant="h3" fontWeight="bold" gutterBottom>
+        <Typography variant="h3" fontWeight="bold" gutterBottom data-testid="end-screen-message">
           ¡Partida Finalizada!
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 2 }}>

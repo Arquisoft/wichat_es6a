@@ -182,6 +182,7 @@ const Home = () => {
               variant="contained"
               size="large"
               onClick={() => navigate("/game-options")}
+              data-testid="play-button"
               sx={{
                 px: 5,
                 py: 1.5,

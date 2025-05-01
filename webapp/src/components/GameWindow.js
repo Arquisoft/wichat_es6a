@@ -485,6 +485,7 @@ export function GameWindow({ gameInstance }) {
               )}
               <Button
                 onClick={handleGetHint}
+                data-testid="hint-button"
                 disabled={selectedAnswer !== null || hasUsedHint || !currentQuestion}
                 startIcon={<LightbulbIcon />}
                 sx={lifelineButtonStyle(hasUsedHint, '#2e7d32')}
@@ -494,6 +495,7 @@ export function GameWindow({ gameInstance }) {
 
               <Button
                 onClick={handleAskAI}
+                data-testid="ask-ai-button"
                 disabled={selectedAnswer !== null || hasUsedAskAI || !currentQuestion}
                 startIcon={<SmartToyIcon />}
                 sx={lifelineButtonStyle(hasUsedAskAI, '#1565c0')}
@@ -503,6 +505,7 @@ export function GameWindow({ gameInstance }) {
 
               <Button
                 onClick={handleFiftyFifty}
+                data-testid="fifty-fifty-button"
                 disabled={selectedAnswer !== null || hasUsedFiftyFifty || !currentQuestion}
                 startIcon={<BalanceIcon />}
                 sx={lifelineButtonStyle(hasUsedFiftyFifty, '#ef6c00')}
@@ -626,6 +629,7 @@ export function GameWindow({ gameInstance }) {
                     fullWidth
                     disabled={isDisabled}
                     onClick={() => handleAnswerClick(index)}
+                    data-testid={`answer-button-${index}`}
                     sx={{
                       minHeight: "3.5em",
                       borderRadius: 2,

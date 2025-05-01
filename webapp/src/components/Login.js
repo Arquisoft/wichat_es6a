@@ -67,6 +67,7 @@ const Login = () => {
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
         <TextField
+          name="username"
           margin="normal"
           fullWidth
           label="Username"
@@ -80,6 +81,7 @@ const Login = () => {
           }}
         />
         <TextField
+          name="password"
           margin="normal"
           fullWidth
           label="Password"
@@ -95,6 +97,7 @@ const Login = () => {
         />
         <Button
           variant="contained"
+          data-testid="login-button"
           color="primary"
           onClick={loginUser}
           sx={{
