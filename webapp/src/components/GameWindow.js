@@ -49,7 +49,7 @@ const defaultDifficulty = {
 const defaultCategory = { name: "Variado", endpoint: "/variado" };
 
 // --- Componente Principal ---
-export function GameWindow() {
+export function GameWindow({ gameInstance }) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -57,7 +57,7 @@ export function GameWindow() {
     location.state || {};
 
   // --- Referencias y Estado ---
-  const gameRef = useRef(new Game(navigate));
+  const gameRef = useRef(gameInstance || new Game(navigate));
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [points, setPoints] = useState(0);
   const [streak, setStreak] = useState(0);
