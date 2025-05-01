@@ -3,9 +3,28 @@ ifndef::imagesdir[:imagesdir: ../images]
 [[section-runtime-view]]
 == Runtime View
 
-- At this stage, we have not yet started development, so the runtime scenarios are still undefined. Once the implementation progresses, we will document key runtime interactions, including authentication flows, data storage, and relevant communication between system components.
+The Runtime View illustrates how the different components of the system interact at runtime to fulfill specific use cases. It focuses on the dynamic behavior of the system, describing the communication between the frontend, gateway, and backend microservices. Each diagram represents a specific user action or system event, highlighting the sequence of requests, validations, and data flows involved.
 
-- For now, the following section will be updated as we gain a clearer understanding of how different components interact in real-time.
+These diagrams help clarify how responsibilities are distributed across services and how data moves through the architecture during key operations such as user registration, login, password changes, and question generation.
+
+==== User Registration
+image::../images/sequence-user-registration.png[User Registration Diagram]
+
+==== User Login
+image::../images/sequence-user-login.png[User Login Diagram]
+
+==== Question Generation
+image::../images/sequence-question-generation.png[Diagrama de generación de preguntas]
+
+==== Answering a Question
+image::../images/sequence-answering-question.png[Diagrama de respuesta a una pregunta]
+
+==== Ask for a hint to the AI Chat
+image::../images/sequence-ask-hint.png[Diagrama de preguna a la IA]
+
+==== User Password Change
+image::../images/sequence-password-change.png[Diagrama de cambio de contraseña]
+
 
 ifdef::arc42help[]
 [role="arc42help"]
