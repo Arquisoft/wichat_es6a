@@ -163,10 +163,6 @@ app.get("/stats", async (req, res) => {
       acc[category] = (acc[category] || 0) + 1;
       return acc;
     }, {});
-    const mostPlayedCategory = keys.reduce((a, b) =>
-      categoryCounts[a] > categoryCounts[b] ? a : b,
-      keys[0] || "No data" 
-    );
 
     // Calcular el tiempo medio de partida
     const totalTime = games.reduce((acc, game) => acc + (game.timeTaken || 0), 0);
@@ -185,7 +181,6 @@ app.get("/stats", async (req, res) => {
       wins,
       losses,
       bestGames: mapGamesToResponse(bestGames),
-      mostPlayedCategory,
       averageGameTime,
     });
   } catch (error) {

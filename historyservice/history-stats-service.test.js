@@ -214,7 +214,6 @@ describe('Servicio de Historial', () => {
       expect(response.body).toHaveProperty('username', 'testuser');
       expect(response.body).toHaveProperty('gamesPlayed', 3);
       expect(response.body).toHaveProperty('totalPoints', 300);
-      expect(response.body).toHaveProperty('mostPlayedCategory', 'Trivia');
     });
 
     it('Debe devolver 400 si falta el nombre de usuario', async () => {
