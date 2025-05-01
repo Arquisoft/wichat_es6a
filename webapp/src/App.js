@@ -22,7 +22,7 @@ function App() {
       <CssBaseline />
       <Navbar />
       <Routes>
-        <Route path="/" element={<Auth />} />
+        <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/game" element={<GameWindow />} />
         <Route path="/game-options" element={<GameOptions />} />
