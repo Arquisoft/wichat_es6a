@@ -89,12 +89,12 @@ const GameOptions = () => {
 
   // --- Datos de Categorías ---
   const categories = [
-    { name: "Países", endpoint: "/paises", image: "/paises.png" },
+    { name: "Paises", endpoint: "/paises", image: "/paises.png" },
     { name: "Monumentos", endpoint: "/monumentos", image: "/monumentos.jpg" },
     { name: "Elementos", endpoint: "/elementos", image: "/elementos.jpg" },
-    { name: "Películas", endpoint: "/peliculas", image: "/peliculas.png" },
+    { name: "Peliculas", endpoint: "/peliculas", image: "/peliculas.png" },
     { name: "Canciones", endpoint: "/canciones", image: "/canciones.png" },
-    { name: "Fórmula 1", endpoint: "/formula1", image: "/formula1.png" },
+    { name: "Formula1", endpoint: "/formula1", image: "/formula1.png" },
     { name: "Pinturas", endpoint: "/pinturas", image: "/pinturas.png" },
     { name: "Variado", endpoint: "/variado", image: "/variado.png" },
   ];
