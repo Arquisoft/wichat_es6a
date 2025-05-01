@@ -13,6 +13,9 @@ image::../images/sequence-user-login.png[User Login Diagram]
 ==== Question Generation
 image::../images/sequence-question-generation.png[Diagrama de generación de preguntas]
 
+==== Ask for a hint to the AI Chat
+image::../images/sequence-ask-hint.png[Diagrama de preguna a la IA]
+
 ifdef::arc42help[]
 [role="arc42help"]
 ****
