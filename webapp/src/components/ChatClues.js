@@ -22,28 +22,17 @@ const ChatClues = forwardRef(({ actualQuestion, answers }, ref) => {
   const [messages, setMessages] = useState(["IA: ¿En qué puedo ayudarte?"]);
   const [input, setInput] = useState("");
   const scrollRef = useRef(null);
-  const apiEndpoint =
-
-    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
+  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
   const [inputEnabled, setInputEnabled] = useState(false);
 
 
-  // Scroll automático
-  useEffect(() => {
-    scrollRef.current?.scrollTo({
-      top: scrollRef.current.scrollHeight,
-      behavior: "smooth",
-    });
-  }, [messages]);
-
-  // Enviar mensaje y obtener pista contextual
   const handleSendMessage = async () => {
     if (input.trim() !== "" && inputEnabled) {
       const userQuery = input;
-      const userMessage = `Tú: ${userQuery}`; // Mensaje usuario en español
-      setMessages((prevMessages) => [...prevMessages, userMessage]); // Mostrar mensaje usuario inmediatamente
-      setInput(""); // Limpiar input
-
+      const userMessage = `Tú: ${userQuery}`;
+      setMessages((prevMessages) => [...prevMessages, userMessage]);
+      setInput("");
+      setInputEnabled(false);
       try {
         const response = await axios.post(`${apiEndpoint}/getHintWithQuery`, {
           question: actualQuestion,
@@ -54,8 +43,7 @@ const ChatClues = forwardRef(({ actualQuestion, answers }, ref) => {
         setMessages((prevMessages) => [...prevMessages, hintMessage]);
       } catch (error) {
         console.error("Error getting hint:", error);
-        let errorMessage =
-          "IA: Error al obtener la pista. Inténtalo más tarde.";
+        let errorMessage = "IA: Error al obtener la pista. Inténtalo más tarde.";
         if (error.response) {
           errorMessage = `IA: Error del servidor: ${error.response.status}`;
         } else if (error.request) {
@@ -66,15 +54,13 @@ const ChatClues = forwardRef(({ actualQuestion, answers }, ref) => {
     }
   };
 
-  // Permitir enviar con Enter
   const handleKeyPress = (event) => {
     if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault(); // Prevenir nueva línea
+      event.preventDefault();
       handleSendMessage();
     }
   };
 
-  // Exponer funciones al componente padre (GameWindow)
   useImperativeHandle(ref, () => ({
     addMessage: (message) => {
       setMessages((prevMessages) => [...prevMessages, message]);
@@ -84,30 +70,28 @@ const ChatClues = forwardRef(({ actualQuestion, answers }, ref) => {
         "IA: Pregúntame lo que quieras sobre la cuestión actual...",
       ]);
       setInputEnabled(true);
-    }, // Mensaje al habilitar
+    },
     disableChat: () => {
       setInputEnabled(false);
       setInput("");
       setMessages(["IA: ¿En qué puedo ayudarte?"]);
-    }, // Resetear al deshabilitar
+    },
   }));
 
   return (
-    // Contenedor principal
     <Paper
-      elevation={0} // Sin sombra propia
+      elevation={0}
       sx={{
-        width: "100%", // Ocupa ancho del contenedor padre
-        height: "100%", // Ocupa alto del contenedor padre
+        width: "100%",
+        height: "100%",
         display: "flex",
         flexDirection: "column",
         p: 1,
-        bgcolor: "transparent", // Fondo transparente
-        color: PALETTE.lightCyan, // Color de texto por defecto claro
+        bgcolor: "transparent",
+        color: PALETTE.lightCyan,
         boxSizing: "border-box",
       }}
     >
-      {/* Título del Chat */}
       <Typography
         variant="subtitle1"
         fontWeight="bold"
@@ -118,15 +102,16 @@ const ChatClues = forwardRef(({ actualQuestion, answers }, ref) => {
 
       {/* Área de Mensajes */}
       <Box
-        ref={scrollRef} // Referencia para scroll
+        ref={scrollRef}
         sx={{
           flexGrow: 1,
           overflowY: "auto",
+          maxHeight: "250px", // Altura máxima añadida
           mb: 1,
           display: "flex",
           flexDirection: "column",
-          gap: 0.5, // Gap reducido
-          pr: 0.5, // Padding derecho reducido para scrollbar
+          gap: 0.5,
+          pr: 0.5,
           "&::-webkit-scrollbar": { width: "6px" },
           "&::-webkit-scrollbar-track": {
             background: PALETTE.federalBlue + "40",
@@ -145,7 +130,6 @@ const ChatClues = forwardRef(({ actualQuestion, answers }, ref) => {
           <Box
             key={index}
             sx={{
-              // Colores de burbuja según emisor
               bgcolor: msg.startsWith("Tú:")
                 ? PALETTE.pacificCyan
                 : PALETTE.federalBlue,
@@ -154,11 +138,11 @@ const ChatClues = forwardRef(({ actualQuestion, answers }, ref) => {
                 : PALETTE.lightCyan,
               p: 1,
               borderRadius: 2,
-              fontSize: "0.8rem", // Tamaño fuente ajustado
-              alignSelf: msg.startsWith("Tú:") ? "flex-end" : "flex-start", // Alineación
-              maxWidth: "90%", // Ancho máximo de burbuja
-              wordBreak: "break-word", // Romper palabras largas
-              boxShadow: "0 1px 2px rgba(0,0,0,0.2)", // Sombra ligera
+              fontSize: "0.8rem",
+              alignSelf: msg.startsWith("Tú:") ? "flex-end" : "flex-start",
+              maxWidth: "90%",
+              wordBreak: "break-word",
+              boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
             }}
           >
             {msg}
@@ -166,7 +150,7 @@ const ChatClues = forwardRef(({ actualQuestion, answers }, ref) => {
         ))}
       </Box>
 
-      {/* Área de Input */}
+      {/* Input */}
       <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
         <TextField
           variant="outlined"
@@ -174,42 +158,39 @@ const ChatClues = forwardRef(({ actualQuestion, answers }, ref) => {
           placeholder="Escribe aquí..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={handleKeyPress} // Enviar con Enter
+          onKeyPress={handleKeyPress}
           fullWidth
           disabled={!inputEnabled}
           sx={{
-            // Estilo Input
             "& .MuiInputBase-root": {
-              borderRadius: "20px", // Bordes redondeados
+              borderRadius: "20px",
               backgroundColor: inputEnabled
                 ? PALETTE.federalBlue + "99"
-                : PALETTE.federalBlue + "50", // Fondo oscuro semitransparente o más tenue si disabled
+                : PALETTE.federalBlue + "50",
             },
-            input: { color: PALETTE.lightCyan, fontSize: "0.85rem" }, // Texto claro
-            // Estilo Bordes
+            input: { color: PALETTE.lightCyan, fontSize: "0.85rem" },
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
                 borderColor: inputEnabled
                   ? PALETTE.pacificCyan
                   : PALETTE.honoluluBlue + "80",
-              }, // Borde brillante o tenue
+              },
               "&:hover fieldset": {
                 borderColor: inputEnabled
                   ? PALETTE.lightCyan
                   : PALETTE.honoluluBlue + "80",
-              }, // Borde claro en hover si habilitado
-              "&.Mui-focused fieldset": { borderColor: PALETTE.lightCyan }, // Borde claro al enfocar
+              },
+              "&.Mui-focused fieldset": { borderColor: PALETTE.lightCyan },
               "&.Mui-disabled fieldset": {
                 borderColor: PALETTE.honoluluBlue + "50",
-              }, // Borde muy tenue si disabled
+              },
             },
-            // Estilo Placeholder
             "& .MuiInputBase-input::placeholder": {
-              color: PALETTE.lightCyan + "99", // Placeholder claro semitransparente
+              color: PALETTE.lightCyan + "99",
               opacity: 1,
             },
             "& .MuiInputBase-input.Mui-disabled::placeholder": {
-              color: PALETTE.lightCyan + "50", // Placeholder más tenue si disabled
+              color: PALETTE.lightCyan + "50",
               opacity: 1,
             },
             "& .MuiInputBase-input.Mui-disabled": {
