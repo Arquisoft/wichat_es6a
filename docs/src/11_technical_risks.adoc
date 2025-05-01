@@ -64,16 +64,25 @@ ifndef::imagesdir[:imagesdir: ../images]
 **** Preventive Measure  
 - Review and optimize the code once it is functional.  
 
-=== Technical Debt  
+=== Technical Debt
 
-1. **Tasks organization** 
-
+1. **Tasks organization**  
 **** Poor organization of the tasks to be carried out. We started by selecting a few key points to work on, but as we developed them and due to the relationships between them, we ended up covering more than what was initially selected. As a result, our current application has a significant amount of development across all parts, but none of them are fully complete or entirely functional.
 
-2. **Tasks organization** 
+2. **No Tests created**  
+**** Functionality has been developed, but no testing has been done. This means our code has a coverage percentage below the required level, and it is not entirely clear whether everything implemented works correctly. Tests must be carried out as soon as possible, and proper planning is necessary since they take time and should not affect development.
 
-**** Functionality has been developed, but no testing has been done. This means our code
- has a coverage percentage below the required level, and it is not entirely clear 
- whether everything implemented works correctly. Tests must be carried out as soon as 
- possible, and proper planning is necessary since they take time and should not affect 
- development.
+3. **Tests created with low coverage**  
+**** Initially, tests were created with a low coverage percentage. While some progress has been made in increasing the test coverage, it is still under 80%. Efforts need to continue to ensure comprehensive test coverage across the application.
+
+4. **Using Empathy, but switching to Gemini**  
+**** We initially used Empathy for LLM-based responses. However, the model frequently failed, causing delays and extra work. Over time, this debt accumulated, and we eventually replaced it with Gemini. This decision helped stabilize the application's performance but caused some disruptions earlier in development.
+
+5. **Direct service calls without using the Gateway**  
+**** At the start, services were implemented and called directly without using a Gateway. This decision led to technical debt, as we had to invest significant time later in the development process to refactor and introduce the Gateway, which is necessary for scalability and proper separation of concerns.
+
+6. **Insufficient documentation updates**  
+**** The documentation was not sufficiently updated during development, leading to discrepancies between the actual implementation and the documentation. As a result, certain parts of the project were not properly reflected, making it difficult for team members and future contributors to follow the project flow.
+
+7. **Initial game images generated with AI causing delays**  
+**** At first, we used AI to generate images for the game based on the questions. However, this approach led to increased wait times, and the quality of the images was not optimal. Subsequently, time was spent switching to images obtained from Wikidata, which was a more efficient solution.
