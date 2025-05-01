@@ -204,52 +204,26 @@ export function GameWindow({ gameInstance }) {
   }, [currentQuestion, apiEndpoint, apiKey, hasUsedHint]);
 
   // --- Manejador para Comodín 50/50 ---
-  const getSecureRandomIndices = (arrayLength, count) => {
-    const indices = [];
-    const used = new Set();
-  
-    while (indices.length < count) {
-      const randomArray = new Uint32Array(1);
-      crypto.getRandomValues(randomArray);
-      const randIndex = randomArray[0] % arrayLength;
-      if (!used.has(randIndex)) {
-        used.add(randIndex);
-        indices.push(randIndex);
-      }
-    }
-  
-    return indices;
-  };
-  
   const handleFiftyFifty = () => {
     if (!currentQuestion || selectedAnswer !== null || hasUsedFiftyFifty)
       return;
-  
     const correctIndex = currentQuestion.answers.findIndex(
       (ans) => ans.isCorrect
     );
-  
     const incorrectIndices = currentQuestion.answers
       .map((ans, idx) => (ans.isCorrect ? -1 : idx))
       .filter((idx) => idx !== -1);
-  
-    if (incorrectIndices.length <= 2) {
-      toRemove = incorrectIndices;
-    } else {
-      const selected = getSecureRandomIndices(incorrectIndices.length, 2);
-      var toRemove = selected.map((i) => incorrectIndices[i]);
-    }
-  
+    const toRemove = incorrectIndices
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 2);
     const newFeedbackStates = currentQuestion.answers.map((_, i) => {
       if (toRemove.includes(i)) return "eliminated";
       return null;
     });
-  
     setFeedbackStates(newFeedbackStates);
     setHasUsedFiftyFifty(true);
     gameRef.current.useFiftyFifty();
   };
-  ;
 
   // --- Manejador para Pregunta IA ---
   const handleAskAI = () => {
