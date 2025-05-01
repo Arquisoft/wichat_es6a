@@ -1,60 +1,91 @@
-ifndef::imagesdir[:imagesdir: ../images]
-
 [[section-solution-strategy]]
 == Solution Strategy
 
-
-ifdef::arc42help[]
-[role="arc42help"]
-****
-.Contents
-A short summary and explanation of the fundamental decisions and solution strategies, that shape system architecture. It includes
-
-* technology decisions
-* decisions about the top-level decomposition of the system, e.g. usage of an architectural pattern or design pattern
-* decisions on how to achieve key quality goals
-* relevant organizational decisions, e.g. selecting a development process or delegating certain tasks to third parties.
-
-.Motivation
-These decisions form the cornerstones for your architecture. They are the foundation for many other detailed decisions or implementation rules.
-
-.Form
-Keep the explanations of such key decisions short.
-
-Motivate what was decided and why it was decided that way,
-based upon problem statement, quality goals and key constraints.
-Refer to details in the following sections.
-
-
-.Further Information
-
-See https://docs.arc42.org/section-4/[Solution Strategy] in the arc42 documentation.
-
-****
-endif::arc42help[]
 === Types of Decisions
 
 ==== 1. Organizational Decisions
-These decisions are related to the **work structure** and how the team is organized.
 
-* **Using a Kanban-style project**: The decision to use a visual task management approach, Kanban, to organize work and ensure that all team members know the status of tasks and what remains to be done.
-* **Using GitHub Flow as a workflow**: The decision to adopt a GitHub Flow based workflow, allowing all team members to collaborate easily through Pull Requests and ensuring that all code is reviewed before being merged into the main branch.
+* **Adopting a Kanban-style project management**:  
+  The team uses a Kanban board to visualize the workflow, prioritize tasks, and increase transparency. This supports continuous delivery and helps identify bottlenecks by limiting work in progress.
+
+* **Using GitHub Flow as the development workflow**:  
+  GitHub Flow is used for version control and team collaboration. It enables feature branches, code reviews via Pull Requests, and promotes consistent, stable integration.
+
+* **Continuous Integration with GitHub Actions and SonarQube**:  
+  A CI pipeline is configured using GitHub Actions to automatically run unit tests and perform code quality analysis with SonarQube. This ensures that every change is validated and checked for bugs, duplication, or security issues before merging.
 
 ==== 2. Technical Decisions
-These decisions are related to **how the project is built** and the tools used.
 
-* **Using a starter template**: The decision to begin with a basic but functional project, allowing for a quick start with a pre-configured structure that works, avoiding the need to build everything from scratch.  
-* **Starting the project from scratch**: Although a starter template can be used, the decision is to create a new project from scratch. This helps the team become more familiar with the code and project structure. Additionally, the previous project can be used as a reference to solve problems or improve the design without relying on it directly.  
-* **Using MongoDB as the database**: Chosen because it fits well with the data used in the application, is easy to use, and was also used in the base project.  
-* **Using Gemini LLM**: After testing, Gemini was determined to be the best fit for generating the desired responses and reacting effectively to the prompts.  
-* **Using JavaScript as the programming language**: Selected because most available resources are in JavaScript, the base project uses it, and it is a common language for web development.  
-* **Using Node.js as the framework**: Chosen for its seamless integration with JavaScript and because it was used in the base project.  
-* **Using Material UI as the UI framework**: Helps in developing the application’s user interface by providing pre-built components that simplify good design and development.  
-* **Using Docker for service deployment**: Docker is used to deploy different application services independently, making them more manageable. It provides tools that simplify deployment and maintenance.  
+* **Starting the project from scratch with custom configuration**:  
+  Although a base project exists, we decided to build from scratch to better understand the codebase and architecture. The old project is used as a reference for ideas and problem-solving.
 
-==== 3. Quality and Maintenance Decisions
-These decisions are about **ensuring that the project is high quality** and easy to maintain.
+* **Using MongoDB as the database**:  
+  MongoDB is a NoSQL database well-suited for the app's data model, easy to use, and already familiar to the team.
 
-* **Using GitHub Flow and Pull Requests**: Through Pull Requests, we ensure that every code change is reviewed by the team before integration, maintaining code quality and minimizing errors in the main branch.  
-* **Using Jest for testing**: Chosen because it is a widely used tool for testing this type of application and was also used in the base project, ensuring consistency in the testing code and avoiding tool mixing.  
-* **Using Ruby for documentation deployment**: Selected because it is the provided tool along with a guide for this task.  
+* **Using Gemini LLM for response generation**:  
+  Gemini was chosen for its effective response generation and suitability for prompt-based interactions, based on testing.
+
+* **Using JavaScript as the primary programming language**:  
+  JavaScript is widely supported, popular in web development, and was used in the base project.
+
+* **Using Node.js as the backend environment**:  
+  Node.js integrates seamlessly with JavaScript, supports event-driven programming, and was part of the original stack.
+
+* **Using Material UI as the UI framework**:  
+  Material UI provides ready-to-use components that follow design best practices and accelerate UI development.
+
+* **Using Docker for service deployment**:  
+  Docker containers allow for independent service deployment, improving scalability, maintainability, and consistency across environments.
+
+* **Using Azure as the cloud platform**:  
+  Azure offers scalable infrastructure, integration with development tools, strong security features, and built-in support for CI/CD pipelines.
+
+* **Using a Linux-based server environment**:  
+  Linux provides stability, resource efficiency, automation capabilities (via cron, bash), and compatibility with modern development tools.
+
+* **Separation of game logic and UI components**:  
+  Game logic (score calculations, answer validation, question flow) is implemented independently of the UI. This separation improves testability, reusability, and code clarity.
+
+* **Using `setInterval` to manage game timers**:  
+  Timed quizzes rely on accurate timers. A controlled `setInterval` mechanism with timestamp drift adjustment ensures precise countdown behavior.
+
+* **Anonymous play support (no login required)**:  
+  Users can participate in quizzes without registering. However, statistics and history are not saved unless the user logs in, improving accessibility while preserving data integrity.
+
+* **User profile editing and password update**:  
+  Registered users can update their profile and change their password through secure interfaces.
+
+* **Using bcrypt to protect user passwords**:  
+  All user passwords are securely hashed using the bcrypt algorithm before being stored in the database. This adds an essential layer of protection against password leaks and brute-force attacks. Bcrypt’s built-in salting and adaptive hashing features make it a strong choice for modern authentication systems.
+
+* **Game modes based on thematic categories**:  
+  The application supports different quiz modes: *Countries*, *Music*, *Cinema*, and a *Mixed Mode* with questions from all categories. This allows users to choose based on interest and enhances replay value.
+
+* **Daily question generation via cron + Wikidata**:  
+  A cron job runs daily on the server to generate new quiz questions from live data in Wikidata. This ensures updated and diverse content without manual intervention.
+
+* **Using Swagger for API documentation**:  
+  Swagger (OpenAPI) is used to automatically generate and maintain up-to-date documentation for the application's RESTful APIs. This tool provides a visual interface where developers and users can explore the available API endpoints, see request/response formats, and even test the APIs interactively. It helps streamline development, improve communication with third-party services, and reduces integration errors by keeping API documentation current.
+
+==== 3. Quality and Maintainability Decisions
+
+* **Using GitHub Flow and Pull Requests for code review**:  
+  All changes are reviewed via Pull Requests before merging to maintain code quality and minimize integration errors.
+
+* **Using Jest for unit testing**:  
+  Jest is a mature, widely-used testing framework for JavaScript projects and was used in the base project, ensuring consistency.
+
+* **Using jest-cucumber for BDD-style testing**:  
+  With jest-cucumber, test scenarios can be written in natural language (Gherkin). This improves readability and collaboration between developers and non-technical stakeholders. It was already part of the base project.
+
+* **Using pepeter for React component testing**:  
+  Pepeter integrates well with React, making component behavior testing more expressive. It was included in the original project setup and maintained due to its convenience.
+
+* **Using Cypress for end-to-end testing**:  
+  Full user flows—such as starting a quiz, submitting answers, and viewing results—are tested with Cypress to ensure the system works reliably after each update.
+
+* **Using Ruby for documentation deployment**:  
+  Ruby was chosen as the deployment tool for documentation because it is part of the recommended tooling and comes with existing setup instructions.
+
+* **Modular and testable code structure**:  
+  Each system module adheres to the single-responsibility principle, ensuring ease of maintenance, clearer ownership, and higher test coverage.
