@@ -13,45 +13,57 @@ ifndef::imagesdir[:imagesdir: ../images]
 cloud "Cloud Provider (TBD)" {
     node "Virtual Machine" {
         node "Docker" {
-            node "App Container"{
-                node "Frontend Service"
+            node "App Container" {
+                node "Frontend Service"  // webapp
             }
-            node "Gateway Container"{
+            node "Gateway Container" {
                 node "API Gateway Service"
             }
-            node "Authentification Container"{
-                node "Authentification Service"
+            node "Authentication Container" {
+                node "Authentication Service"  // authservice
             }
-            node "User Container"{
-                node "User Service"
+            node "User Container" {
+                node "User Service"  // userservice
             }
-            node "Chat Container"{
-                node "Chat Service"
+            node "Question Container" {
+                node "Question Service"  // questionsservice
             }
-            node "Storage Container"{
-                node "File Storage Service"
+            node "Wikidata Communication Container" {
+                node "Wikidata Service"  // wikidataservice
             }
-            node "Database Container"{
-                node "Database Service"
+            node "Game History Container" {
+                node "History Service"  // historyservice
             }
-            node "Documentation Container"{
+            node "LLM Container" {
+                node "LLM Service"  // llmservice
+            }
+            node "Documentation Container" {
                 node "arc42 Documentation"
+            }
+            node "Monitoring Container" {
+                node "Prometheus"
+                node "Grafana"
+            }
+            node "Database Container" {
+                node "MongoDB"
             }
         }
     }
 }
 
-
 actor "User"
 
 "User" -- "Frontend Service" : "HTTP/port: 3000"
 "Frontend Service" -down- "API Gateway Service" : "port: 8000"
-"API Gateway Service" --- "Authentification Service" : "port: 8001"
-"API Gateway Service" --- "User Service" : "port: 8002"
-"API Gateway Service" --- "Chat Service" : "port: 8003"
-"Chat Service" -- "File Storage Service" : "port: 8004"
-"API Gateway Service" -- "Database Service" : "port: TBD"
+"API Gateway Service" --> "Authentication Service" : "port: 8001"
+"API Gateway Service" --> "User Service" : "port: 8002"
+"API Gateway Service" --> "Question Service" : "port: 8003"
+"API Gateway Service" --> "LLM Service" : "port: 8004"
+"API Gateway Service" --> "History Service" : "port: 8005"
+"API Gateway Service" --> "Wikidata Service" : "port: 8006"
+"API Gateway Service" --> "MongoDB" : "port: 27017"
 ----
+
 
 In addition to what is shown in the diagram, we will also use arc42 for documentation.
 
