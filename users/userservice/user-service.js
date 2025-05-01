@@ -117,10 +117,11 @@ app.put('/user/:id/username', async (req, res) => {
   try {
     // Buscar al usuario
     const user = await User.findById(req.params.id);
-    const actualUserName = user.username;
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user){
+      return res.status(404).json({ error: 'User not found' });
+    } 
 
-    // Validar el nuevo nombre de usuario
+        const actualUserName = user.username;
         // Validar y sanitizar el nuevo nombre de usuario
         const newUsername = String(req.body.username);
         if (!newUsername || newUsername.includes('$') || newUsername.includes('.')) {
@@ -226,8 +227,7 @@ app.get('/user/:id/profile-pic', async (req, res) => {
     const imagePath = path.join(__dirname, 'uploads', 'profile_pics', `${userId}.png`);  // Ruta completa a la imagen
 
     // Verificar si el archivo existe
-    // NOSONAR
-    fs.access(imagePath, fs.constants.F_OK, (err) => {
+    fs.access(imagePath, fs.constants.F_OK, (err) => {  // NOSONAR
       if (err) {
         return res.status(404).json({ error: 'Profile picture not found' });
       }
@@ -251,15 +251,13 @@ app.delete('/user/:id/profile-pic', async (req, res) => {
     const imagePath = path.join(__dirname, 'uploads', 'profile_pics', `${userId}.png`);
 
     // Verificar si el archivo existe
-    // NOSONAR
-    fs.access(imagePath, fs.constants.F_OK, (err) => {
+    fs.access(imagePath, fs.constants.F_OK, (err) => { // NOSONAR
       if (err) {
         return res.status(400).json({ error: 'No profile picture to delete' });
       }
 
-      // NOSONAR
       // Eliminar el archivo de la imagen de perfil en el sistema de archivos
-      fs.unlink(imagePath, (err) => {
+      fs.unlink(imagePath, (err) => {  // NOSONAR
         if (err) {
           return res.status(500).json({ error: 'Failed to delete the image' });
         }

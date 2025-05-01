@@ -22,7 +22,7 @@ const apiKey = process.env.LLM_API_KEY;
     for (const category of categories) {
         try {
             //Generamos 2 preguntas por categoría: 21 en total
-            for(i = 0; i < 2; i++){
+            for(var i = 0; i < 2; i++){
 
                 const entry = await getWikidataForCategory(category, 1);
                 if (!entry) {

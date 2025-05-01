@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
-  TextField, Button, Box, Avatar, Typography, Paper, Alert, Grid, Divider,
+  TextField, Button, Box, Avatar, Typography, Paper, Alert, 
   Card, CardContent, CardActions, Fade, IconButton, Tooltip
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -93,12 +93,10 @@ export const handleSavePassword = (currentPassword, newPassword, repeatPassword,
 };
 
 const EditProfile = () => {
-  const navigate = useNavigate();
   const [newUsername, setNewUsername] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
-  const [image, setImage] = useState(null);
   const [profilePic, setProfilePic] = useState(null);
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
