@@ -16,6 +16,8 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "fs": "^0.0.1-security",
+    "mock-require": "^3.0.3",
+    "mongodb-memory-server": "^10.1.4",
     "mongoose": "^8.13.3",
     "swagger-ui-express": "^5.0.1",
     "yaml": "^2.7.1"
