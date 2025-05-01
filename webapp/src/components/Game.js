@@ -146,52 +146,52 @@ async init(category, difficulty) {
         null
       ),
       new Question(
-        "¿Quién escribió 'Don Quijote de la Mancha'?",
+        "¿Cuál es la capital de Francia?",
         [
-          new Answer("Miguel de Cervantes", true),
-          new Answer("Gabriel García Márquez", false),
-          new Answer("William Shakespeare", false),
-          new Answer("Federico García Lorca", false),
+          new Answer("Madrid", false),
+          new Answer("París", true),
+          new Answer("Berlín", false),
+          new Answer("Lisboa", false),
         ],
         null
       ),
       new Question(
-        "¿En qué año llegó el ser humano a la Luna?",
+        "¿Cuál es la capital de Francia?",
         [
-          new Answer("1969", true),
-          new Answer("1975", false),
-          new Answer("1965", false),
-          new Answer("1980", false),
+          new Answer("Madrid", false),
+          new Answer("París", true),
+          new Answer("Berlín", false),
+          new Answer("Lisboa", false),
         ],
         null
       ),
       new Question(
-        "¿Cuál es el océano más grande del mundo?",
+        "¿Cuál es la capital de Francia?",
         [
-          new Answer("Atlántico", false),
-          new Answer("Índico", false),
-          new Answer("Pacífico", true),
-          new Answer("Ártico", false),
+          new Answer("Madrid", false),
+          new Answer("París", true),
+          new Answer("Berlín", false),
+          new Answer("Lisboa", false),
         ],
         null
       ),
       new Question(
-        "¿Cuál es el río más largo del mundo?",
+        "¿Cuál es la capital de Francia?",
         [
-          new Answer("Nilo", false),
-          new Answer("Amazonas", true),
-          new Answer("Misisipi", false),
-          new Answer("Yangtsé", false),
+          new Answer("Madrid", false),
+          new Answer("París", true),
+          new Answer("Berlín", false),
+          new Answer("Lisboa", false),
         ],
         null
       ),
       new Question(
-        "¿Cuántos lados tiene un hexágono?",
+        "¿Cuál es la capital de Francia?",
         [
-          new Answer("5", false),
-          new Answer("7", false),
-          new Answer("6", true),
-          new Answer("8", false),
+          new Answer("Madrid", false),
+          new Answer("París", true),
+          new Answer("Berlín", false),
+          new Answer("Lisboa", false),
         ],
         null
       ),

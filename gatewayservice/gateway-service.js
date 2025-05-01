@@ -6,6 +6,7 @@ const swaggerUi = require('swagger-ui-express');
 const fs = require("fs");
 const YAML = require('yaml');
 const { Counter, Gauge } = require('prom-client');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
 const port = 8000;
@@ -152,17 +153,18 @@ app.put('/user/:id/password', async (req, res) => {
   }
 });
 
-app.post('/user/:id/profile-pic', async (req, res) => {
-  try {
-    const userResponse = await axios.post(userServiceUrl + `/user/${req.params.id}/profile-pic`, req.body, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
-    res.json(userResponse.data);
-  } catch (error) {
-    failedRequestsCounter.inc({ service: 'user', endpoint: '/user/:id/profile-pic', status: error.response?.status || 500 });
-    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+// Proxy que acepta POST (y cualquier otro método) y conserva el body
+app.use('/user/:id/profile-pic', createProxyMiddleware({
+  target: userServiceUrl,
+  changeOrigin: true,
+  pathRewrite: (path, req) => `/user/${req.params.id}/profile-pic`,
+  onProxyReq: (proxyReq, req, res) => {
+    // Si quieres pasar headers extra como el Authorization:
+    if (req.headers.authorization) {
+      proxyReq.setHeader('Authorization', req.headers.authorization);
+    }
   }
-});
+}));
 
 app.get('/user/:id/profile-pic', async (req, res) => {
   try {

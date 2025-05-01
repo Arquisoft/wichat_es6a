@@ -174,12 +174,20 @@ app.put('/user/:id/password', async (req, res) => {
 // 📸 Subir imagen de perfil
 app.post('/user/:id/profile-pic', upload.single('profilePic'), async (req, res) => {
   try {
+    console.log('Received request to upload profile picture for user:', req.params.id);
+
+    // Verificar si se subió un archivo
     if (!req.file) {
+      console.log('No file uploaded');
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
+    console.log('File uploaded:', req.file.filename);
+
+    // Buscar el usuario
     const user = await User.findById(req.params.id);
     if (!user) {
+      console.log('User not found with ID:', req.params.id);
       return res.status(404).json({ error: 'User not found' });
     }
 
@@ -187,13 +195,18 @@ app.post('/user/:id/profile-pic', upload.single('profilePic'), async (req, res) 
     user.profilePic = `/uploads/profile_pics/${req.file.filename}`;
     await user.save();
 
+    console.log('Profile picture saved successfully for user:', req.params.id);
+
     res.status(200).json({
       message: 'Profile picture uploaded successfully',
+      profilePicUrl: `http://localhost:8001${user.profilePic}`,
     });
   } catch (error) {
+    console.log('Error occurred while uploading profile picture:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
+
 
 // 📸 Obtener imagen de perfil
 app.get('/user/:id/profile-pic', async (req, res) => {
