@@ -6,86 +6,87 @@
 ==== 1. Organizational Decisions
 
 * **Adopting a Kanban-style project management**:  
-  The team uses a Kanban board to visualize the workflow, prioritize tasks, and increase transparency. This supports continuous delivery and helps identify bottlenecks by limiting work in progress.
+  The team employs a Kanban approach to organize and visualize the software development process. Tasks are represented on a Kanban board, facilitating prioritization and fostering team-wide transparency. This methodology enhances focus by limiting work in progress (WIP), promoting continuous delivery and helping the team identify process bottlenecks early.
 
 * **Using GitHub Flow as the development workflow**:  
-  GitHub Flow is used for version control and team collaboration. It enables feature branches, code reviews via Pull Requests, and promotes consistent, stable integration.
+  GitHub Flow is adopted to ensure a clear and collaborative development process. It encourages the use of short-lived feature branches and enforces Pull Request-based code reviews. This ensures that every change is peer-reviewed before integration, increasing stability and maintaining consistent code quality.
 
 * **Continuous Integration with GitHub Actions and SonarQube**:  
-  A CI pipeline is configured using GitHub Actions to automatically run unit tests and perform code quality analysis with SonarQube. This ensures that every change is validated and checked for bugs, duplication, or security issues before merging.
+  A CI pipeline is implemented using GitHub Actions to automatically run tests and code quality checks on every push. SonarQube is integrated to analyze code for bugs, vulnerabilities, code smells, and duplications. These tools provide immediate feedback, ensuring issues are addressed before deployment and reinforcing best practices.
 
 ==== 2. Technical Decisions
 
 * **Starting the project from scratch with custom configuration**:  
-  Although a base project exists, we decided to build from scratch to better understand the codebase and architecture. The old project is used as a reference for ideas and problem-solving.
+  While a reference project exists, the development team opted to build the system from the ground up. This decision fosters a deeper understanding of the architecture, eliminates dependencies on legacy code, and enables customization aligned with current needs. The prior implementation serves strictly as a conceptual guide.
 
 * **Using MongoDB as the database**:  
-  MongoDB is a NoSQL database well-suited for the app's data model, easy to use, and already familiar to the team.
+  MongoDB, a document-oriented NoSQL database, was selected for its flexibility, scalability, and alignment with the application’s data model. Its familiarity within the team and prior successful usage further reinforce this choice.
 
 * **Using Gemini LLM for response generation**:  
-  Gemini was chosen for its effective response generation and suitability for prompt-based interactions, based on testing.
+  After testing several large language models, Gemini was selected due to its superior performance in generating relevant and context-aware responses to user prompts. Its integration facilitates intelligent, adaptive behavior in the application’s core logic.
 
 * **Using JavaScript as the primary programming language**:  
-  JavaScript is widely supported, popular in web development, and was used in the base project.
+  JavaScript is chosen for its ubiquity in web development, extensive ecosystem, and strong support for full-stack development via Node.js. The team’s familiarity with the language ensures faster development cycles and reduces onboarding time.
 
 * **Using Node.js as the backend environment**:  
-  Node.js integrates seamlessly with JavaScript, supports event-driven programming, and was part of the original stack.
+  Node.js is used to build the server-side logic due to its asynchronous event-driven architecture and seamless integration with JavaScript. It is well-suited for handling concurrent requests in real-time applications such as quizzes.
 
 * **Using Material UI as the UI framework**:  
-  Material UI provides ready-to-use components that follow design best practices and accelerate UI development.
+  Material UI accelerates front-end development by offering a comprehensive set of customizable, accessible components. It ensures visual consistency while reducing the amount of custom styling and layout logic needed.
 
 * **Using Docker for service deployment**:  
-  Docker containers allow for independent service deployment, improving scalability, maintainability, and consistency across environments.
+  Docker is employed to containerize application components, enabling environment consistency, isolated testing, easier scaling, and streamlined deployment pipelines.
 
 * **Using Azure as the cloud platform**:  
-  Azure offers scalable infrastructure, integration with development tools, strong security features, and built-in support for CI/CD pipelines.
+  Microsoft Azure is selected for its robust cloud services, seamless DevOps integration, enterprise-level security, and global infrastructure. Azure’s CI/CD support and monitoring tools align well with the project’s operational requirements.
 
 * **Using a Linux-based server environment**:  
-  Linux provides stability, resource efficiency, automation capabilities (via cron, bash), and compatibility with modern development tools.
+  Linux is chosen for hosting the application due to its reliability, performance efficiency, and compatibility with modern development and automation tools.
 
 * **Separation of game logic and UI components**:  
-  Game logic (score calculations, answer validation, question flow) is implemented independently of the UI. This separation improves testability, reusability, and code clarity.
+  To ensure maintainability and testability, core game functionality (e.g., score tracking, validation logic, question selection) is decoupled from presentation components. This separation enforces single responsibility and supports future extensibility.
 
 * **Using `setInterval` to manage game timers**:  
-  Timed quizzes rely on accurate timers. A controlled `setInterval` mechanism with timestamp drift adjustment ensures precise countdown behavior.
+  Timed gameplay requires precise countdown control. The use of `setInterval` with timestamp drift correction enables consistent and reliable timer behavior, even under varying load conditions.
 
 * **Anonymous play support (no login required)**:  
-  Users can participate in quizzes without registering. However, statistics and history are not saved unless the user logs in, improving accessibility while preserving data integrity.
+  Users can access and play quizzes without authentication. However, to preserve data integrity, only authenticated users have access to statistics, history, and profile management. This improves accessibility without compromising personalization for logged-in users.
 
 * **User profile editing and password update**:  
-  Registered users can update their profile and change their password through secure interfaces.
+  Authenticated users are allowed to manage personal details and change their passwords through secure interfaces. Proper validation and feedback mechanisms are integrated to ensure usability and security.
 
 * **Using bcrypt to protect user passwords**:  
-  All user passwords are securely hashed using the bcrypt algorithm before being stored in the database. This adds an essential layer of protection against password leaks and brute-force attacks. Bcrypt’s built-in salting and adaptive hashing features make it a strong choice for modern authentication systems.
+  All stored passwords are hashed using bcrypt, which provides built-in salting and adaptive hashing to resist brute-force and rainbow table attacks. This aligns with industry best practices for secure authentication.
 
 * **Game modes based on thematic categories**:  
-  The application supports different quiz modes: *Countries*, *Music*, *Cinema*, and a *Mixed Mode* with questions from all categories. This allows users to choose based on interest and enhances replay value.
+  To enhance user engagement, the application supports multiple quiz modes including *Countries*, *Music*, *Cinema*, and *Mixed Mode*. This allows users to tailor their experience based on personal interests.
 
 * **Daily question generation via cron + Wikidata**:  
-  A cron job runs daily on the server to generate new quiz questions from live data in Wikidata. This ensures updated and diverse content without manual intervention.
+  An automated cron job fetches and generates new quiz questions daily from Wikidata. This ensures the application remains dynamic, up-to-date, and free from manual content entry requirements.
 
 * **Using Swagger for API documentation**:  
-  Swagger (OpenAPI) is used to automatically generate and maintain up-to-date documentation for the application's RESTful APIs. This tool provides a visual interface where developers and users can explore the available API endpoints, see request/response formats, and even test the APIs interactively. It helps streamline development, improve communication with third-party services, and reduces integration errors by keeping API documentation current.
+  Swagger (OpenAPI) is integrated to document all API endpoints interactively. Developers can view, test, and understand the API via a visual interface, which streamlines both internal development and third-party integration efforts.
 
 ==== 3. Quality and Maintainability Decisions
 
 * **Using GitHub Flow and Pull Requests for code review**:  
-  All changes are reviewed via Pull Requests before merging to maintain code quality and minimize integration errors.
+  Pull Requests are enforced across all feature and bug-fix branches. Each submission is subject to peer review, ensuring that standards are met, potential defects are caught early, and collaboration remains transparent.
 
 * **Using Jest for unit testing**:  
-  Jest is a mature, widely-used testing framework for JavaScript projects and was used in the base project, ensuring consistency.
+  Jest is used to test application logic at the unit level. It offers fast test execution, easy mocking, and snapshot testing, making it well-suited for JavaScript-based projects.
 
 * **Using jest-cucumber for BDD-style testing**:  
-  With jest-cucumber, test scenarios can be written in natural language (Gherkin). This improves readability and collaboration between developers and non-technical stakeholders. It was already part of the base project.
+  Test scenarios are written in Gherkin syntax using `jest-cucumber`, improving test readability and enabling non-developers to participate in test definition. This supports behavior-driven development (BDD) and improves communication across technical and business stakeholders.
 
 * **Using pepeter for React component testing**:  
-  Pepeter integrates well with React, making component behavior testing more expressive. It was included in the original project setup and maintained due to its convenience.
+  Pepeter is used to create expressive, readable tests for React components. It simplifies interaction simulation and state validation, allowing for deeper and more maintainable component-level testing.
 
 * **Using Cypress for end-to-end testing**:  
-  Full user flows—such as starting a quiz, submitting answers, and viewing results—are tested with Cypress to ensure the system works reliably after each update.
+  Cypress is adopted for testing complete user flows, such as answering questions, submitting results, and navigating through different parts of the application. This ensures high confidence in the stability of the application post-deployment.
 
 * **Using Ruby for documentation deployment**:  
-  Ruby was chosen as the deployment tool for documentation because it is part of the recommended tooling and comes with existing setup instructions.
+  Ruby is selected as the documentation deployment environment based on tooling compatibility. Existing scripts and setup guides are designed for Ruby, minimizing setup overhead and ensuring smooth integration with the documentation pipeline.
 
 * **Modular and testable code structure**:  
-  Each system module adheres to the single-responsibility principle, ensuring ease of maintenance, clearer ownership, and higher test coverage.
+  The codebase is designed following modular principles, where each component or module fulfills a single, well-defined responsibility. This approach promotes testability, simplifies debugging, and improves long-term maintainability.
+
