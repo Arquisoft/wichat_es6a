@@ -1,7 +1,7 @@
 ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-design-decisions]]
-# Architecture Decisions
+## Architecture Decisions
 
 To document the architectural decisions of the project, we have created individual pages in the GitHub Wiki. This approach allows us to provide a detailed explanation of each decision without cluttering the main documentation. Each page includes the rationale behind the decision, as well as its advantages and disadvantages.
 

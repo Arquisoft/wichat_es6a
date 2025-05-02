@@ -14,28 +14,28 @@ cloud "Cloud Provider (TBD)" {
     node "Virtual Machine" {
         node "Docker" {
             node "App Container" {
-                node "Frontend Service"  // webapp
+                node "Frontend Service"  
             }
             node "Gateway Container" {
                 node "API Gateway Service"
             }
             node "Authentication Container" {
-                node "Authentication Service"  // authservice
+                node "Authentication Service"  
             }
             node "User Container" {
-                node "User Service"  // userservice
+                node "User Service"  
             }
             node "Question Container" {
-                node "Question Service"  // questionsservice
+                node "Question Service" 
             }
             node "Wikidata Communication Container" {
-                node "Wikidata Service"  // wikidataservice
+                node "Wikidata Service" 
             }
             node "Game History Container" {
-                node "History Service"  // historyservice
+                node "History Service"  
             }
             node "LLM Container" {
-                node "LLM Service"  // llmservice
+                node "LLM Service"  
             }
             node "Documentation Container" {
                 node "arc42 Documentation"
