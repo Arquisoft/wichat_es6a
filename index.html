@@ -471,47 +471,63 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_types_of_decisions">4.1. Types of Decisions</a></li>
 </ul>
 </li>
-<li><a href="#section-building-block-view">5. Building Block View</a>
+<li><a href="#section-building-block-view">5. 5. Building Block View</a>
 <ul class="sectlevel2">
-<li><a href="#_whitebox_overall_system">5.1. Whitebox Overall System</a></li>
-<li><a href="#_contained_building_blocks">5.2. Contained Building Blocks</a></li>
-<li><a href="#_important_interfaces">5.3. Important Interfaces</a></li>
-<li><a href="#_system_components">5.4. System Components</a></li>
-<li><a href="#_level_2">5.5. Level 2</a></li>
-<li><a href="#_component_description">5.6. Component Description</a></li>
-<li><a href="#_level_3">5.7. Level 3</a></li>
+<li><a href="#_5_0_high_level_system_overview_context_recap">5.1. 5.0 High-Level System Overview (Context Recap)</a></li>
+<li><a href="#_5_1_whitebox_overall_system_level_1">5.2. 5.1 Whitebox Overall System (Level 1)</a></li>
 </ul>
 </li>
-<li><a href="#section-runtime-view">6. Runtime View</a></li>
-<li><a href="#section-deployment-view">7. Deployment View</a>
+<li><a href="#_5_2_level_2_refinements">6. 5.2 Level 2 (Refinements)</a>
 <ul class="sectlevel2">
-<li><a href="#_infrastructure_level_1">7.1. Infrastructure Level 1</a></li>
+<li><a href="#_5_2_1_white_box_llm_service_hint_service">6.1. 5.2.1 White Box LLM Service (Hint Service)</a></li>
 </ul>
 </li>
-<li><a href="#section-concepts">8. Cross-cutting Concepts</a>
+<li><a href="#_5_3_level_3_refinements_concepts">7. 5.3 Level 3 (Refinements / Concepts)</a>
 <ul class="sectlevel2">
-<li><a href="#_user_experience_ux">8.1. User Experience (UX)</a></li>
-<li><a href="#_security_protection">8.2. Security &amp; Protection</a></li>
-<li><a href="#_under_the_hood">8.3. Under-the-Hood</a></li>
-<li><a href="#_development">8.4. Development</a></li>
-<li><a href="#_architectural_style">8.5. Architectural Style</a></li>
-<li><a href="#_concept_map">8.6. Concept Map</a></li>
+<li><a href="#_concept_question_generation_and_storage_flow">7.1. Concept: Question Generation and Storage Flow</a></li>
+<li><a href="#_concept_statistics_calculation">7.2. Concept: Statistics Calculation</a></li>
 </ul>
 </li>
-<li><a href="#section-design-decisions">9. Architecture decisions</a></li>
-<li><a href="#section-quality-scenarios">10. Quality Requirements</a>
-<ul class="sectlevel2">
-<li><a href="#_quality_tree">10.1. Quality Tree</a></li>
-<li><a href="#_quality_scenarios">10.2. Quality Scenarios</a></li>
+<li><a href="#section-runtime-view">8. Runtime View</a>
+<ul class="sectlevel3">
+<li><a href="#_user_registration">8.1. User Registration</a></li>
+<li><a href="#_user_login">8.2. User Login</a></li>
+<li><a href="#_question_generation">8.3. Question Generation</a></li>
+<li><a href="#_answering_a_question">8.4. Answering a Question</a></li>
+<li><a href="#_ask_for_a_hint_to_the_ai_chat">8.5. Ask for a hint to the AI Chat</a></li>
+<li><a href="#_user_password_change">8.6. User Password Change</a></li>
 </ul>
 </li>
-<li><a href="#section-risks-and-technical-debt">11. Risks and Technical Debt</a>
+<li><a href="#section-deployment-view">9. Deployment View</a>
 <ul class="sectlevel2">
-<li><a href="#_technical_risks">11.1. Technical Risks</a></li>
-<li><a href="#_technical_debt">11.2. Technical Debt</a></li>
+<li><a href="#_infrastructure_level_1">9.1. Infrastructure Level 1</a></li>
 </ul>
 </li>
-<li><a href="#section-glossary">12. Glossary</a></li>
+<li><a href="#section-concepts">10. Cross-cutting Concepts</a>
+<ul class="sectlevel2">
+<li><a href="#_user_experience_ux">10.1. User Experience (UX)</a></li>
+<li><a href="#_security_protection">10.2. Security &amp; Protection</a></li>
+<li><a href="#_under_the_hood">10.3. Under-the-Hood</a></li>
+<li><a href="#_development">10.4. Development</a></li>
+<li><a href="#_architectural_style">10.5. Architectural Style</a></li>
+<li><a href="#_concept_map">10.6. Concept Map</a></li>
+</ul>
+</li>
+<li><a href="#section-design-decisions">11. Architecture Decisions</a></li>
+<li><a href="#_technology_decisions">12. Technology Decisions</a></li>
+<li><a href="#section-quality-scenarios">13. Quality Requirements</a>
+<ul class="sectlevel2">
+<li><a href="#_quality_tree">13.1. Quality Tree</a></li>
+<li><a href="#_quality_scenarios">13.2. Quality Scenarios</a></li>
+</ul>
+</li>
+<li><a href="#section-risks-and-technical-debt">14. Risks and Technical Debt</a>
+<ul class="sectlevel2">
+<li><a href="#_technical_risks">14.1. Technical Risks</a></li>
+<li><a href="#_technical_debt">14.2. Technical Debt</a></li>
+</ul>
+</li>
+<li><a href="#section-glossary">15. Glossary</a></li>
 </ul>
 </div>
 </div>
@@ -863,90 +879,133 @@ together with a mapping table showing the relationships between channels and inp
 <div class="sect1">
 <h2 id="section-solution-strategy">4. Solution Strategy</h2>
 <div class="sectionbody">
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<div class="title">Contents</div>
-<p>A short summary and explanation of the fundamental decisions and solution strategies, that shape system architecture. It includes</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>technology decisions</p>
-</li>
-<li>
-<p>decisions about the top-level decomposition of the system, e.g. usage of an architectural pattern or design pattern</p>
-</li>
-<li>
-<p>decisions on how to achieve key quality goals</p>
-</li>
-<li>
-<p>relevant organizational decisions, e.g. selecting a development process or delegating certain tasks to third parties.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<div class="title">Motivation</div>
-<p>These decisions form the cornerstones for your architecture. They are the foundation for many other detailed decisions or implementation rules.</p>
-</div>
-<div class="paragraph">
-<div class="title">Form</div>
-<p>Keep the explanations of such key decisions short.</p>
-</div>
-<div class="paragraph">
-<p>Motivate what was decided and why it was decided that way,
-based upon problem statement, quality goals and key constraints.
-Refer to details in the following sections.</p>
-</div>
-<div class="paragraph">
-<div class="title">Further Information</div>
-<p>See <a href="https://docs.arc42.org/section-4/">Solution Strategy</a> in the arc42 documentation.</p>
-</div>
-</div>
-</div>
 <div class="sect2">
 <h3 id="_types_of_decisions">4.1. Types of Decisions</h3>
 <div class="sect3">
 <h4 id="_1_organizational_decisions">4.1.1. 1. Organizational Decisions</h4>
-<div class="paragraph">
-<p>These decisions are related to the <strong>work structure</strong> and how the team is organized.</p>
-</div>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Using a Kanban-style project</strong>: The decision to use a visual task management approach, Kanban, to organize work and ensure that all team members know the status of tasks and what remains to be done.</p>
+<p><strong>Adopting a Kanban-style project management</strong>:
+The team employs a Kanban approach to organize and visualize the software development process. Tasks are represented on a Kanban board, facilitating prioritization and fostering team-wide transparency. This methodology enhances focus by limiting work in progress (WIP), promoting continuous delivery and helping the team identify process bottlenecks early.</p>
 </li>
 <li>
-<p><strong>Using GitHub Flow as a workflow</strong>: The decision to adopt a <strong>GitHub Flow</strong>-based workflow, allowing all team members to collaborate easily through <strong>Pull Requests</strong> and ensuring that all code is reviewed before being merged into the main branch.</p>
+<p><strong>Using GitHub Flow as the development workflow</strong>:
+GitHub Flow is adopted to ensure a clear and collaborative development process. It encourages the use of short-lived feature branches and enforces Pull Request-based code reviews. This ensures that every change is peer-reviewed before integration, increasing stability and maintaining consistent code quality.</p>
+</li>
+<li>
+<p><strong>Continuous Integration with GitHub Actions and SonarQube</strong>:
+A CI pipeline is implemented using GitHub Actions to automatically run tests and code quality checks on every push. SonarQube is integrated to analyze code for bugs, vulnerabilities, code smells, and duplications. These tools provide immediate feedback, ensuring issues are addressed before deployment and reinforcing best practices.</p>
 </li>
 </ul>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_2_technical_decisions">4.1.2. 2. Technical Decisions</h4>
-<div class="paragraph">
-<p>These decisions are related to <strong>how the project is built</strong> and the tools used.</p>
-</div>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Using a starter template</strong>: The decision to begin with a basic but functional project, allowing for a quick start with a pre-configured structure that works, avoiding the need to build everything from scratch.</p>
+<p><strong>Starting the project from scratch with custom configuration</strong>:
+While a reference project exists, the development team opted to build the system from the ground up. This decision fosters a deeper understanding of the architecture, eliminates dependencies on legacy code, and enables customization aligned with current needs. The prior implementation serves strictly as a conceptual guide.</p>
 </li>
 <li>
-<p><strong>Starting the project from scratch</strong>: Although a starter template can be used, the decision is to create a new project from scratch. This helps the team become more familiar with the code and project structure. Additionally, the previous project can be used as a reference to solve problems or improve the design without relying on it directly.</p>
+<p><strong>Using MongoDB as the database</strong>:
+MongoDB, a document-oriented NoSQL database, was selected for its flexibility, scalability, and alignment with the application’s data model. Its familiarity within the team and prior successful usage further reinforce this choice.</p>
+</li>
+<li>
+<p><strong>Using Gemini LLM for response generation</strong>:
+After testing several large language models, Gemini was selected due to its superior performance in generating relevant and context-aware responses to user prompts. Its integration facilitates intelligent, adaptive behavior in the application’s core logic.</p>
+</li>
+<li>
+<p><strong>Using JavaScript as the primary programming language</strong>:
+JavaScript is chosen for its ubiquity in web development, extensive ecosystem, and strong support for full-stack development via Node.js. The team’s familiarity with the language ensures faster development cycles and reduces onboarding time.</p>
+</li>
+<li>
+<p><strong>Using Node.js as the backend environment</strong>:
+Node.js is used to build the server-side logic due to its asynchronous event-driven architecture and seamless integration with JavaScript. It is well-suited for handling concurrent requests in real-time applications such as quizzes.</p>
+</li>
+<li>
+<p><strong>Using Material UI as the UI framework</strong>:
+Material UI accelerates front-end development by offering a comprehensive set of customizable, accessible components. It ensures visual consistency while reducing the amount of custom styling and layout logic needed.</p>
+</li>
+<li>
+<p><strong>Using Docker for service deployment</strong>:
+Docker is employed to containerize application components, enabling environment consistency, isolated testing, easier scaling, and streamlined deployment pipelines.</p>
+</li>
+<li>
+<p><strong>Using Azure as the cloud platform</strong>:
+Microsoft Azure is selected for its robust cloud services, seamless DevOps integration, enterprise-level security, and global infrastructure. Azure’s CI/CD support and monitoring tools align well with the project’s operational requirements.</p>
+</li>
+<li>
+<p><strong>Using a Linux-based server environment</strong>:
+Linux is chosen for hosting the application due to its reliability, performance efficiency, and compatibility with modern development and automation tools.</p>
+</li>
+<li>
+<p><strong>Separation of game logic and UI components</strong>:
+To ensure maintainability and testability, core game functionality (e.g., score tracking, validation logic, question selection) is decoupled from presentation components. This separation enforces single responsibility and supports future extensibility.</p>
+</li>
+<li>
+<p><strong>Using <code>setInterval</code> to manage game timers</strong>:
+Timed gameplay requires precise countdown control. The use of <code>setInterval</code> with timestamp drift correction enables consistent and reliable timer behavior, even under varying load conditions.</p>
+</li>
+<li>
+<p><strong>Anonymous play support (no login required)</strong>:
+Users can access and play quizzes without authentication. However, to preserve data integrity, only authenticated users have access to statistics, history, and profile management. This improves accessibility without compromising personalization for logged-in users.</p>
+</li>
+<li>
+<p><strong>User profile editing and password update</strong>:
+Authenticated users are allowed to manage personal details and change their passwords through secure interfaces. Proper validation and feedback mechanisms are integrated to ensure usability and security.</p>
+</li>
+<li>
+<p><strong>Using bcrypt to protect user passwords</strong>:
+All stored passwords are hashed using bcrypt, which provides built-in salting and adaptive hashing to resist brute-force and rainbow table attacks. This aligns with industry best practices for secure authentication.</p>
+</li>
+<li>
+<p><strong>Game modes based on thematic categories</strong>:
+To enhance user engagement, the application supports multiple quiz modes including <strong>Countries</strong>, <strong>Music</strong>, <strong>Cinema</strong>, and <strong>Mixed Mode</strong>. This allows users to tailor their experience based on personal interests.</p>
+</li>
+<li>
+<p><strong>Daily question generation via cron + Wikidata</strong>:
+An automated cron job fetches and generates new quiz questions daily from Wikidata. This ensures the application remains dynamic, up-to-date, and free from manual content entry requirements.</p>
+</li>
+<li>
+<p><strong>Using Swagger for API documentation</strong>:
+Swagger (OpenAPI) is integrated to document all API endpoints interactively. Developers can view, test, and understand the API via a visual interface, which streamlines both internal development and third-party integration efforts.</p>
 </li>
 </ul>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_3_quality_and_maintenance_decisions">4.1.3. 3. Quality and Maintenance Decisions</h4>
-<div class="paragraph">
-<p>These decisions are about <strong>ensuring that the project is high quality</strong> and easy to maintain.</p>
-</div>
+<h4 id="_3_quality_and_maintainability_decisions">4.1.3. 3. Quality and Maintainability Decisions</h4>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Using GitHub Flow and Pull Requests</strong>: Through <strong>Pull Requests</strong>, we ensure that every code change is reviewed by the team before integration, maintaining code quality and minimizing errors in the main branch.</p>
+<p><strong>Using GitHub Flow and Pull Requests for code review</strong>:
+Pull Requests are enforced across all feature and bug-fix branches. Each submission is subject to peer review, ensuring that standards are met, potential defects are caught early, and collaboration remains transparent.</p>
+</li>
+<li>
+<p><strong>Using Jest for unit testing</strong>:
+Jest is used to test application logic at the unit level. It offers fast test execution, easy mocking, and snapshot testing, making it well-suited for JavaScript-based projects.</p>
+</li>
+<li>
+<p><strong>Using jest-cucumber for BDD-style testing</strong>:
+Test scenarios are written in Gherkin syntax using <code>jest-cucumber</code>, improving test readability and enabling non-developers to participate in test definition. This supports behavior-driven development (BDD) and improves communication across technical and business stakeholders.</p>
+</li>
+<li>
+<p><strong>Using pepeter for React component testing</strong>:
+Pepeter is used to create expressive, readable tests for React components. It simplifies interaction simulation and state validation, allowing for deeper and more maintainable component-level testing.</p>
+</li>
+<li>
+<p><strong>Using Cypress for end-to-end testing</strong>:
+Cypress is adopted for testing complete user flows, such as answering questions, submitting results, and navigating through different parts of the application. This ensures high confidence in the stability of the application post-deployment.</p>
+</li>
+<li>
+<p><strong>Using Ruby for documentation deployment</strong>:
+Ruby is selected as the documentation deployment environment based on tooling compatibility. Existing scripts and setup guides are designed for Ruby, minimizing setup overhead and ensuring smooth integration with the documentation pipeline.</p>
+</li>
+<li>
+<p><strong>Modular and testable code structure</strong>:
+The codebase is designed following modular principles, where each component or module fulfills a single, well-defined responsibility. This approach promotes testability, simplifies debugging, and improves long-term maintainability.</p>
 </li>
 </ul>
 </div>
@@ -956,371 +1015,676 @@ Refer to details in the following sections.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-building-block-view">5. Building Block View</h2>
+<h2 id="section-building-block-view">5. 5. Building Block View</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>This view shows the static decomposition of the WIChat system into its main building blocks (components, services) and outlines their responsibilities and primary relationships.</p>
+</div>
+<hr>
 <div class="sect2">
-<h3 id="_whitebox_overall_system">5.1. Whitebox Overall System</h3>
-<div class="sect3">
-<h4 id="_overview_diagram">5.1.1. Overview Diagram</h4>
-<div class="imageblock">
+<h3 id="_5_0_high_level_system_overview_context_recap">5.1. 5.0 High-Level System Overview (Context Recap)</h3>
+<div class="paragraph">
+<p>The following diagram shows the WIChat system as a whole (blackbox), interacting with the primary user and external data/service providers (Wikidata, LLM). This corresponds to the <strong>Context View</strong> (Chapter 3).</p>
+</div>
+<div class="imageblock text-center">
 <div class="content">
-<img src="./images/BuildingBlockViewOverviewDiagram.png" alt="BuildingBlockViewOverviewDiagram">
+<img src="./images/BuildingBlockViewOverviewDiagram.png" alt="High-Level Context Diagram">
 </div>
 </div>
-</div>
-<div class="sect3">
-<h4 id="_motivation">5.1.2. Motivation</h4>
-<div class="paragraph">
-<p>WIChat is a real-time messaging system that allows users to communicate via text, images, and other media. The system&#8217;s architecture is modular, facilitating scalability and integration with different technologies.</p>
-</div>
-</div>
+<hr>
 </div>
 <div class="sect2">
-<h3 id="_contained_building_blocks">5.2. Contained Building Blocks</h3>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 66.6667%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Name</th>
-<th class="tableblock halign-left valign-top">Responsibility</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Frontend</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Web and mobile user interface.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Backend API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Handles authentication, messaging, and business logic.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Database</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Stores users, conversations, and messages.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Wikidata</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Structured data source to enhance user experience.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Language Model for Hints</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Provides intelligent suggestions and autocomplete for messages.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
-<h3 id="_important_interfaces">5.3. Important Interfaces</h3>
+<h3 id="_5_1_whitebox_overall_system_level_1">5.2. 5.1 Whitebox Overall System (Level 1)</h3>
 <div class="paragraph">
-<p>Database Access: Interface between the API and the database.</p>
-</div>
-<div class="paragraph">
-<p>Wikidata API: Accesses structured and relevant data.</p>
-</div>
-<div class="paragraph">
-<p>Language Model: Interface with the AI system for text suggestions.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_system_components">5.4. System Components</h3>
-<div class="sect3">
-<h4 id="_frontend">5.4.1. Frontend</h4>
-<div class="paragraph">
-<p>Purpose / Responsibility</p>
-</div>
-<div class="paragraph">
-<p>Provide an interactive interface for the user.</p>
-</div>
-<div class="paragraph">
-<p>Send and receive real-time messages.</p>
-</div>
-<div class="paragraph">
-<p>Manage sessions and contacts.</p>
-</div>
-<div class="paragraph">
-<p>Interfaces</p>
-</div>
-<div class="paragraph">
-<p>Graphical user interface.</p>
-</div>
-<div class="paragraph">
-<p>Connection to the API for authentication and data retrieval.</p>
-</div>
-<div class="paragraph">
-<p>Use of the language model for message suggestions.</p>
-</div>
+<p>This section describes the top-level decomposition of the WIChat trivia game system into its internal microservices and components.</p>
 </div>
 <div class="sect3">
-<h4 id="_backend_api">5.4.2. Backend API</h4>
+<h4 id="_overview_diagram_level_1">5.2.1. Overview Diagram (Level 1)</h4>
 <div class="paragraph">
-<p>Purpose / Responsibility</p>
+<p>The following diagram shows the main internal building blocks (Level 1) of the WIChat system and their primary interactions.</p>
 </div>
-<div class="paragraph">
-<p>Manage user authentication and authorization.</p>
-</div>
-<div class="paragraph">
-<p>Provide access to message and user data.</p>
-</div>
-<div class="paragraph">
-<p>Integrate with other services (Wikidata, Language Model).</p>
-</div>
-<div class="paragraph">
-<p>Interfaces</p>
-</div>
-<div class="paragraph">
-<p>API for communication with the frontend.</p>
-</div>
-<div class="paragraph">
-<p>Connection to the database for data storage.</p>
-</div>
-<div class="paragraph">
-<p>Access to Wikidata to enrich the user experience.</p>
-</div>
-<div class="paragraph">
-<p>Integration with the language model for message assistance.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_database">5.4.3. Database</h4>
-<div class="paragraph">
-<p>Purpose / Responsibility</p>
-</div>
-<div class="paragraph">
-<p>Store information about users, messages, and conversations.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_wikidata">5.4.4. Wikidata</h4>
-<div class="paragraph">
-<p>Purpose / Responsibility</p>
-</div>
-<div class="paragraph">
-<p>Provide structured data to enhance the user experience in the chat.</p>
-</div>
-<div class="paragraph">
-<p>Interfaces</p>
-</div>
-<div class="paragraph">
-<p>Wikidata API to obtain relevant real-time information.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_language_model_for_hints">5.4.5. Language Model for Hints</h4>
-<div class="paragraph">
-<p>Purpose / Responsibility</p>
-</div>
-<div class="paragraph">
-<p>Offer intelligent suggestions and message autocomplete.</p>
-</div>
-<div class="paragraph">
-<p>Interfaces</p>
-</div>
-<div class="paragraph">
-<p>AI API for text analysis and response generation.</p>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_level_2">5.5. Level 2</h3>
-<div class="imageblock">
+<div class="imageblock text-center">
 <div class="content">
-<img src="./images/05_LEVEL2.png" alt="level 2">
+<img src="./images/05_LEVEL2.png" alt="Level 1 Whitebox Diagram for WIChat System">
+</div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_white_box_gateway_service">5.5.1. White Box Gateway Service</h4>
+<h4 id="_motivation">5.2.2. Motivation</h4>
+<div class="paragraph">
+<p>The WIChat system architecture is decomposed into microservices (Level 1) to achieve:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Separation of Concerns:</strong> Isolating UI (<code>WebApp</code>), API routing/aggregation (<code>Gateway Service</code>), user management (<code>Users Manager</code>), authentication (<code>Auth Service</code>), question logic/generation (<code>Question Service</code>), game history/stats (<code>History Service</code>), Wikidata interaction/caching (<code>Wikidata Service</code>), and AI hints (<code>LLM Service</code>).</p>
+</li>
+<li>
+<p><strong>Independent Scalability:</strong> Each service can be scaled independently based on specific load patterns (e.g., <code>Question Service</code> during gameplay, <code>Auth Service</code> during login peaks).</p>
+</li>
+<li>
+<p><strong>Technological Flexibility:</strong> Allows using potentially different technologies for each service and facilitates independent updates or replacements (e.g., changing the LLM provider).</p>
+</li>
+<li>
+<p><strong>Maintainability &amp; Testability:</strong> Smaller, focused services are easier to manage, test, and deploy.</p>
+</li>
+<li>
+<p><strong>Resilience:</strong> Failure in one non-critical service (e.g., <code>LLM Service</code>) should minimally impact core gameplay.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_level_1_building_blocks_blackboxes">5.2.3. Level 1 Building Blocks (Blackboxes)</h4>
+<div class="paragraph">
+<p>The following building blocks constitute the WIChat system at Level 1.</p>
+</div>
+<div class="sect4">
+<h5 id="_5_1_1_webapp_frontend">5.1.1 <code>WebApp</code> (Frontend)</h5>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Responsibility</strong></dt>
+<dd>
+<p>Provides the interactive web UI for the trivia game. Displays questions, answers, images, score, streak, user profile, statistics. Handles user input (answers, lifelines, login, registration, profile edits). Communicates exclusively with the <code>Gateway Service</code>.</p>
+</dd>
+<dt class="hdlist1"><strong>Interfaces (Consumed)</strong></dt>
+<dd>
+<p>Gateway API (REST/WebSocket).</p>
+</dd>
+</dl>
+</div>
+<hr>
+</div>
+<div class="sect4">
+<h5 id="_5_1_2_gateway_service">5.1.2 <code>Gateway Service</code></h5>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Responsibility</strong></dt>
+<dd>
+<p>Single entry point for the <code>WebApp</code>. Routes API requests to appropriate backend microservices (<code>Auth</code>, <code>Users</code>, <code>Questions</code>, <code>History</code>, <code>LLM</code>, <code>Wikidata</code>). Handles CORS, basic request validation. Exposes aggregated API documentation (Swagger) and observability metrics (Prometheus). Performs health checks on downstream services.</p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Interfaces</strong></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Provided:</strong> Gateway API (REST) towards <code>WebApp</code>, <code>/metrics</code>, <code>/health</code>, <code>/api-doc</code>.</p>
+</li>
+<li>
+<p><strong>Consumed:</strong> Auth Service API, Users Service API, Question Service API, History Service API, LLM Service API, Wikidata Service API.</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+</dd>
+<dt class="hdlist1"><strong>Technology</strong></dt>
+<dd>
+<p>Node.js, Express, Axios</p>
+</dd>
+</dl>
+</div>
+<hr>
+</div>
+<div class="sect4">
+<h5 id="_5_1_3_auth_service">5.1.3 <code>Auth Service</code></h5>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Responsibility</strong></dt>
+<dd>
+<p>Handles user authentication. Validates credentials against data likely stored via <code>Users Service</code>/<code>Database</code>. Issues authentication tokens (e.g., JWT).</p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Interfaces</strong></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Provided:</strong> Internal API (e.g., REST <code>/login</code>) consumed by <code>Gateway Service</code>.</p>
+</li>
+<li>
+<p><strong>Consumed:</strong> Potentially <code>Users Service</code> API or <code>Database</code> Access Interface.</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+</dd>
+<dt class="hdlist1"><strong>Technology</strong></dt>
+<dd>
+<p>Node.js/Express (Assumed)</p>
+</dd>
+</dl>
+</div>
+<hr>
+</div>
+<div class="sect4">
+<h5 id="_5_1_4_users_service">5.1.4 <code>Users Service</code></h5>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Responsibility</strong></dt>
+<dd>
+<p>Manages user data CRUD operations (Create, Read, Update, Delete). Handles profile picture storage/retrieval. Stores/retrieves user data via the <code>Database</code>.</p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Interfaces</strong></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Provided:</strong> Internal API (e.g., REST <code>/adduser</code>, <code>/user/&#8230;&#8203;</code>) consumed by <code>Gateway Service</code>.</p>
+</li>
+<li>
+<p><strong>Consumed:</strong> <code>Database</code> Access Interface.</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+</dd>
+<dt class="hdlist1"><strong>Technology</strong></dt>
+<dd>
+<p>Node.js/Express (Assumed)</p>
+</dd>
+</dl>
+</div>
+<hr>
+</div>
+<div class="sect4">
+<h5 id="_5_1_5_question_service">5.1.5 <code>Question Service</code></h5>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Responsibility</strong></dt>
+<dd>
+<p>Manages storage/retrieval of trivia questions <strong>after</strong> generation by <code>LLM Service</code>. Provides endpoints like <code>/addQuestion</code>, <code>/questions</code>. Interacts with the <code>Database</code>.</p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Interfaces</strong></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Provided:</strong> Internal API (e.g., REST <code>/addQuestion</code>, <code>/questions</code>) consumed by <code>Gateway Service</code>.</p>
+</li>
+<li>
+<p><strong>Consumed:</strong> <code>Database</code> Access Interface.</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+</dd>
+</dl>
+</div>
+<hr>
+</div>
+<div class="sect4">
+<h5 id="_5_1_6_history_service">5.1.6 <code>History Service</code></h5>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Responsibility</strong></dt>
+<dd>
+<p>Persists completed game history per user. Calculates and provides aggregate statistics (<code>/stats</code>). Provides endpoints to retrieve past games (<code>/getBestGames</code>, <code>/getAllGames</code>).</p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Interfaces</strong></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Provided:</strong> Internal API (e.g., REST <code>/addGame</code>, <code>/stats</code>, etc.) consumed by <code>Gateway Service</code>.</p>
+</li>
+<li>
+<p><strong>Consumed:</strong> <code>Database</code> Access Interface (Mongoose).</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+</dd>
+<dt class="hdlist1"><strong>Technology</strong></dt>
+<dd>
+<p>Node.js, Express, Mongoose</p>
+</dd>
+</dl>
+</div>
+<hr>
+</div>
+<div class="sect4">
+<h5 id="_5_1_7_wikidata_service">5.1.7 <code>Wikidata Service</code></h5>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Responsibility</strong></dt>
+<dd>
+<p>Acts as a facade and cache for Wikidata. Fetches raw data and image URLs from external Wikidata SPARQL endpoint. Processes data. Caches entries in its own <code>Database</code> partition. Provides an internal API for retrieving cached data. Handles cache initialization/refresh.</p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Interfaces</strong></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Provided:</strong> Internal API (e.g., REST <code>/api/entries/&#8230;&#8203;</code>) consumed by <code>Gateway Service</code>.</p>
+</li>
+<li>
+<p><strong>Consumed:</strong> Wikidata SPARQL Endpoint (External).</p>
+</li>
+<li>
+<p><strong>Consumed:</strong> <code>Database</code> Access Interface (Mongoose, for cache).</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+</dd>
+<dt class="hdlist1"><strong>Technology</strong></dt>
+<dd>
+<p>Node.js, Express, Mongoose</p>
+</dd>
+</dl>
+</div>
+<hr>
+</div>
+<div class="sect4">
+<h5 id="_5_1_8_llm_service_hint_service">5.1.8 <code>LLM Service</code> (Hint Service)</h5>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Responsibility</strong></dt>
+<dd>
+<p>Orchestrates question generation and provides hints. Fetches base data+imageURLs via <code>Gateway</code> &#8594; <code>Wikidata Service</code>. Uses external LLMs (Gemini) for text generation. Combines text + image. Triggers question storage via <code>Gateway</code> &#8594; <code>Question Service</code>. Generates hints via external LLM.</p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Interfaces</strong></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Provided:</strong> Internal API (e.g., REST <code>/generateQuestions</code>, <code>/getHint</code>) consumed by <code>Gateway Service</code>.</p>
+</li>
+<li>
+<p><strong>Consumed:</strong> <code>Wikidata Service</code> API (via Gateway), External LLM API (Gemini), <code>Gateway Service</code> API (<code>/addQuestion</code>).</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+</dd>
+<dt class="hdlist1"><strong>Technology</strong></dt>
+<dd>
+<p>Node.js, Express, Axios, @google/genai</p>
+</dd>
+</dl>
+</div>
+<hr>
+</div>
+<div class="sect4">
+<h5 id="_5_1_9_database">5.1.9 <code>Database</code></h5>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Responsibility</strong></dt>
+<dd>
+<p>Provides persistent storage for: User data (<code>Users Service</code>), Game history/stats (<code>History Service</code>), Generated questions (<code>Question Service</code>), Cached Wikidata entries (<code>Wikidata Service</code>).</p>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Interfaces</strong></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Provided:</strong> Database connection/query interface (MongoDB driver interface). Consumed by backend services.</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+</dd>
+<dt class="hdlist1"><strong>Technology</strong></dt>
+<dd>
+<p>MongoDB</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_important_interfaces_summary">5.2.4. Important Interfaces (Summary)</h4>
+<div class="paragraph text-center">
+<p><em>Summary of key interfaces between Level 1 components and external systems.</em></p>
+</div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 66.6667%;">
+<col style="width: 14.2857%;">
+<col style="width: 42.8571%;">
+<col style="width: 14.2857%;">
+<col style="width: 28.5715%;">
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-left valign-top">Module</th>
-<th class="tableblock halign-left valign-top">Functionality</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">WebApp</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Provides the user interface and manages user interaction.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Gateway Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Acts as an intermediary between the WebApp and other system services.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Users Manager</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Handles user management, including authentication and profiles.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Question Manager</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Processes and manages user questions.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Wikidata</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Structured data source used to answer questions.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_component_description">5.6. Component Description</h3>
-<div class="sect3">
-<h4 id="_webapp">5.6.1. WebApp</h4>
-<div class="paragraph">
-<p>Purpose / Responsibility:</p>
-</div>
-<div class="paragraph">
-<p>Provide an interactive interface for users.</p>
-</div>
-<div class="paragraph">
-<p>Allow access to system functionalities.</p>
-</div>
-<div class="paragraph">
-<p>Send and receive requests through the Gateway Service.</p>
-</div>
-<div class="paragraph">
-<p>Interfaces:</p>
-</div>
-<div class="paragraph">
-<p>Connection with the Gateway Service to manage users and questions.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_gateway_service">5.6.2. Gateway Service</h4>
-<div class="paragraph">
-<p>Purpose / Responsibility:</p>
-</div>
-<div class="paragraph">
-<p>Centralize communication between the WebApp and other services.</p>
-</div>
-<div class="paragraph">
-<p>Manage request and response routing.</p>
-</div>
-<div class="paragraph">
-<p>Interfaces:</p>
-</div>
-<div class="paragraph">
-<p>Bidirectional communication with WebApp, Users Manager, and Question Manager.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_users_manager">5.6.3. Users Manager</h4>
-<div class="paragraph">
-<p>Purpose / Responsibility:</p>
-</div>
-<div class="paragraph">
-<p>Manage users and their profiles.</p>
-</div>
-<div class="paragraph">
-<p>Administer authentication and access permissions.</p>
-</div>
-<div class="paragraph">
-<p>Interfaces:</p>
-</div>
-<div class="paragraph">
-<p>Connection with Gateway Service for user validation and data retrieval.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_question_manager">5.6.4. Question Manager</h4>
-<div class="paragraph">
-<p>Purpose / Responsibility:</p>
-</div>
-<div class="paragraph">
-<p>Process user questions.</p>
-</div>
-<div class="paragraph">
-<p>Retrieve relevant information from Wikidata.</p>
-</div>
-<div class="paragraph">
-<p>Interfaces:</p>
-</div>
-<div class="paragraph">
-<p>Communication with Gateway Service and Wikidata for information queries.</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_wikidata_2">5.6.5. Wikidata</h4>
-<div class="paragraph">
-<p>Purpose / Responsibility:</p>
-</div>
-<div class="paragraph">
-<p>Provide structured data to enrich responses to user questions.</p>
-</div>
-<div class="paragraph">
-<p>Interfaces:</p>
-</div>
-<div class="paragraph">
-<p>Query API used by the Question Manager.</p>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_level_3">5.7. Level 3</h3>
-<div class="sect3">
-<h4 id="_white_box_message_handling_backend_api">5.7.1. White Box Message Handling (Backend API)</h4>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 66.6667%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Component</th>
+<th class="tableblock halign-center valign-top">Interface Name       </th>
 <th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-center valign-top">Provided By</th>
+<th class="tableblock halign-center valign-top">Consumed By</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Message Storage</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Manages message persistence in the database, ensuring integrity and availability.</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Gateway API (REST)   </p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>API for WebApp (auth, game, hints, user profile, stats, wikidata proxy).</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Gateway Service</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">WebApp</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Auth Service API     </p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal API for login/token validation.</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Auth Service</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Gateway Service</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Users Service API     </p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal API for user CRUD operations.</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Users Service</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Gateway Service, potentially Auth Service</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Question Service API </p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal API for storing/retrieving generated questions.</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Question Service</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Gateway Service (and LLM Service via Gateway)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">History Service API   </p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal API for storing game results and retrieving stats/history.</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">History Service</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Gateway Service</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Wikidata Service API </p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal API for retrieving cached/processed Wikidata entries.</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Wikidata Service</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Gateway Service (and LLM Service via Gateway)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">LLM Service API       </p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal API for generating questions and hints.</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">LLM Service</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Gateway Service</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Database Access       </p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal interface (MongoDB Driver) to the shared database.</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Database</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Auth, Users, Questions, History, Wikidata Services</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Wikidata SPARQL       </p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>External endpoint for querying raw Wikidata.</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Wikidata (External)</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Wikidata Service (internally)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-center valign-top"><p class="tableblock">External LLM API     </p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>External API for AI text generation (hints, questions).</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">LLM Provider (External)</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">LLM Service</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="sect3">
-<h4 id="_white_box_wikidata_integration">5.7.2. White Box Wikidata Integration</h4>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 33.3333%;">
-<col style="width: 66.6667%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Component</th>
-<th class="tableblock halign-left valign-top">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data Retrieval</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Queries relevant data from Wikidata in real time to enhance user experience.</p></td>
-</tr>
-</tbody>
-</table>
-<div style="page-break-after: always;"></div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-runtime-view">6. Runtime View</h2>
+<h2 id="_5_2_level_2_refinements">6. 5.2 Level 2 (Refinements)</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>This section details the internal structures or key logic flows of selected Level 1 building blocks that warrant further explanation due to their complexity or importance.</p>
+</div>
+<div class="sect2">
+<h3 id="_5_2_1_white_box_llm_service_hint_service">6.1. 5.2.1 White Box LLM Service (Hint Service)</h3>
+<div class="sect3">
+<h4 id="_motivation_llm_service_focus">6.1.1. Motivation (LLM Service Focus)</h4>
+<div class="paragraph">
+<p>This service encapsulates complex logic for interacting with external AI (LLM) and data providers (Wikidata Service via Gateway). It coordinates multiple steps to generate trivia questions and provide hints, acting as a central intelligence hub for game content generation.</p>
+</div>
+<div class="paragraph">
+<p>Understanding its flow is key to understanding how game content is created and assisted.</p>
+</div>
+<hr>
+</div>
+<div class="sect3">
+<h4 id="_internal_logic_flow_responsibilities">6.1.2. Internal Logic Flow / Responsibilities</h4>
+<div class="sect4">
+<h5 id="_question_generation_orchestration_generatequestions_endpoint">• Question Generation Orchestration (<code>/generateQuestions</code> endpoint)</h5>
+<div class="imageblock text-center">
+<div class="content">
+<img src="./images/BuildingBlockViewGenerateQuestions.png" alt="Generation Questions flow diagram">
+</div>
+</div>
 <div class="ulist">
 <ul>
 <li>
-<p>At this stage, we have not yet started development, so the runtime scenarios are still undefined. Once the implementation progresses, we will document key runtime interactions, including authentication flows, data storage, and relevant communication between system components.</p>
+<p>Receives category and count request from Gateway Service.</p>
 </li>
 <li>
-<p>For now, the following section will be updated as we gain a clearer understanding of how different components interact in real-time.</p>
+<p>Requests base data entries (including <code>imageUrl</code>) from Wikidata Service (via Gateway&#8217;s <code>/api/entries/&#8230;&#8203;</code> proxy).</p>
+</li>
+<li>
+<p>For each entry:</p>
+</li>
+<li>
+<p>Formats textual information (<code>formatEntryInfo</code>).</p>
+</li>
+<li>
+<p>Constructs a detailed prompt for the external LLM (Gemini/Empathy) to create a question and four multiple-choice answers (in JSON).</p>
+</li>
+<li>
+<p>Calls external LLM API via <code>sendQuestionToLLM</code>.</p>
+</li>
+<li>
+<p>Parses and validates the LLM&#8217;s JSON response (<code>parseJsonResponse</code>), with retries if needed.</p>
+</li>
+<li>
+<p>Combines the LLM-generated text with the <code>imageUrl</code>.</p>
+</li>
+<li>
+<p>Calls Gateway&#8217;s <code>/addQuestion</code> endpoint (routes to Question Service) to persist the question + image.</p>
+</li>
+<li>
+<p>Aggregates generated questions and returns the list to Gateway Service.</p>
 </li>
 </ul>
+</div>
+<hr>
+</div>
+<div class="sect4">
+<h5 id="_hint_generation_gethint_endpoint">• Hint Generation (<code>/getHint</code> endpoint)</h5>
+<div class="imageblock text-center">
+<div class="content">
+<img src="./images/BuildingBlockViewHintRequest.png" alt="get hint flow diagram">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Receives current question text and answer options from Gateway Service.</p>
+</li>
+<li>
+<p>Constructs a prompt asking the LLM for a hint without revealing the correct answer.</p>
+</li>
+<li>
+<p>Calls external LLM API via <code>sendQuestionToLLM</code>.</p>
+</li>
+<li>
+<p>Parses and returns a single hint sentence.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+<div class="sect4">
+<h5 id="_conversational_hint_generation_gethintwithquery_endpoint">• Conversational Hint Generation (<code>/getHintWithQuery</code> endpoint)</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>Similar to <code>/getHint</code> but incorporates a user-specific query.</p>
+</li>
+<li>
+<p>Filters requests to prevent direct answer reveals.</p>
+</li>
+<li>
+<p>Constructs a prompt asking the LLM to answer the user&#8217;s query related to the game question, <strong>without giving away the solution</strong>.</p>
+</li>
+<li>
+<p>Calls external LLM API, parses response, and returns the conversational hint.</p>
+</li>
+</ul>
+</div>
+<hr>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_5_3_level_3_refinements_concepts">7. 5.3 Level 3 (Refinements / Concepts)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This level describes cross-cutting concepts or further details.</p>
+</div>
+<hr>
+<div class="sect2">
+<h3 id="_concept_question_generation_and_storage_flow">7.1. Concept: Question Generation and Storage Flow</h3>
+<div class="paragraph">
+<p><strong>Involved Components:</strong>
+Gateway Service, LLM Service, Wikidata Service, Question Service, Database, External Wikidata, External LLM.</p>
+</div>
+<div class="paragraph">
+<p><strong>Flow:</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>WebApp requests new questions for a category via Gateway.</p>
+</li>
+<li>
+<p>Gateway routes the request to LLM Service (<code>/generateQuestions</code>).</p>
+</li>
+<li>
+<p>LLM Service requests base data + image URL from Wikidata Service (via Gateway <code>/api/entries/&#8230;&#8203;</code>).</p>
+</li>
+<li>
+<p>Wikidata Service returns cached/processed data (originating from external Wikidata SPARQL).</p>
+</li>
+<li>
+<p>LLM Service formats text and prompts external LLM.</p>
+</li>
+<li>
+<p>LLM Service receives, parses, and validates the LLM JSON response.</p>
+</li>
+<li>
+<p>LLM Service combines LLM text with original image URL.</p>
+</li>
+<li>
+<p>LLM Service calls Gateway’s <code>/addQuestion</code> to store the complete question.</p>
+</li>
+<li>
+<p>Gateway routes <code>/addQuestion</code> to Question Service, which saves it in the Database.</p>
+</li>
+<li>
+<p>LLM Service returns the generated question(s) to the original caller (likely WebApp).</p>
+</li>
+</ol>
+</div>
+<hr>
+</div>
+<div class="sect2">
+<h3 id="_concept_statistics_calculation">7.2. Concept: Statistics Calculation</h3>
+<div class="paragraph">
+<p><strong>Responsible Component:</strong>
+<code>History Service</code></p>
+</div>
+<div class="paragraph">
+<p><strong>Description:</strong>
+When <code>/stats</code> is called:
+- Retrieves <strong>all</strong> game history records for the user from the Database.
+- Calculates aggregate statistics (total points, games played, win/loss ratio, averages, most played category) in memory.
+- Returns the result including the top 3 games played.</p>
+</div>
+<div class="quoteblock">
+<blockquote>
+<div class="paragraph">
+<p>⚠️ Performance might degrade for users with very large game histories.</p>
+</div>
+</blockquote>
+</div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-runtime-view">8. Runtime View</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Runtime View illustrates how the different components of the system interact at runtime to fulfill specific use cases. It focuses on the dynamic behavior of the system, describing the communication between the frontend, gateway, and backend microservices. Each diagram represents a specific user action or system event, highlighting the sequence of requests, validations, and data flows involved.</p>
+</div>
+<div class="paragraph">
+<p>These diagrams help clarify how responsibilities are distributed across services and how data moves through the architecture during key operations such as user registration, login, password changes, and question generation.</p>
+</div>
+<div class="sect3">
+<h4 id="_user_registration">8.1. User Registration</h4>
+<div class="imageblock">
+<div class="content">
+<img src="./images/sequence-user-registration.png" alt="User Registration Diagram">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_user_login">8.2. User Login</h4>
+<div class="imageblock">
+<div class="content">
+<img src="./images/sequence-user-login.png" alt="User Login Diagram">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_question_generation">8.3. Question Generation</h4>
+<div class="imageblock">
+<div class="content">
+<img src="./images/sequence-question-generation.png" alt="Diagrama de generación de preguntas">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_answering_a_question">8.4. Answering a Question</h4>
+<div class="imageblock">
+<div class="content">
+<img src="./images/sequence-answering-question.png" alt="Diagrama de respuesta a una pregunta">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_ask_for_a_hint_to_the_ai_chat">8.5. Ask for a hint to the AI Chat</h4>
+<div class="imageblock">
+<div class="content">
+<img src="./images/sequence-ask-hint.png" alt="Diagrama de preguna a la IA">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_user_password_change">8.6. User Password Change</h4>
+<div class="imageblock">
+<div class="content">
+<img src="./images/sequence-password-change.png" alt="Diagrama de cambio de contraseña">
+</div>
 </div>
 <div class="sidebarblock arc42help">
 <div class="content">
@@ -1421,14 +1785,15 @@ building block instances depicted in this diagram.&gt;</em></p>
 <div style="page-break-after: always;"></div>
 </div>
 </div>
+</div>
 <div class="sect1">
-<h2 id="section-deployment-view">7. Deployment View</h2>
+<h2 id="section-deployment-view">9. Deployment View</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_infrastructure_level_1">7.1. Infrastructure Level 1</h3>
+<h3 id="_infrastructure_level_1">9.1. Infrastructure Level 1</h3>
 <div class="imageblock">
 <div class="content">
-<img src="./images/Deployment%20View.png" alt="Deployment View" width="719" height="865">
+<img src="./images/Deployment%20View.png" alt="Deployment View" width="1744" height="671">
 </div>
 </div>
 <div class="paragraph">
@@ -1463,7 +1828,7 @@ building block instances depicted in this diagram.&gt;</em></p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-concepts">8. Cross-cutting Concepts</h2>
+<h2 id="section-concepts">10. Cross-cutting Concepts</h2>
 <div class="sectionbody">
 <div class="sidebarblock arc42help">
 <div class="content">
@@ -1565,7 +1930,7 @@ on this list.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_user_experience_ux">8.1. User Experience (UX)</h3>
+<h3 id="_user_experience_ux">10.1. User Experience (UX)</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1602,7 +1967,7 @@ on this list.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_security_protection">8.2. Security &amp; Protection</h3>
+<h3 id="_security_protection">10.2. Security &amp; Protection</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1612,7 +1977,7 @@ on this list.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_under_the_hood">8.3. Under-the-Hood</h3>
+<h3 id="_under_the_hood">10.3. Under-the-Hood</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1628,7 +1993,7 @@ on this list.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_development">8.4. Development</h3>
+<h3 id="_development">10.4. Development</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1641,7 +2006,7 @@ on this list.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_architectural_style">8.5. Architectural Style</h3>
+<h3 id="_architectural_style">10.5. Architectural Style</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1671,7 +2036,7 @@ on this list.</p>
 </table>
 </div>
 <div class="sect2">
-<h3 id="_concept_map">8.6. Concept Map</h3>
+<h3 id="_concept_map">10.6. Concept Map</h3>
 <div class="imageblock">
 <div class="content">
 <img src="./images/Cross-cutting_Concepts.jpg" alt="Cross cutting Concepts">
@@ -1682,46 +2047,44 @@ on this list.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-design-decisions">9. Architecture decisions</h2>
+<h2 id="section-design-decisions">11. Architecture Decisions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To document the architectural decisions of the project, we have created individual pages in the GitHub Wiki. This approach allows us to provide a detailed explanation of each decision without cluttering the main documentation. Each page includes the rationale behind the decision, as well as its advantages and disadvantages.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_technology_decisions">12. Technology Decisions</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
 <li>
-<p>These decisions are not final and may change as the project evolves. They represent our current approach based on the available information and team expertise, but adjustments might be necessary as we gain more experience and face new challenges.</p>
+<p><a href="https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-Javascript">JavaScript</a></p>
+</li>
+<li>
+<p><a href="https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-Node.js">Node.js</a></p>
+</li>
+<li>
+<p><a href="https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-React">React</a></p>
+</li>
+<li>
+<p><a href="https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-MongoDB">MongoDB</a></p>
+</li>
+<li>
+<p><a href="https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-Docker">Docker</a></p>
+</li>
+<li>
+<p><a href="https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-Grafana-and-Prometheus">Grafana and Prometheus</a></p>
+</li>
+<li>
+<p><a href="https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-Gemini">Gemini</a></p>
 </li>
 </ul>
 </div>
-<table class="tableblock frame-all grid-all stretch">
-<colgroup>
-<col style="width: 16.6666%;">
-<col style="width: 33.3333%;">
-<col style="width: 50.0001%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Decision</th>
-<th class="tableblock halign-left valign-top">Reasons</th>
-<th class="tableblock halign-left valign-top">Disagvantanges</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">JavaScript</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">We have decided to develop the application using JavaScript because, in addition to having some prior knowledge, working with the provided template encourages us to do so, avoiding unnecessary complexity in the initial development phase.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">It is a complex language that can cause us problems while other simpler languages could make our work easier.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">React.js</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">It is the most popular JavaScript framework, with extensive documentation available.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">None of us in the team have worked with it before, so we will all need to learn how to use it.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">MongoDB</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">As a non-relational database, it offers ease of use. Additionally, it is widely adopted by major telecommunications companies.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Non-relational databases are the ones with which we have the least experience.</p></td>
-</tr>
-</tbody>
-</table>
+<div class="paragraph">
+<p>Each decision was made based on the project requirements, the team’s prior experience, and the technologies provided in the base template.</p>
+</div>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
@@ -1770,7 +2133,7 @@ There you will find links and examples about ADR.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-quality-scenarios">10. Quality Requirements</h2>
+<h2 id="section-quality-scenarios">13. Quality Requirements</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The <strong>WIChat</strong> system prioritizes five critical quality attributes to ensure success:</p>
@@ -1782,7 +2145,7 @@ There you will find links and examples about ADR.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Goal: An intuitive interface that allows users to play and access hints easily.</p>
+<p>Goal: An intuitive interface that allows users to play, access hints, view/edit their profile, and inspect their game statistics with minimal friction.</p>
 </li>
 </ul>
 </div>
@@ -1792,7 +2155,7 @@ There you will find links and examples about ADR.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Goal: Modular and well-documented code to facilitate updates.</p>
+<p>Goal: Modular, well-documented codebase (separation of concerns, clear folder structure, descriptive comments) to facilitate onboarding and future feature additions (e.g., new quiz categories).</p>
 </li>
 </ul>
 </div>
@@ -1802,13 +2165,16 @@ There you will find links and examples about ADR.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Goal: Low latency in critical operations:</p>
+<p>Goal: Low latency in all interactive operations:</p>
 </li>
 <li>
-<p>Question generation.</p>
+<p>Quiz question generation (≤ 200 ms per request under normal load).</p>
 </li>
 <li>
-<p>LLM response.</p>
+<p>LLM prompt/response turnaround (≤ 500 ms).</p>
+</li>
+<li>
+<p>Profile and statistics retrieval (≤ 150 ms).</p>
 </li>
 </ul>
 </div>
@@ -1818,7 +2184,19 @@ There you will find links and examples about ADR.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Goal: Data protection and resistance to attacks.</p>
+<p>Goal: Robust protection of user credentials and session data, and resistance to common web attacks:</p>
+</li>
+<li>
+<p><strong>Password hashing</strong>: All passwords are salted and hashed with bcrypt before storage.</p>
+</li>
+<li>
+<p><strong>Session tokens</strong>: JWTs signed with strong secret and short TTL (1 h), transmitted via HTTPS; no use of opaque session IDs in URLs.</p>
+</li>
+<li>
+<p><strong>No token reuse</strong>: Tokens are checked on every request; unable to override identity by simply including a different token.</p>
+</li>
+<li>
+<p><strong>Input validation</strong>: Every input field (e.g., login credentials) is validated</p>
 </li>
 </ul>
 </div>
@@ -1828,13 +2206,19 @@ There you will find links and examples about ADR.</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Goal: Reliably meeting key business requirements:</p>
+<p>Goal: Reliably satisfy core business workflows:</p>
 </li>
 <li>
-<p>Automatic question/answer generation from Wikidata.</p>
+<p>Automatic question/answer generation from Wikidata entries (with image support).</p>
 </li>
 <li>
-<p>Conversational hints with hallucination mitigation (RAG).</p>
+<p>Conversational hint service with RAG-based hallucination mitigation.</p>
+</li>
+<li>
+<p>Accurate user statistics tracking and retrieval.</p>
+</li>
+<li>
+<p>User profile editing (username, password, avatar) with immediate effect.</p>
 </li>
 </ul>
 </div>
@@ -1842,10 +2226,10 @@ There you will find links and examples about ADR.</p>
 </ol>
 </div>
 <div class="paragraph">
-<p>These requirements guide technical decisions and ensure the system meets both RTVE&#8217;s expectations and the end-user experience.</p>
+<p>These quality requirements guide every architectural and implementation decision, ensuring WIChat meets stakeholder expectations and delivers a seamless, secure user experience.</p>
 </div>
 <div class="sect2">
-<h3 id="_quality_tree">10.1. Quality Tree</h3>
+<h3 id="_quality_tree">13.1. Quality Tree</h3>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 16.6666%;">
@@ -1862,34 +2246,34 @@ There you will find links and examples about ADR.</p>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Usability</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Intuitive interface for gameplay and hint access</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Intuitive UI for gameplay, hints, stats viewing, and profile editing</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#SC-4">[SC-4]</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Maintainability</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Modular and well-documented code for updates</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Modular, documented code; clear separation of services and helpers</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#SC-5">[SC-5]</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Performance</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Low latency in question generation and LLM responses</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Low-latency in question generation, LLM calls, and user data access</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#SC-2">[SC-2]</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Security</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Data protection and resistance to attacks</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bcrypt-hashed passwords, JWT auth, input validation</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#SC-3">[SC-3]</a></p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Functionality</strong></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Reliable question/answer generation with hallucination mitigation (RAG)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">End-to-end quiz flows, hints with RAG, user stats and profile management</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#SC-1">[SC-1]</a></p></td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="sect2">
-<h3 id="_quality_scenarios">10.2. Quality Scenarios</h3>
+<h3 id="_quality_scenarios">13.2. Quality Scenarios</h3>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 11.1111%;">
@@ -1901,7 +2285,7 @@ There you will find links and examples about ADR.</p>
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">Scenario</th>
-<th class="tableblock halign-left valign-top">Stimulus/Source</th>
+<th class="tableblock halign-left valign-top">Stimulus / Source</th>
 <th class="tableblock halign-left valign-top">Environment</th>
 <th class="tableblock halign-left valign-top">Artifact</th>
 <th class="tableblock halign-left valign-top">Expected Response</th>
@@ -1909,39 +2293,39 @@ There you will find links and examples about ADR.</p>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">SC-1: Accurate question generation</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">System needs a new question</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="SC-1"></a> SC-1: Accurate question generation</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">System requests N new quiz questions</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Normal load</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Wikidata Service</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Question generated with verified data (no hallucinations)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Wikidata Service &amp; LLM</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">All questions match real data; no hallucinations</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">SC-2: Performance under load</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">500 users start a game simultaneously</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="SC-2"></a> SC-2: Performance under concurrent load</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">20 users simultaneously start quizzes</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Peak demand</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Question API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Low generation latency</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Quiz API</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Average response ≤ 200 ms</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">SC-3: User data protection</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Unauthorized attempt to access sensitive data</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Brute force attack</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Database</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Encryption of sensitive data</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="SC-3"></a> SC-3: Secure credential handling</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Malicious login attempts (brute-force)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Internet</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Auth Service + Database</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Passwords hashed with bcrypt; input validated; JWT sessions managed securely</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">SC-4: Intuitive hint access</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">New user tries to get a hint</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="SC-4"></a> SC-4: Intuitive user interactions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">New user navigates to hints, stats, profile</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">First use</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">User interface</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Hint accessible</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Frontend UI</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hints, stats, profile pages load in ≤ 150 ms; clear labels &amp; error feedback</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">SC-5: Maintainability of topics</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Developer adds "European History" topic</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Development environment</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a id="SC-5"></a> SC-5: Rapid maintainability</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Developer adds “Art History” category</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Dev environment</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Codebase</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Topic integrated quickly</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Module and tests added in ≤ 2 hours</p></td>
 </tr>
 </tbody>
 </table>
@@ -1950,10 +2334,10 @@ There you will find links and examples about ADR.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-risks-and-technical-debt">11. Risks and Technical Debt</h2>
+<h2 id="section-risks-and-technical-debt">14. Risks and Technical Debt</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_technical_risks">11.1. Technical Risks</h3>
+<h3 id="_technical_risks">14.1. Technical Risks</h3>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -2176,19 +2560,87 @@ There you will find links and examples about ADR.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_technical_debt">11.2. Technical Debt</h3>
-<div class="sect3">
-<h4 id="_there_is_no_technical_debt">11.2.1. There is no technical debt</h4>
-<div class="paragraph">
-<p>Currently, there is no significant technical debt in the project. However, we will monitor the codebase to ensure that technical debt does not accumulate over time.</p>
+<h3 id="_technical_debt">14.2. Technical Debt</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Tasks organization</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Poor organization of the tasks to be carried out. We started by selecting a few key points to work on, but as we developed them and due to the relationships between them, we ended up covering more than what was initially selected. As a result, our current application has a significant amount of development across all parts, but none of them are fully complete or entirely functional.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>No Tests created</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Functionality has been developed, but no testing has been done. This means our code has a coverage percentage below the required level, and it is not entirely clear whether everything implemented works correctly. Tests must be carried out as soon as possible, and proper planning is necessary since they take time and should not affect development.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Tests created with low coverage</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Initially, tests were created with a low coverage percentage. While some progress has been made in increasing the test coverage, it is still under 80%. Efforts need to continue to ensure comprehensive test coverage across the application.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Using Empathy, but switching to Gemini</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>We initially used Empathy for LLM-based responses. However, the model frequently failed, causing delays and extra work. Over time, this debt accumulated, and we eventually replaced it with Gemini. This decision helped stabilize the application&#8217;s performance but caused some disruptions earlier in development.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Direct service calls without using the Gateway</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>At the start, services were implemented and called directly without using a Gateway. This decision led to technical debt, as we had to invest significant time later in the development process to refactor and introduce the Gateway, which is necessary for scalability and proper separation of concerns.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Insufficient documentation updates</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>The documentation was not sufficiently updated during development, leading to discrepancies between the actual implementation and the documentation. As a result, certain parts of the project were not properly reflected, making it difficult for team members and future contributors to follow the project flow.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Initial game images generated with AI causing delays</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>At first, we used AI to generate images for the game based on the questions. However, this approach led to increased wait times, and the quality of the images was not optimal. Subsequently, time was spent switching to images obtained from Wikidata, which was a more efficient solution.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
 </div>
 <div style="page-break-after: always;"></div>
 </div>
 </div>
 </div>
-</div>
 <div class="sect1">
-<h2 id="section-glossary">12. Glossary</h2>
+<h2 id="section-glossary">15. Glossary</h2>
 <div class="sectionbody">
 <div class="sidebarblock arc42help">
 <div class="content">
@@ -2270,7 +2722,7 @@ There you will find links and examples about ADR.</p>
 <div id="footer">
 <div id="footer-text">
 Version 8.2 EN<br>
-Last updated 2025-02-11 16:13:52 +0100
+Last updated 2025-04-25 11:52:04 +0200
 </div>
 </div>
 </body>
