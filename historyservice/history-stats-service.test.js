@@ -5,28 +5,26 @@ const cors = require('cors');
 require('dotenv').config();
 
 // Mock del modelo UserGame
-jest.mock('../llmservice/models/history-model', () => {
+jest.mock('./models/history-model', () => {
   const mockModel = function (data) {
     return {
       ...data,
-      save: jest.fn().mockResolvedValue(data), // save sigue simulando el éxito
+      save: jest.fn().mockResolvedValue(data),
     };
   };
 
   // Mock de los métodos estáticos
   mockModel.find = jest.fn();
-  mockModel.create = jest.fn(); // Aquí dejamos el mock vacío, será sobrescrito en cada test
+  mockModel.create = jest.fn();
+  mockModel.updateMany = jest.fn();
 
   return () => mockModel;
 });
 
-// Mock de la conexión a la base de datos
-jest.mock('../llmservice/config/database', () => jest.fn());
-
-const UserGame = require('../users/questionsService/models/history-model')(mongoose);
+const UserGame = require('./models/history-model')(mongoose);
 
 // Importar el app exportado del servicio
-const app = require('./history-stats-service'); // Ajusta la ruta al archivo de tu servicio
+const app = require('./history-stats-service');
 
 // Datos de prueba
 const mockGames = [
@@ -97,7 +95,6 @@ const invalidGame = {
 
 // Configuración de la aplicación Express
 beforeAll(async () => {
-  // Configurar middleware (por si el servicio no los configura en las pruebas)
   app.use(express.json());
   app.use(cors({
     origin: 'http://localhost:3000',
@@ -234,6 +231,9 @@ describe('Servicio de Historial', () => {
       expect(response.body).toHaveProperty('gamesPlayed', 0);
       expect(response.body).toHaveProperty('totalPoints', 0);
       expect(response.body).toHaveProperty('mostPlayedCategory', 'Sin categoría');
+      expect(response.body).toHaveProperty('wins', 0);
+      expect(response.body).toHaveProperty('losses', 0);
+      expect(response.body).toHaveProperty('averageGameTime', 0);
     });
 
     it('Debe devolver 500 en caso de error interno', async () => {
@@ -246,11 +246,27 @@ describe('Servicio de Historial', () => {
       expect(response.status).toBe(500);
       expect(response.body).toHaveProperty('message', 'Error fetching stats');
     });
+
+    // Nuevo test para cubrir línea 203 (if (!games || games.length === 0))
+    it('Debe devolver estadísticas predeterminadas si games es null', async () => {
+      UserGame.find.mockResolvedValue(null);
+
+      const response = await request(app)
+        .get('/stats')
+        .set('username', 'testuser');
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('gamesPlayed', 0);
+      expect(response.body).toHaveProperty('totalPoints', 0);
+      expect(response.body).toHaveProperty('mostPlayedCategory', 'Sin categoría');
+      expect(response.body).toHaveProperty('wins', 0);
+      expect(response.body).toHaveProperty('losses', 0);
+      expect(response.body).toHaveProperty('averageGameTime', 0);
+    });
   });
 
   describe('POST /addGame', () => {
     it('Debe agregar una nueva partida correctamente', async () => {
-      // Simulamos que el método create retorna la partida
       UserGame.create.mockResolvedValue({
         ...validGame,
         recordedAt: new Date(),
@@ -285,6 +301,112 @@ describe('Servicio de Historial', () => {
       expect(response.body).toHaveProperty('message', 'Validation failed');
       expect(response.body.errors).toContain('Score cannot be negative');
     });
-      
+
+    // Nuevo test para cubrir líneas 254-255 (validación de difficulty)
+    it('Debe devolver 400 si difficulty no es válido', async () => {
+      const invalidDifficultyGame = {
+        ...validGame,
+        difficulty: undefined,
+      };
+
+      const response = await request(app)
+        .post('/addGame')
+        .send(invalidDifficultyGame);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('message', 'Validation failed');
+      expect(response.body.errors).toContain('Not a valid difficulty');
+    });
+  });
+
+  describe('PUT /update-username', () => {
+    it('Debe actualizar el nombre de usuario correctamente', async () => {
+      UserGame.updateMany.mockResolvedValue({ modifiedCount: 2 });
+
+      const response = await request(app)
+        .put('/update-username')
+        .send({ actualUserName: 'testuser', newUsername: 'newuser' });
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('message', 'Username updated in user games successfully');
+      expect(UserGame.updateMany).toHaveBeenCalledWith(
+        { username: 'testuser' },
+        { $set: { username: 'newuser' } }
+      );
+    });
+
+    it('Debe devolver 400 si falta actualUserName', async () => {
+      const response = await request(app)
+        .put('/update-username')
+        .send({ newUsername: 'newuser' });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('error', 'Both actualUserName and newUsername are required');
+    });
+
+    it('Debe devolver 400 si falta newUsername', async () => {
+      const response = await request(app)
+        .put('/update-username')
+        .send({ actualUserName: 'testuser' });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('error', 'Both actualUserName and newUsername are required');
+    });
+
+    it('Debe devolver 400 si ambos campos están vacíos', async () => {
+      const response = await request(app)
+        .put('/update-username')
+        .send({});
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('error', 'Both actualUserName and newUsername are required');
+    });
+
+    it('Debe devolver 500 en caso de error interno', async () => {
+      UserGame.updateMany.mockRejectedValue(new Error('Error en la base de datos'));
+
+      const response = await request(app)
+        .put('/update-username')
+        .send({ actualUserName: 'testuser', newUsername: 'newuser' });
+
+      expect(response.status).toBe(500);
+      expect(response.body).toHaveProperty('error', 'Internal server error');
+    });
+
+    // Nuevo test para cubrir línea 292 (empty string edge case)
+    it('Debe devolver 400 si actualUserName es una cadena vacía', async () => {
+      const response = await request(app)
+        .put('/update-username')
+        .send({ actualUserName: '', newUsername: 'newuser' });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('error', 'Both actualUserName and newUsername are required');
+    });
+
+    // Nuevo test para cubrir línea 292 (empty string edge case)
+    it('Debe devolver 400 si newUsername es una cadena vacía', async () => {
+      const response = await request(app)
+        .put('/update-username')
+        .send({ actualUserName: 'testuser', newUsername: '' });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty('error', 'Both actualUserName and newUsername are required');
+    });
+
+    // Nuevo test para cubrir caso cuando no se modifican documentos
+    it('Debe devolver 200 incluso si no se modifican documentos', async () => {
+      UserGame.updateMany.mockResolvedValue({ modifiedCount: 0 });
+
+      const response = await request(app)
+        .put('/update-username')
+        .send({ actualUserName: 'testuser', newUsername: 'newuser' });
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('message', 'Username updated in user games successfully');
+      expect(UserGame.updateMany).toHaveBeenCalledWith(
+        { username: 'testuser' },
+        { $set: { username: 'newuser' } }
+      );
+    });
   });
 });

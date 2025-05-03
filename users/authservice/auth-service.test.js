@@ -96,7 +96,6 @@ describe('Auth Service', () => {
     expect(response.body).toHaveProperty('error');
   });
 
-  // Optional: simulate internal server error
   it('Should return 500 if an internal error occurs', async () => {
     const originalFindOne = User.findOne;
     User.findOne = jest.fn().mockRejectedValue(new Error('Database error'));

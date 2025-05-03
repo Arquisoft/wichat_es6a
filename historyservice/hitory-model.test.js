@@ -10,7 +10,7 @@ beforeAll(async () => {
   await mongoose.connect(uri);
 
   // IMPORTA EL MODELO PASANDO mongoose
-  History = require('../users/questionsService/models/history-model')(mongoose);
+  History = require('./models/history-model')(mongoose);
 });
 
 afterAll(async () => {
@@ -146,8 +146,8 @@ test('Falla al guardar si falta un campo requerido (gameId)', async () => {
 });
 
 test('El modelo no se compila de nuevo si ya existe un modelo con ese nombre', () => {
-  const historyModel1 = require('../users/questionsService/models/history-model')(mongoose);
-  const historyModel2 = require('../users/questionsService/models/history-model')(mongoose);
+  const historyModel1 = require('./models/history-model')(mongoose);
+  const historyModel2 = require('./models/history-model')(mongoose);
 
   expect(historyModel1).toBe(historyModel2);  // Ambos modelos deben ser el mismo
 });

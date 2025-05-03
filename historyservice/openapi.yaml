@@ -415,3 +415,59 @@ paths:
                     type: string
                     description: Detailed error information.
                     example: Database connection failed
+  /update-username:
+    put:
+      summary: Update username in game history records.
+      operationId: updateUsernameInHistory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                actualUserName:
+                  type: string
+                  description: Current username to be updated.
+                  example: olduser
+                newUsername:
+                  type: string
+                  description: New username to replace the current one.
+                  example: newuser
+              required:
+                - actualUserName
+                - newUsername
+      responses:
+        "200":
+          description: Username updated successfully in game history.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+                    example: Username updated in user games successfully
+        "400":
+          description: Missing required fields.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: Both actualUserName and newUsername are required
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message.
+                    example: Internal server error
