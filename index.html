@@ -478,59 +478,50 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_high_level_system_overview_context_recap">5.1. High-Level System Overview (Context Recap)</a></li>
 <li><a href="#_whitebox_overall_system_level_1">5.2. Whitebox Overall System (Level 1)</a></li>
 <li><a href="#_important_interfaces_summary">5.3. Important Interfaces (Summary)</a></li>
+<li><a href="#level2-refinements">5.4. Level 2 (Refinements)</a></li>
+<li><a href="#level3-concepts">5.5. Level 3 (Refinements / Concepts)</a></li>
 </ul>
 </li>
-<li><a href="#level2-refinements">6. Level 2 (Refinements)</a>
-<ul class="sectlevel2">
-<li><a href="#_white_box_llm_service_hint_service">6.1. White Box LLM Service (Hint Service)</a></li>
-</ul>
-</li>
-<li><a href="#level3-concepts">7. Level 3 (Refinements / Concepts)</a>
-<ul class="sectlevel2">
-<li><a href="#_concept_question_generation_and_storage_flow">7.1. Concept: Question Generation and Storage Flow</a></li>
-<li><a href="#_concept_statistics_calculation">7.2. Concept: Statistics Calculation</a></li>
-</ul>
-</li>
-<li><a href="#section-runtime-view">8. Runtime View</a>
+<li><a href="#section-runtime-view">6. Runtime View</a>
 <ul class="sectlevel3">
-<li><a href="#_user_registration">8.1. User Registration</a></li>
-<li><a href="#_user_login">8.2. User Login</a></li>
-<li><a href="#_question_generation">8.3. Question Generation</a></li>
-<li><a href="#_answering_a_question">8.4. Answering a Question</a></li>
-<li><a href="#_ask_for_a_hint_to_the_ai_chat">8.5. Ask for a hint to the AI Chat</a></li>
-<li><a href="#_user_password_change">8.6. User Password Change</a></li>
+<li><a href="#_user_registration">6.1. User Registration</a></li>
+<li><a href="#_user_login">6.2. User Login</a></li>
+<li><a href="#_question_generation">6.3. Question Generation</a></li>
+<li><a href="#_answering_a_question">6.4. Answering a Question</a></li>
+<li><a href="#_ask_for_a_hint_to_the_ai_chat">6.5. Ask for a hint to the AI Chat</a></li>
+<li><a href="#_user_password_change">6.6. User Password Change</a></li>
 </ul>
 </li>
-<li><a href="#section-deployment-view">9. Deployment View</a>
+<li><a href="#section-deployment-view">7. Deployment View</a>
 <ul class="sectlevel2">
-<li><a href="#_infrastructure_level_1">9.1. Infrastructure Level 1</a></li>
+<li><a href="#_infrastructure_level_1">7.1. Infrastructure Level 1</a></li>
 </ul>
 </li>
-<li><a href="#section-concepts">10. Cross-cutting Concepts</a>
+<li><a href="#section-concepts">8. Cross-cutting Concepts</a>
 <ul class="sectlevel2">
-<li><a href="#_user_experience_ux">10.1. User Experience (UX)</a></li>
-<li><a href="#_security_protection">10.2. Security &amp; Protection</a></li>
-<li><a href="#_under_the_hood">10.3. Under-the-Hood</a></li>
-<li><a href="#_development">10.4. Development</a></li>
-<li><a href="#_architectural_style">10.5. Architectural Style</a></li>
-<li><a href="#_concept_map">10.6. Concept Map</a></li>
+<li><a href="#_user_experience_ux">8.1. User Experience (UX)</a></li>
+<li><a href="#_security_protection">8.2. Security &amp; Protection</a></li>
+<li><a href="#_under_the_hood">8.3. Under-the-Hood</a></li>
+<li><a href="#_development">8.4. Development</a></li>
+<li><a href="#_architectural_style">8.5. Architectural Style</a></li>
+<li><a href="#_concept_map">8.6. Concept Map</a></li>
 </ul>
 </li>
-<li><a href="#section-design-decisions">11. Architecture Decisions</a></li>
-<li><a href="#_technology_decisions">12. Technology Decisions</a></li>
-<li><a href="#section-quality-scenarios">13. Quality Requirements</a>
+<li><a href="#section-design-decisions">9. Architecture Decisions</a></li>
+<li><a href="#_technology_decisions">10. Technology Decisions</a></li>
+<li><a href="#section-quality-scenarios">11. Quality Requirements</a>
 <ul class="sectlevel2">
-<li><a href="#_quality_tree">13.1. Quality Tree</a></li>
-<li><a href="#_quality_scenarios">13.2. Quality Scenarios</a></li>
+<li><a href="#_quality_tree">11.1. Quality Tree</a></li>
+<li><a href="#_quality_scenarios">11.2. Quality Scenarios</a></li>
 </ul>
 </li>
-<li><a href="#section-risks-and-technical-debt">14. Risks and Technical Debt</a>
+<li><a href="#section-risks-and-technical-debt">12. Risks and Technical Debt</a>
 <ul class="sectlevel2">
-<li><a href="#_technical_risks">14.1. Technical Risks</a></li>
-<li><a href="#_technical_debt">14.2. Technical Debt</a></li>
+<li><a href="#_technical_risks">12.1. Technical Risks</a></li>
+<li><a href="#_technical_debt">12.2. Technical Debt</a></li>
 </ul>
 </li>
-<li><a href="#section-glossary">15. Glossary</a></li>
+<li><a href="#section-glossary">13. Glossary</a></li>
 </ul>
 </div>
 </div>
@@ -1397,25 +1388,22 @@ The codebase is designed following modular principles, where each component or m
 </tbody>
 </table>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="level2-refinements">6. Level 2 (Refinements)</h2>
-<div class="sectionbody">
-<hr>
 <div class="sect2">
-<h3 id="_white_box_llm_service_hint_service">6.1. White Box LLM Service (Hint Service)</h3>
+<h3 id="level2-refinements">5.4. Level 2 (Refinements)</h3>
+<hr>
 <div class="sect3">
-<h4 id="_motivation_llm_service_focus">6.1.1. Motivation (LLM Service Focus)</h4>
+<h4 id="_white_box_llm_service_hint_service">5.4.1. White Box LLM Service (Hint Service)</h4>
+<div class="sect4">
+<h5 id="_motivation_llm_service_focus">Motivation (LLM Service Focus)</h5>
 <hr>
 <div class="paragraph">
 <p>This service encapsulates the complex logic of interacting with external providers (LLM, Wikidata Service) and coordinates multiple steps to generate questions and hints.</p>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_internal_logic_flow_responsibilities">6.1.2. Internal Logic Flow / Responsibilities</h4>
 <div class="sect4">
-<h5 id="_question_generation_orchestration_generatequestions_endpoint">Question Generation Orchestration (<code>/generateQuestions</code> endpoint)</h5>
+<h5 id="_internal_logic_flow_responsibilities">Internal Logic Flow / Responsibilities</h5>
+<div class="sect5">
+<h6 id="_question_generation_orchestration_generatequestions_endpoint">Question Generation Orchestration (<code>/generateQuestions</code> endpoint)</h6>
 <hr>
 <div class="imageblock text-center">
 <div class="content">
@@ -1462,8 +1450,8 @@ The codebase is designed following modular principles, where each component or m
 </div>
 <hr>
 </div>
-<div class="sect4">
-<h5 id="_hint_generation_gethint_endpoint">Hint Generation (<code>/getHint</code> endpoint)</h5>
+<div class="sect5">
+<h6 id="_hint_generation_gethint_endpoint">Hint Generation (<code>/getHint</code> endpoint)</h6>
 <hr>
 <div class="imageblock text-center">
 <div class="content">
@@ -1488,8 +1476,8 @@ The codebase is designed following modular principles, where each component or m
 </div>
 <hr>
 </div>
-<div class="sect4">
-<h5 id="_conversational_hint_generation_gethintwithquery_endpoint">Conversational Hint Generation (<code>/getHintWithQuery</code> endpoint)</h5>
+<div class="sect5">
+<h6 id="_conversational_hint_generation_gethintwithquery_endpoint">Conversational Hint Generation (<code>/getHintWithQuery</code> endpoint)</h6>
 <hr>
 <div class="olist arabic">
 <ol class="arabic">
@@ -1508,13 +1496,11 @@ The codebase is designed following modular principles, where each component or m
 </div>
 </div>
 </div>
-</div>
-<div class="sect1">
-<h2 id="level3-concepts">7. Level 3 (Refinements / Concepts)</h2>
-<div class="sectionbody">
-<hr>
 <div class="sect2">
-<h3 id="_concept_question_generation_and_storage_flow">7.1. Concept: Question Generation and Storage Flow</h3>
+<h3 id="level3-concepts">5.5. Level 3 (Refinements / Concepts)</h3>
+<hr>
+<div class="sect3">
+<h4 id="_concept_question_generation_and_storage_flow">5.5.1. Concept: Question Generation and Storage Flow</h4>
 <div class="paragraph">
 <p><strong>Involved components:</strong> Gateway Service, LLM Service, Wikidata Service, Question Service, Database, Wikidata SPARQL, External LLM.</p>
 </div>
@@ -1551,8 +1537,8 @@ The codebase is designed following modular principles, where each component or m
 </div>
 <hr>
 </div>
-<div class="sect2">
-<h3 id="_concept_statistics_calculation">7.2. Concept: Statistics Calculation</h3>
+<div class="sect3">
+<h4 id="_concept_statistics_calculation">5.5.2. Concept: Statistics Calculation</h4>
 <div class="paragraph">
 <p><strong>Responsible component:</strong> History Service</p>
 </div>
@@ -1573,8 +1559,9 @@ The codebase is designed following modular principles, where each component or m
 </div>
 </div>
 </div>
+</div>
 <div class="sect1">
-<h2 id="section-runtime-view">8. Runtime View</h2>
+<h2 id="section-runtime-view">6. Runtime View</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The Runtime View illustrates how the different components of the system interact at runtime to fulfill specific use cases. It focuses on the dynamic behavior of the system, describing the communication between the frontend, gateway, and backend microservices. Each diagram represents a specific user action or system event, highlighting the sequence of requests, validations, and data flows involved.</p>
@@ -1583,7 +1570,7 @@ The codebase is designed following modular principles, where each component or m
 <p>These diagrams help clarify how responsibilities are distributed across services and how data moves through the architecture during key operations such as user registration, login, password changes, and question generation.</p>
 </div>
 <div class="sect3">
-<h4 id="_user_registration">8.1. User Registration</h4>
+<h4 id="_user_registration">6.1. User Registration</h4>
 <div class="imageblock">
 <div class="content">
 <img src="./images/sequence-user-registration.png" alt="User Registration Diagram">
@@ -1591,7 +1578,7 @@ The codebase is designed following modular principles, where each component or m
 </div>
 </div>
 <div class="sect3">
-<h4 id="_user_login">8.2. User Login</h4>
+<h4 id="_user_login">6.2. User Login</h4>
 <div class="imageblock">
 <div class="content">
 <img src="./images/sequence-user-login.png" alt="User Login Diagram">
@@ -1599,7 +1586,7 @@ The codebase is designed following modular principles, where each component or m
 </div>
 </div>
 <div class="sect3">
-<h4 id="_question_generation">8.3. Question Generation</h4>
+<h4 id="_question_generation">6.3. Question Generation</h4>
 <div class="imageblock">
 <div class="content">
 <img src="./images/sequence-question-generation.png" alt="Diagrama de generación de preguntas">
@@ -1607,7 +1594,7 @@ The codebase is designed following modular principles, where each component or m
 </div>
 </div>
 <div class="sect3">
-<h4 id="_answering_a_question">8.4. Answering a Question</h4>
+<h4 id="_answering_a_question">6.4. Answering a Question</h4>
 <div class="imageblock">
 <div class="content">
 <img src="./images/sequence-answering-question.png" alt="Diagrama de respuesta a una pregunta">
@@ -1615,7 +1602,7 @@ The codebase is designed following modular principles, where each component or m
 </div>
 </div>
 <div class="sect3">
-<h4 id="_ask_for_a_hint_to_the_ai_chat">8.5. Ask for a hint to the AI Chat</h4>
+<h4 id="_ask_for_a_hint_to_the_ai_chat">6.5. Ask for a hint to the AI Chat</h4>
 <div class="imageblock">
 <div class="content">
 <img src="./images/sequence-ask-hint.png" alt="Diagrama de preguna a la IA">
@@ -1623,7 +1610,7 @@ The codebase is designed following modular principles, where each component or m
 </div>
 </div>
 <div class="sect3">
-<h4 id="_user_password_change">8.6. User Password Change</h4>
+<h4 id="_user_password_change">6.6. User Password Change</h4>
 <div class="imageblock">
 <div class="content">
 <img src="./images/sequence-password-change.png" alt="Diagrama de cambio de contraseña">
@@ -1730,10 +1717,10 @@ building block instances depicted in this diagram.&gt;</em></p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-deployment-view">9. Deployment View</h2>
+<h2 id="section-deployment-view">7. Deployment View</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_infrastructure_level_1">9.1. Infrastructure Level 1</h3>
+<h3 id="_infrastructure_level_1">7.1. Infrastructure Level 1</h3>
 <div class="imageblock">
 <div class="content">
 <img src="./images/Deployment%20View.png" alt="Deployment View" width="1744" height="671">
@@ -1771,7 +1758,7 @@ building block instances depicted in this diagram.&gt;</em></p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-concepts">10. Cross-cutting Concepts</h2>
+<h2 id="section-concepts">8. Cross-cutting Concepts</h2>
 <div class="sectionbody">
 <div class="sidebarblock arc42help">
 <div class="content">
@@ -1873,7 +1860,7 @@ on this list.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_user_experience_ux">10.1. User Experience (UX)</h3>
+<h3 id="_user_experience_ux">8.1. User Experience (UX)</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1910,7 +1897,7 @@ on this list.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_security_protection">10.2. Security &amp; Protection</h3>
+<h3 id="_security_protection">8.2. Security &amp; Protection</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1920,7 +1907,7 @@ on this list.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_under_the_hood">10.3. Under-the-Hood</h3>
+<h3 id="_under_the_hood">8.3. Under-the-Hood</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1936,7 +1923,7 @@ on this list.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_development">10.4. Development</h3>
+<h3 id="_development">8.4. Development</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1949,7 +1936,7 @@ on this list.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_architectural_style">10.5. Architectural Style</h3>
+<h3 id="_architectural_style">8.5. Architectural Style</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -1979,7 +1966,7 @@ on this list.</p>
 </table>
 </div>
 <div class="sect2">
-<h3 id="_concept_map">10.6. Concept Map</h3>
+<h3 id="_concept_map">8.6. Concept Map</h3>
 <div class="imageblock">
 <div class="content">
 <img src="./images/Cross-cutting_Concepts.jpg" alt="Cross cutting Concepts">
@@ -1990,7 +1977,7 @@ on this list.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-design-decisions">11. Architecture Decisions</h2>
+<h2 id="section-design-decisions">9. Architecture Decisions</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>To document the architectural decisions of the project, we have created individual pages in the GitHub Wiki. This approach allows us to provide a detailed explanation of each decision without cluttering the main documentation. Each page includes the rationale behind the decision, as well as its advantages and disadvantages.</p>
@@ -1998,7 +1985,7 @@ on this list.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_technology_decisions">12. Technology Decisions</h2>
+<h2 id="_technology_decisions">10. Technology Decisions</h2>
 <div class="sectionbody">
 <div class="ulist">
 <ul>
@@ -2076,7 +2063,7 @@ There you will find links and examples about ADR.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-quality-scenarios">13. Quality Requirements</h2>
+<h2 id="section-quality-scenarios">11. Quality Requirements</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The <strong>WIChat</strong> system prioritizes five critical quality attributes to ensure success:</p>
@@ -2172,7 +2159,7 @@ There you will find links and examples about ADR.</p>
 <p>These quality requirements guide every architectural and implementation decision, ensuring WIChat meets stakeholder expectations and delivers a seamless, secure user experience.</p>
 </div>
 <div class="sect2">
-<h3 id="_quality_tree">13.1. Quality Tree</h3>
+<h3 id="_quality_tree">11.1. Quality Tree</h3>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 16.6666%;">
@@ -2216,7 +2203,7 @@ There you will find links and examples about ADR.</p>
 </table>
 </div>
 <div class="sect2">
-<h3 id="_quality_scenarios">13.2. Quality Scenarios</h3>
+<h3 id="_quality_scenarios">11.2. Quality Scenarios</h3>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 11.1111%;">
@@ -2277,10 +2264,10 @@ There you will find links and examples about ADR.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-risks-and-technical-debt">14. Risks and Technical Debt</h2>
+<h2 id="section-risks-and-technical-debt">12. Risks and Technical Debt</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_technical_risks">14.1. Technical Risks</h3>
+<h3 id="_technical_risks">12.1. Technical Risks</h3>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -2503,7 +2490,7 @@ There you will find links and examples about ADR.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_technical_debt">14.2. Technical Debt</h3>
+<h3 id="_technical_debt">12.2. Technical Debt</h3>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -2583,7 +2570,7 @@ There you will find links and examples about ADR.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-glossary">15. Glossary</h2>
+<h2 id="section-glossary">13. Glossary</h2>
 <div class="sectionbody">
 <div class="sidebarblock arc42help">
 <div class="content">
