@@ -1055,7 +1055,7 @@ The codebase is designed following modular principles, where each component or m
 <h4 id="_motivation">5.2.2. Motivation</h4>
 <hr>
 <div class="paragraph">
-<p>The WIChat system is decomposed into microservices (Level 1) for:</p>
+<p>The WIChat system is decomposed into microservices (Level 1) to:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -1063,16 +1063,16 @@ The codebase is designed following modular principles, where each component or m
 <p><strong>Separation of Concerns:</strong> UI (<code>WebApp</code>), routing/aggregation (<code>Gateway Service</code>), user management (<code>Users Service</code>), authentication (<code>Auth Service</code>), question logic (<code>Question Service</code>), history/statistics (<code>History Service</code>), interaction/cache with Wikidata (<code>Wikidata Service</code>), AI suggestions (<code>LLM Service</code>).</p>
 </li>
 <li>
-<p><strong>Independent Scalability:</strong> Each service can scale independently based on demand (e.g., <code>Question Service</code> during gameplay, <code>Auth Service</code> during login peaks).</p>
+<p><strong>Independent Scalability:</strong> Scale each service based on demand (e.g., <code>Question Service</code> during gameplay, <code>Auth Service</code> during peak logins).</p>
 </li>
 <li>
-<p><strong>Technological Flexibility:</strong> Allows different technologies per service and independent updates.</p>
+<p><strong>Technological Flexibility:</strong> Allows different technologies per service and independent upgrades.</p>
 </li>
 <li>
 <p><strong>Maintainability &amp; Testability:</strong> Smaller services are easier to manage, test, and deploy.</p>
 </li>
 <li>
-<p><strong>Resilience:</strong> Failures in non-critical services (e.g., <code>LLM Service</code>) minimally affect gameplay.</p>
+<p><strong>Resilience:</strong> Failures in non-critical services (e.g., <code>LLM Service</code>) have minimal impact on core gameplay.</p>
 </li>
 </ul>
 </div>
@@ -1086,7 +1086,7 @@ The codebase is designed following modular principles, where each component or m
 <dl>
 <dt class="hdlist1"><strong>Responsibility</strong></dt>
 <dd>
-<p>Provides the interactive web interface. Displays questions, answers, images, scores, statistics, and user profiles. Communicates only with the <code>Gateway Service</code>.</p>
+<p>Provides the interactive web interface. Displays questions, answers, images, score, statistics, and user profile. Communicates only with the <code>Gateway Service</code>.</p>
 </dd>
 <dt class="hdlist1"><strong>Interfaces (Consumed)</strong></dt>
 <dd>
@@ -1102,7 +1102,7 @@ The codebase is designed following modular principles, where each component or m
 <dl>
 <dt class="hdlist1"><strong>Responsibility</strong></dt>
 <dd>
-<p>Single entry point. Routes requests to microservices (<code>Auth</code>, <code>Users</code>, <code>Questions</code>, <code>History</code>, <code>LLM</code>, <code>Wikidata</code>), manages CORS, basic validation, exposes Swagger and metrics (Prometheus), checks downstream service health.</p>
+<p>Single entry point. Routes requests to microservices (<code>Auth</code>, <code>Users</code>, <code>Questions</code>, <code>History</code>, <code>LLM</code>, <code>Wikidata</code>), handles CORS, basic validation, exposes Swagger and metrics (Prometheus), checks downstream services’ health.</p>
 </dd>
 <dt class="hdlist1"><strong>Interfaces</strong></dt>
 <dd>
@@ -1131,7 +1131,7 @@ The codebase is designed following modular principles, where each component or m
 <dl>
 <dt class="hdlist1"><strong>Responsibility</strong></dt>
 <dd>
-<p>User authentication (validation and issuance of JWT tokens).</p>
+<p>User authentication (validation and JWT issuance).</p>
 </dd>
 <dt class="hdlist1"><strong>Interfaces</strong></dt>
 <dd>
@@ -1243,7 +1243,7 @@ The codebase is designed following modular principles, where each component or m
 <dl>
 <dt class="hdlist1"><strong>Responsibility</strong></dt>
 <dd>
-<p>Facade and cache for Wikidata. Queries SPARQL, processes and caches results.</p>
+<p>Facade and cache for Wikidata. Queries SPARQL, processes, and caches data.</p>
 </dd>
 <dt class="hdlist1"><strong>Interfaces</strong></dt>
 <dd>
@@ -1253,7 +1253,7 @@ The codebase is designed following modular principles, where each component or m
 <p><strong>Provided:</strong> <code>/api/entries/{…}</code>.</p>
 </li>
 <li>
-<p><strong>Consumed:</strong> Wikidata SPARQL and database (Mongoose).</p>
+<p><strong>Consumed:</strong> Wikidata SPARQL endpoint and database (Mongoose).</p>
 </li>
 </ul>
 </div>
@@ -1268,7 +1268,7 @@ The codebase is designed following modular principles, where each component or m
 <dl>
 <dt class="hdlist1"><strong>Responsibility</strong></dt>
 <dd>
-<p>Orchestrates question and hint generation. Fetches base data from Wikidata, calls the external LLM API, formats and persists questions.</p>
+<p>Orchestrates question and hint generation. Fetches base data from Wikidata, calls external LLM, formats, and persists questions.</p>
 </dd>
 <dt class="hdlist1"><strong>Interfaces</strong></dt>
 <dd>
@@ -1297,7 +1297,7 @@ The codebase is designed following modular principles, where each component or m
 <dl>
 <dt class="hdlist1"><strong>Responsibility</strong></dt>
 <dd>
-<p>Persistent storage for users, history, questions, Wikidata cache.</p>
+<p>Persistent storage for users, history, questions, and Wikidata cache.</p>
 </dd>
 <dt class="hdlist1"><strong>Interfaces</strong></dt>
 <dd>
@@ -1348,7 +1348,7 @@ The codebase is designed following modular principles, where each component or m
 </tr>
 <tr>
 <td class="tableblock halign-center valign-top"><p class="tableblock">Users Service API</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>User CRUD operations.</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CRUD for users.</code></p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">Users Service</p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">Gateway Service, Auth Service</p></td>
 </tr>
@@ -1384,7 +1384,7 @@ The codebase is designed following modular principles, where each component or m
 </tr>
 <tr>
 <td class="tableblock halign-center valign-top"><p class="tableblock">Wikidata SPARQL</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>External data endpoint.</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>External endpoint for raw Wikidata data.</code></p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">Wikidata (External)</p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">Wikidata Service</p></td>
 </tr>
@@ -1438,7 +1438,7 @@ The codebase is designed following modular principles, where each component or m
 <p>Formats textual information (<code>formatEntryInfo</code>).</p>
 </li>
 <li>
-<p>Constructs a detailed prompt for the external LLM API.</p>
+<p>Constructs a detailed prompt for the external LLM.</p>
 </li>
 <li>
 <p>Calls the LLM API (<code>sendQuestionToLLM</code>).</p>
@@ -1447,10 +1447,10 @@ The codebase is designed following modular principles, where each component or m
 <p>Parses and validates the JSON response (<code>parseJsonResponse</code>), retrying if needed.</p>
 </li>
 <li>
-<p>Combines generated text with <code>imageUrl</code>.</p>
+<p>Combines generated text with the <code>imageUrl</code>.</p>
 </li>
 <li>
-<p>Persists the question via <code>/addQuestion</code> endpoint through the Gateway.</p>
+<p>Persists the question via the <code>/addQuestion</code> endpoint on the Gateway.</p>
 </li>
 </ul>
 </div>
@@ -1494,13 +1494,13 @@ The codebase is designed following modular principles, where each component or m
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Similar to <code>/getHint</code>, but incorporates a specific user query.</p>
+<p>Similar to <code>/getHint</code>, but incorporates a user-specific query.</p>
 </li>
 <li>
-<p>Filters to prevent direct revelation of the answer.</p>
+<p>Filters to prevent direct answer disclosure.</p>
 </li>
 <li>
-<p>Builds and sends the prompt to the LLM, parses and returns the conversational hint.</p>
+<p>Builds and sends the prompt to the LLM, parses, and returns the conversational hint.</p>
 </li>
 </ol>
 </div>
@@ -1527,7 +1527,7 @@ The codebase is designed following modular principles, where each component or m
 <p>Gateway routes to LLM Service (<code>/generateQuestions</code>).</p>
 </li>
 <li>
-<p>LLM Service requests base data from Wikidata Service via Gateway.</p>
+<p>LLM Service fetches base data from Wikidata Service via Gateway.</p>
 </li>
 <li>
 <p>Wikidata Service returns cached data.</p>
@@ -1539,7 +1539,7 @@ The codebase is designed following modular principles, where each component or m
 <p>LLM responds in JSON; LLM Service parses and validates.</p>
 </li>
 <li>
-<p>LLM Service unifies text and image and calls <code>/addQuestion</code> through Gateway.</p>
+<p>LLM Service merges text and image, then calls <code>/addQuestion</code> via Gateway.</p>
 </li>
 <li>
 <p>Gateway routes to Question Service, which stores it in the database.</p>
@@ -1558,14 +1558,14 @@ The codebase is designed following modular principles, where each component or m
 </div>
 <div class="paragraph">
 <p>When <code>/stats</code> is called:
-* Retrieves all game records for the user.
-* Calculates aggregated statistics in-memory (total points, number of games, win/loss ratio, averages, most played category).
-* Returns results, including the 3 most outstanding games.</p>
+* Retrieves all user game records.
+* Calculates aggregated statistics in memory (total points, number of games, win/loss ratio, averages, most played category).
+* Returns results, including the top 3 games.</p>
 </div>
 <div class="quoteblock">
 <blockquote>
 <div class="paragraph">
-<p>⚠️ For users with very large histories, performance may degrade if not paginated.</p>
+<p>⚠️ For users with very large histories, performance may degrade if all records are loaded into memory.</p>
 </div>
 </blockquote>
 </div>
