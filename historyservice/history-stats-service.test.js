@@ -103,10 +103,6 @@ beforeAll(async () => {
   }));
 });
 
-afterAll(async () => {
-  await mongoose.disconnect();
-});
-
 describe('Servicio de Historial', () => {
   beforeEach(() => {
     jest.clearAllMocks();
