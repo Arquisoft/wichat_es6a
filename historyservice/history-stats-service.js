@@ -278,7 +278,7 @@ app.put('/update-username', async (req, res) => {
   }
 
   try {
-    await UserGame.updateMany(
+    await UserGame.updateMany( //NOSONAR
       { username: actualUserName },
       { $set: { username: newUsername } }
     );

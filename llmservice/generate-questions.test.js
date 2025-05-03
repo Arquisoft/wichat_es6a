@@ -9,7 +9,7 @@ jest.mock('path', () => ({
     }),
   }));
   
-  jest.mock('../llmservice/llm-service', () => ({
+  jest.mock('./llm-service', () => ({
     getWikidataForCategory: jest.fn(),
     generateQuestionForEntry: jest.fn(),
   }));
@@ -17,7 +17,7 @@ jest.mock('path', () => ({
   // Importar mocks
   const path = require('path');
   const dotenv = require('dotenv');
-  const { getWikidataForCategory, generateQuestionForEntry } = require('../llmservice/llm-service');
+  const { getWikidataForCategory, generateQuestionForEntry } = require('./llm-service');
   
   // Mock de console
   console.log = jest.fn();
