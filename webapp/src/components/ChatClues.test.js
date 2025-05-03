@@ -10,7 +10,9 @@ const mockAnswers = ["Madrid", "Berlín", "París", "Londres"];
 
 const setup = () => {
   const ref = React.createRef();
-  render(<ChatClues ref={ref} actualQuestion={mockQuestion} answers={mockAnswers} />);
+  render(
+    <ChatClues ref={ref} actualQuestion={mockQuestion} answers={mockAnswers} />
+  );
   return { ref };
 };
 
@@ -19,24 +21,27 @@ describe("ChatClues component", () => {
     jest.clearAllMocks();
   });
 
-  it("renders initial message", () => {
+  it("renders initial instruction message", () => {
     setup();
-    expect(screen.getByText(/¿En qué puedo ayudarte/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Pulsa 'Pista' o 'Pregunta IA' para activar el asistente/i
+      )
+    ).toBeInTheDocument();
   });
 
-  it("does not allow input or button when chat is disabled", () => {
+  it("does not render input or send button when chat is disabled", () => {
     setup();
-    const input = screen.getByPlaceholderText("Escribe aquí...");
-    const button = screen.getByRole("button", { name: /send/i });
+    const input = screen.queryByPlaceholderText("Escribe aquí...");
+    const button = screen.queryByRole("button", { name: /send/i });
 
-    expect(input).toBeDisabled();
-    expect(button).toBeDisabled();
+    expect(input).not.toBeInTheDocument();
+    expect(button).not.toBeInTheDocument();
   });
 
   it("enables chat and allows user input and message send", async () => {
     const { ref } = setup();
 
-    // Enable chat
     act(() => {
       ref.current.enableChat();
     });
@@ -47,11 +52,9 @@ describe("ChatClues component", () => {
     expect(input).toBeEnabled();
     expect(button).toBeEnabled();
 
-    // Simulate user typing
     fireEvent.change(input, { target: { value: "¿Es París la capital?" } });
     expect(input.value).toBe("¿Es París la capital?");
 
-    // Mock API success response
     axios.post.mockResolvedValueOnce({
       data: { hint: "Sí, París es la capital." },
     });
@@ -61,7 +64,9 @@ describe("ChatClues component", () => {
     });
 
     expect(screen.getByText(/Tú: ¿Es París la capital\?/)).toBeInTheDocument();
-    expect(screen.getByText(/IA: Sí, París es la capital./)).toBeInTheDocument();
+    expect(
+      screen.getByText(/IA: Sí, París es la capital\./)
+    ).toBeInTheDocument();
   });
 
   it("handles API error response gracefully", async () => {
@@ -70,18 +75,17 @@ describe("ChatClues component", () => {
       ref.current.enableChat();
     });
 
-    const input = screen.getByPlaceholderText("Escribe aquí...");
-    fireEvent.change(input, { target: { value: "¿Es Madrid la capital?" } });
-
-    axios.post.mockRejectedValueOnce({
-      response: { status: 500 },
+    fireEvent.change(screen.getByPlaceholderText("Escribe aquí..."), {
+      target: { value: "¿Es Madrid la capital?" },
     });
+
+    axios.post.mockRejectedValueOnce({ response: { status: 500 } });
 
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: /send/i }));
     });
 
-    expect(screen.getByText(/Error del servidor: 500/)).toBeInTheDocument();
+    expect(screen.getByText(/Error del servidor \(500\)/)).toBeInTheDocument();
   });
 
   it("handles API no response error", async () => {
@@ -94,9 +98,7 @@ describe("ChatClues component", () => {
       target: { value: "Hola" },
     });
 
-    axios.post.mockRejectedValueOnce({
-      request: {},
-    });
+    axios.post.mockRejectedValueOnce({ request: {} });
 
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: /send/i }));
@@ -105,15 +107,20 @@ describe("ChatClues component", () => {
     expect(screen.getByText(/Sin respuesta del servidor/)).toBeInTheDocument();
   });
 
-  it("can disable chat and reset messages", () => {
+  it("can disable chat and reset to initial instruction", () => {
     const { ref } = setup();
     act(() => {
       ref.current.enableChat();
       ref.current.disableChat();
     });
 
-    expect(screen.getByText(/¿En qué puedo ayudarte/)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Escribe aquí...")).toBeDisabled();
+    expect(
+      screen.getByText(/Pulsa 'Pista' o 'Pregunta IA'/i)
+    ).toBeInTheDocument();
+    const input = screen.queryByPlaceholderText("Escribe aquí...");
+    const button = screen.queryByRole("button", { name: /send/i });
+    expect(input).not.toBeInTheDocument();
+    expect(button).not.toBeInTheDocument();
   });
 
   it("can add a message programmatically", () => {
@@ -122,6 +129,13 @@ describe("ChatClues component", () => {
       ref.current.addMessage("IA: Este es un mensaje agregado.");
     });
 
+    // Message is added
     expect(screen.getByText(/Este es un mensaje agregado/)).toBeInTheDocument();
+
+    // Chat becomes visible, input and button should be present but disabled
+    const input = screen.getByPlaceholderText("Escribe aquí...");
+    const button = screen.getByRole("button", { name: /send/i });
+    expect(input).toBeDisabled();
+    expect(button).toBeDisabled();
   });
 });

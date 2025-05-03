@@ -1,4 +1,3 @@
-// src/components/ChatClues.js
 import React, {
   useState,
   forwardRef,
@@ -6,7 +5,7 @@ import React, {
   useEffect,
   useRef,
 } from "react";
-import { Grid, Typography, Button, TextField, Paper, Box } from "@mui/material";
+import { Typography, Button, TextField, Paper, Box } from "@mui/material";
 import axios from "axios";
 
 // --- Paleta Azul ---
@@ -15,66 +14,73 @@ const PALETTE = {
   honoluluBlue: "#0077b6ff",
   pacificCyan: "#00b4d8ff",
   nonPhotoBlue: "#90e0efff",
-  lightCyan: "#caf0f8ff",
+  lightCyan: "#caf0efff",
 };
 
-const ChatClues = forwardRef(({ actualQuestion, answers }, ref) => { //NOSONAR
-  const [messages, setMessages] = useState(["IA: ¿En qué puedo ayudarte?"]);
+const ChatClues = forwardRef(({ actualQuestion, answers }, ref) => {
+  const [showChat, setShowChat] = useState(false);
+  const [inputEnabled, setInputEnabled] = useState(false);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const scrollRef = useRef(null);
-  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
-  const [inputEnabled, setInputEnabled] = useState(false);
+  const apiEndpoint =
+    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
 
+  // Auto-scroll when chat is visible and messages change
+  useEffect(() => {
+    if (showChat && scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages, showChat]);
 
+  // Envío de mensaje al servidor
   const handleSendMessage = async () => {
-    if (input.trim() !== "" && inputEnabled) {
-      const userQuery = input;
-      const userMessage = `Tú: ${userQuery}`;
-      setMessages((prevMessages) => [...prevMessages, userMessage]);
-      setInput("");
-      setInputEnabled(false);
-      try {
-        const response = await axios.post(`${apiEndpoint}/getHintWithQuery`, {
-          question: actualQuestion,
-          answers: answers,
-          userQuery: userQuery,
-        });
-        const hintMessage = `IA: ${response.data.hint}`;
-        setMessages((prevMessages) => [...prevMessages, hintMessage]);
-      } catch (error) {
-        console.error("Error getting hint:", error);
-        let errorMessage = "IA: Error al obtener la pista. Inténtalo más tarde.";
-        if (error.response) {
-          errorMessage = `IA: Error del servidor: ${error.response.status}`;
-        } else if (error.request) {
-          errorMessage = "IA: Sin respuesta del servidor.";
-        }
-        setMessages((prevMessages) => [...prevMessages, errorMessage]);
-      }
+    if (!inputEnabled || input.trim() === "") return;
+    const userText = input;
+    setMessages((prev) => [...prev, `Tú: ${userText}`]);
+    setInput("");
+    try {
+      const response = await axios.post(`${apiEndpoint}/getHintWithQuery`, {
+        question: actualQuestion,
+        answers,
+        userQuery: userText,
+      });
+      setMessages((prev) => [...prev, `IA: ${response.data.hint}`]);
+    } catch (err) {
+      const errorMsg = err.response
+        ? `IA: Error del servidor (${err.response.status})`
+        : `IA: Sin respuesta del servidor`;
+      setMessages((prev) => [...prev, errorMsg]);
     }
   };
 
-  const handleKeyPress = (event) => {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
       handleSendMessage();
     }
   };
 
+  // Métodos expuestos al padre
   useImperativeHandle(ref, () => ({
-    addMessage: (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
+    addMessage: (msg) => {
+      if (!showChat) setShowChat(true);
+      setMessages((prev) => [...prev, msg]);
+    },
+    activateHint: () => {
+      setShowChat(true);
+      setInputEnabled(false);
     },
     enableChat: () => {
-      setMessages([
-        "IA: Pregúntame lo que quieras sobre la cuestión actual...",
-      ]);
+      setShowChat(true);
       setInputEnabled(true);
+      setMessages(["IA: Puedes hacer una pregunta sobre la cuestión actual"]);
     },
     disableChat: () => {
+      setShowChat(false);
       setInputEnabled(false);
       setInput("");
-      setMessages(["IA: ¿En qué puedo ayudarte?"]);
+      setMessages([]);
     },
   }));
 
@@ -89,137 +95,105 @@ const ChatClues = forwardRef(({ actualQuestion, answers }, ref) => { //NOSONAR
         p: 1,
         bgcolor: "transparent",
         color: PALETTE.lightCyan,
-        boxSizing: "border-box",
       }}
     >
-      <Typography
-        variant="subtitle1"
-        fontWeight="bold"
-        sx={{ mb: 1, color: "inherit" }}
-      >
+      <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 1 }}>
         Chat IA
       </Typography>
 
-      {/* Área de Mensajes */}
-      <Box
-        ref={scrollRef}
-        sx={{
-          flexGrow: 1,
-          overflowY: "auto",
-          maxHeight: "250px", // Altura máxima añadida
-          mb: 1,
-          display: "flex",
-          flexDirection: "column",
-          gap: 0.5,
-          pr: 0.5,
-          "&::-webkit-scrollbar": { width: "6px" },
-          "&::-webkit-scrollbar-track": {
-            background: PALETTE.federalBlue + "40",
-            borderRadius: "3px",
-          },
-          "&::-webkit-scrollbar-thumb": {
-            background: PALETTE.pacificCyan + "80",
-            borderRadius: "3px",
-          },
-          "&::-webkit-scrollbar-thumb:hover": {
-            background: PALETTE.pacificCyan,
-          },
-        }}
-      >
-        {messages.map((msg, index) => (
-          <Box
-            key={index}
-            sx={{
-              bgcolor: msg.startsWith("Tú:")
-                ? PALETTE.pacificCyan
-                : PALETTE.federalBlue,
-              color: msg.startsWith("Tú:")
-                ? PALETTE.federalBlue
-                : PALETTE.lightCyan,
-              p: 1,
-              borderRadius: 2,
-              fontSize: "0.8rem",
-              alignSelf: msg.startsWith("Tú:") ? "flex-end" : "flex-start",
-              maxWidth: "90%",
-              wordBreak: "break-word",
-              boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
-            }}
-          >
-            {msg}
-          </Box>
-        ))}
-      </Box>
-
-      {/* Input */}
-      <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-        <TextField
-          variant="outlined"
-          size="small"
-          placeholder="Escribe aquí..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyPress={handleKeyPress}
-          fullWidth
-          disabled={!inputEnabled}
+      {/* Vista inicial cuando el chat está inactivo */}
+      {!showChat ? (
+        <Box
           sx={{
-            "& .MuiInputBase-root": {
-              borderRadius: "20px",
-              backgroundColor: inputEnabled
-                ? PALETTE.federalBlue + "99"
-                : PALETTE.federalBlue + "50",
-            },
-            input: { color: PALETTE.lightCyan, fontSize: "0.85rem" },
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": {
-                borderColor: inputEnabled
-                  ? PALETTE.pacificCyan
-                  : PALETTE.honoluluBlue + "80",
-              },
-              "&:hover fieldset": {
-                borderColor: inputEnabled
-                  ? PALETTE.lightCyan
-                  : PALETTE.honoluluBlue + "80",
-              },
-              "&.Mui-focused fieldset": { borderColor: PALETTE.lightCyan },
-              "&.Mui-disabled fieldset": {
-                borderColor: PALETTE.honoluluBlue + "50",
-              },
-            },
-            "& .MuiInputBase-input::placeholder": {
-              color: PALETTE.lightCyan + "99",
-              opacity: 1,
-            },
-            "& .MuiInputBase-input.Mui-disabled::placeholder": {
-              color: PALETTE.lightCyan + "50",
-              opacity: 1,
-            },
-            "& .MuiInputBase-input.Mui-disabled": {
-              WebkitTextFillColor: PALETTE.lightCyan + "70",
-            },
-          }}
-        />
-        <Button
-          variant="contained"
-          onClick={handleSendMessage}
-          size="small"
-          disabled={!inputEnabled}
-          sx={{
-            bgcolor: PALETTE.pacificCyan,
-            color: PALETTE.federalBlue,
-            minWidth: 50,
-            px: 1.5,
-            borderRadius: "20px",
-            "&:hover": { bgcolor: PALETTE.nonPhotoBlue },
-            "&.Mui-disabled": {
-              bgcolor: PALETTE.federalBlue,
-              color: PALETTE.honoluluBlue,
-              opacity: 0.7,
-            },
+            flexGrow: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            p: 2,
           }}
         >
-          Send
-        </Button>
-      </Box>
+          <Typography variant="body2" align="center">
+            Pulsa 'Pista' o 'Pregunta IA' para activar el asistente. Solo con
+            'Pregunta IA' puedes escribir tu duda.
+          </Typography>
+        </Box>
+      ) : (
+        <>
+          {/* Área de Mensajes */}
+          <Box
+            ref={scrollRef}
+            sx={{
+              flexGrow: 1,
+              overflowY: "auto",
+              mb: 1,
+              px: 1,
+              display: "flex",
+              flexDirection: "column",
+              gap: 0.5,
+            }}
+          >
+            {messages.map((msg, idx) => (
+              <Box
+                key={idx}
+                sx={{
+                  bgcolor: msg.startsWith("Tú:")
+                    ? PALETTE.pacificCyan
+                    : PALETTE.federalBlue,
+                  color: msg.startsWith("Tú:")
+                    ? PALETTE.federalBlue
+                    : PALETTE.lightCyan,
+                  p: 1,
+                  borderRadius: 2,
+                  fontSize: "0.8rem",
+                  alignSelf: msg.startsWith("Tú:") ? "flex-end" : "flex-start",
+                  maxWidth: "90%",
+                  wordBreak: "break-word",
+                  boxShadow: "0 1px 2px rgba(0,0,0,0.2)",
+                }}
+              >
+                {msg}
+              </Box>
+            ))}
+          </Box>
+
+          {/* Input y botón de envío */}
+          <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+            <TextField
+              variant="outlined"
+              size="small"
+              placeholder="Escribe aquí..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={handleKeyPress}
+              fullWidth
+              disabled={!inputEnabled}
+              sx={{
+                "& .MuiInputBase-root": {
+                  borderRadius: "20px",
+                  backgroundColor: PALETTE.federalBlue + "99",
+                },
+                input: { color: PALETTE.lightCyan, fontSize: "0.85rem" },
+              }}
+            />
+            <Button
+              variant="contained"
+              onClick={handleSendMessage}
+              size="small"
+              disabled={!inputEnabled}
+              sx={{
+                bgcolor: PALETTE.pacificCyan,
+                color: PALETTE.federalBlue,
+                minWidth: 50,
+                px: 1.5,
+                borderRadius: "20px",
+                "&:hover": { bgcolor: PALETTE.nonPhotoBlue },
+              }}
+            >
+              Send
+            </Button>
+          </Box>
+        </>
+      )}
     </Paper>
   );
 });

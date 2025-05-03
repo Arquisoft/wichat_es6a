@@ -10,10 +10,10 @@ import Game from "./Game";
 import axios from "axios";
 import QuestionTimer from "./QuestionTimer";
 import { keyframes } from "@mui/system";
-import { darken } from '@mui/material/styles';
-import LightbulbIcon from '@mui/icons-material/Lightbulb';
-import SmartToyIcon from '@mui/icons-material/SmartToy';
-import BalanceIcon from '@mui/icons-material/Balance';
+import { darken } from "@mui/material/styles";
+import LightbulbIcon from "@mui/icons-material/Lightbulb";
+import SmartToyIcon from "@mui/icons-material/SmartToy";
+import BalanceIcon from "@mui/icons-material/Balance";
 // --- Paleta Azul ---
 const PALETTE = {
   federalBlue: "#03045eff", // Darkest Blue
@@ -49,7 +49,8 @@ const defaultDifficulty = {
 const defaultCategory = { name: "Variado", endpoint: "/variado" };
 
 // --- Componente Principal ---
-export function GameWindow({ gameInstance }) { //NOSONAR
+export function GameWindow({ gameInstance }) {
+  //NOSONAR
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -177,32 +178,6 @@ export function GameWindow({ gameInstance }) { //NOSONAR
     [currentQuestion, selectedAnswer]
   );
 
-  // --- Manejador para Obtener Pista ---
-  const handleGetHint = useCallback(async () => {
-    if (!currentQuestion || !chatCluesRef.current || hasUsedHint) return;
-    chatCluesRef.current.addMessage("IA: Solicitando pista...");
-    setHasUsedHint(true);
-    try {
-      const response = await axios.post(`${apiEndpoint}/getHint`, {
-        question: currentQuestion.questionText,
-        answers: currentQuestion.answers.map((a) => ({ text: a.text })),
-        apiKey: apiKey,
-      });
-      const hintMessage = `IA: ${response.data.hint}`;
-      if (chatCluesRef.current) chatCluesRef.current.addMessage(hintMessage);
-      gameRef.current.useHint();
-    } catch (error) {
-      setHasUsedHint(false);
-      let errorMessage = "IA: Error al obtener la pista.";
-      if (error.response)
-        errorMessage = `IA: Error del servidor (${error.response.status}) al pedir pista.`;
-      else if (error.request)
-        errorMessage = "IA: Sin respuesta del servidor al pedir pista.";
-      if (chatCluesRef.current) chatCluesRef.current.addMessage(errorMessage);
-      console.error("Hint error:", error);
-    }
-  }, [currentQuestion, apiEndpoint, apiKey, hasUsedHint]);
-
   // --- Manejador para Comodín 50/50 ---
   const handleFiftyFifty = () => {
     if (!currentQuestion || selectedAnswer !== null || hasUsedFiftyFifty)
@@ -225,6 +200,32 @@ export function GameWindow({ gameInstance }) { //NOSONAR
     gameRef.current.useFiftyFifty();
   };
 
+  // --- Manejador para Obtener Pista ---
+  const handleGetHint = useCallback(async () => {
+    if (!currentQuestion || !chatCluesRef.current || hasUsedHint) return;
+    // Activar chat en modo pista (sin input)
+    chatCluesRef.current.activateHint();
+    chatCluesRef.current.addMessage("IA: Solicitando pista...");
+    setHasUsedHint(true);
+    try {
+      const response = await axios.post(`${apiEndpoint}/getHint`, {
+        question: currentQuestion.questionText,
+        answers: currentQuestion.answers.map((a) => ({ text: a.text })),
+        apiKey,
+      });
+      const hintMsg = `IA: ${response.data.hint}`;
+      chatCluesRef.current.addMessage(hintMsg);
+      gameRef.current.useHint();
+    } catch (error) {
+      setHasUsedHint(false);
+      const errorMsg = error.response
+        ? `IA: Error del servidor (${error.response.status}) al pedir pista.`
+        : `IA: Sin respuesta del servidor al pedir pista.`;
+      chatCluesRef.current.addMessage(errorMsg);
+      console.error("Hint error:", error);
+    }
+  }, [currentQuestion, apiEndpoint, apiKey, hasUsedHint]);
+
   // --- Manejador para Pregunta IA ---
   const handleAskAI = () => {
     if (chatCluesRef.current && !hasUsedAskAI) {
@@ -239,7 +240,7 @@ export function GameWindow({ gameInstance }) { //NOSONAR
     width: { xs: "80%", sm: "auto" },
     minWidth: "120px",
     bgcolor: baseColor,
-    color:  "#ffffff",
+    color: "#ffffff",
     opacity: used ? 0.6 : 1,
     transition: "background-color 0.3s, color 0.3s, opacity 0.3s",
     "&:hover": {
@@ -252,7 +253,6 @@ export function GameWindow({ gameInstance }) { //NOSONAR
       opacity: used ? 0.6 : 0.5,
     },
   });
-  
 
   // --- Estado de Carga Inicial ---
   if (isGameLoading) {
@@ -486,9 +486,11 @@ export function GameWindow({ gameInstance }) { //NOSONAR
               <Button
                 onClick={handleGetHint}
                 data-testid="hint-button"
-                disabled={selectedAnswer !== null || hasUsedHint || !currentQuestion}
+                disabled={
+                  selectedAnswer !== null || hasUsedHint || !currentQuestion
+                }
                 startIcon={<LightbulbIcon />}
-                sx={lifelineButtonStyle(hasUsedHint, '#2e7d32')}
+                sx={lifelineButtonStyle(hasUsedHint, "#2e7d32")}
               >
                 Pista
               </Button>
@@ -496,9 +498,11 @@ export function GameWindow({ gameInstance }) { //NOSONAR
               <Button
                 onClick={handleAskAI}
                 data-testid="ask-ai-button"
-                disabled={selectedAnswer !== null || hasUsedAskAI || !currentQuestion}
+                disabled={
+                  selectedAnswer !== null || hasUsedAskAI || !currentQuestion
+                }
                 startIcon={<SmartToyIcon />}
-                sx={lifelineButtonStyle(hasUsedAskAI, '#1565c0')}
+                sx={lifelineButtonStyle(hasUsedAskAI, "#1565c0")}
               >
                 Pregunta IA
               </Button>
@@ -506,14 +510,16 @@ export function GameWindow({ gameInstance }) { //NOSONAR
               <Button
                 onClick={handleFiftyFifty}
                 data-testid="fifty-fifty-button"
-                disabled={selectedAnswer !== null || hasUsedFiftyFifty || !currentQuestion}
+                disabled={
+                  selectedAnswer !== null ||
+                  hasUsedFiftyFifty ||
+                  !currentQuestion
+                }
                 startIcon={<BalanceIcon />}
-                sx={lifelineButtonStyle(hasUsedFiftyFifty, '#ef6c00')}
+                sx={lifelineButtonStyle(hasUsedFiftyFifty, "#ef6c00")}
               >
                 50 / 50
               </Button>
-
-
             </Box>
           </Grid>
         </Grid>
