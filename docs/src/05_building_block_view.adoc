@@ -29,24 +29,24 @@ image::BuildingBlockView2.png["Level 1 Whitebox Diagram for WIChat System", alig
 ==== Motivation
 
 ---
-The WIChat system is decomposed into microservices (Level 1) for:
+The WIChat system is decomposed into microservices (Level 1) to:
 
 * **Separation of Concerns:** UI (`WebApp`), routing/aggregation (`Gateway Service`), user management (`Users Service`), authentication (`Auth Service`), question logic (`Question Service`), history/statistics (`History Service`), interaction/cache with Wikidata (`Wikidata Service`), AI suggestions (`LLM Service`).
-* **Independent Scalability:** Each service can scale independently based on demand (e.g., `Question Service` during gameplay, `Auth Service` during login peaks).
-* **Technological Flexibility:** Allows different technologies per service and independent updates.
+* **Independent Scalability:** Scale each service based on demand (e.g., `Question Service` during gameplay, `Auth Service` during peak logins).
+* **Technological Flexibility:** Allows different technologies per service and independent upgrades.
 * **Maintainability & Testability:** Smaller services are easier to manage, test, and deploy.
-* **Resilience:** Failures in non-critical services (e.g., `LLM Service`) minimally affect gameplay.
+* **Resilience:** Failures in non-critical services (e.g., `LLM Service`) have minimal impact on core gameplay.
 
 ==== Level 1 Building Blocks (Blackboxes)
 
 ---
 ===== `WebApp` (Frontend)
-*Responsibility*:: Provides the interactive web interface. Displays questions, answers, images, scores, statistics, and user profiles. Communicates only with the `Gateway Service`.  
+*Responsibility*:: Provides the interactive web interface. Displays questions, answers, images, score, statistics, and user profile. Communicates only with the `Gateway Service`.  
 *Interfaces (Consumed)*:: Gateway API (REST/WebSocket).
 
 ---
 ===== `Gateway Service`
-*Responsibility*:: Single entry point. Routes requests to microservices (`Auth`, `Users`, `Questions`, `History`, `LLM`, `Wikidata`), manages CORS, basic validation, exposes Swagger and metrics (Prometheus), checks downstream service health.  
+*Responsibility*:: Single entry point. Routes requests to microservices (`Auth`, `Users`, `Questions`, `History`, `LLM`, `Wikidata`), handles CORS, basic validation, exposes Swagger and metrics (Prometheus), checks downstream services’ health.  
 *Interfaces*::  
 * *Provided:* Gateway API (REST), `/metrics`, `/health`, `/api-doc`.  
 * *Consumed:* Auth, Users, Question, History, LLM, Wikidata APIs.  
@@ -54,7 +54,7 @@ The WIChat system is decomposed into microservices (Level 1) for:
 
 ---
 ===== `Auth Service`
-*Responsibility*:: User authentication (validation and issuance of JWT tokens).  
+*Responsibility*:: User authentication (validation and JWT issuance).  
 *Interfaces*::  
 * *Provided:* `/login` (REST).  
 * *Consumed:* Users Service or direct database access.  
@@ -85,14 +85,14 @@ The WIChat system is decomposed into microservices (Level 1) for:
 
 ---
 ===== `Wikidata Service`
-*Responsibility*:: Facade and cache for Wikidata. Queries SPARQL, processes and caches results.  
+*Responsibility*:: Facade and cache for Wikidata. Queries SPARQL, processes, and caches data.  
 *Interfaces*::  
 * *Provided:* `/api/entries/{…}`.  
-* *Consumed:* Wikidata SPARQL and database (Mongoose).
+* *Consumed:* Wikidata SPARQL endpoint and database (Mongoose).
 
 ---
 ===== `LLM Service` (Hint Service)
-*Responsibility*:: Orchestrates question and hint generation. Fetches base data from Wikidata, calls the external LLM API, formats and persists questions.  
+*Responsibility*:: Orchestrates question and hint generation. Fetches base data from Wikidata, calls external LLM, formats, and persists questions.  
 *Interfaces*::  
 * *Provided:* `/generateQuestions`, `/getHint`, `/getHintWithQuery`.  
 * *Consumed:* Gateway → Wikidata Service, external LLM API, Gateway → Question Service.  
@@ -100,7 +100,7 @@ The WIChat system is decomposed into microservices (Level 1) for:
 
 ---
 ===== `Database`
-*Responsibility*:: Persistent storage for users, history, questions, Wikidata cache.  
+*Responsibility*:: Persistent storage for users, history, questions, and Wikidata cache.  
 *Interfaces*:: MongoDB driver consumed by services.  
 *Technology*:: MongoDB.
 
@@ -113,16 +113,16 @@ _Summary of key interfaces._
 [cols="^1,3m,^1,^2", options="header"]
 |===
 | Interface Name         | Description                                                    | Provided By        | Consumed By
-| Gateway API (REST)     | API for WebApp (auth, game, hints, profile, stats, proxy).       | Gateway Service    | WebApp
-| Auth Service API       | Internal API for login/token.                                   | Auth Service       | Gateway Service
-| Users Service API      | User CRUD operations.                                           | Users Service      | Gateway Service, Auth Service
-| Question Service API   | Save/retrieve questions.                                        | Question Service   | Gateway Service (and LLM Service)
-| History Service API    | Save results and stats.                                          | History Service    | Gateway Service
-| Wikidata Service API   | Processed data from Wikidata.                                   | Wikidata Service   | Gateway Service (and LLM Service)
+| Gateway API (REST)     | API for WebApp (auth, game, hints, profile, stats, proxy).    | Gateway Service    | WebApp
+| Auth Service API       | Internal API for login/token.                                  | Auth Service       | Gateway Service
+| Users Service API      | CRUD for users.                                                | Users Service      | Gateway Service, Auth Service
+| Question Service API   | Save/retrieve questions.                                       | Question Service   | Gateway Service (and LLM Service)
+| History Service API    | Save results and stats.                                        | History Service    | Gateway Service
+| Wikidata Service API   | Processed data from Wikidata.                                  | Wikidata Service   | Gateway Service (and LLM Service)
 | LLM Service API        | Question and hint generation.                                  | LLM Service        | Gateway Service
-| Database Access        | MongoDB query interface.                                        | Database           | All services
-| Wikidata SPARQL        | External data endpoint.                                         | Wikidata (External)| Wikidata Service
-| External LLM API       | AI text provider.                                               | LLM Provider       | LLM Service
+| Database Access        | MongoDB query interface.                                       | Database           | All services
+| Wikidata SPARQL        | External endpoint for raw Wikidata data.                       | Wikidata (External)| Wikidata Service
+| External LLM API       | AI text provider.                                              | LLM Provider       | LLM Service
 |===
 
 [[level2-refinements]]
@@ -147,11 +147,11 @@ image::BuildingBlockViewGenerateQuestions.png["Generation Questions Flow Diagram
 2. Requests base data (including `imageUrl`) from the Wikidata Service via Gateway.  
 3. For each entry:  
    * Formats textual information (`formatEntryInfo`).  
-   * Constructs a detailed prompt for the external LLM API.  
+   * Constructs a detailed prompt for the external LLM.  
    * Calls the LLM API (`sendQuestionToLLM`).  
    * Parses and validates the JSON response (`parseJsonResponse`), retrying if needed.  
-   * Combines generated text with `imageUrl`.  
-   * Persists the question via `/addQuestion` endpoint through the Gateway.  
+   * Combines generated text with the `imageUrl`.  
+   * Persists the question via the `/addQuestion` endpoint on the Gateway.  
 4. Aggregates all generated questions and returns them to the Gateway Service.
 
 ---
@@ -169,9 +169,9 @@ image::BuildingBlockViewHintRequest.png["Get Hint Flow Diagram", align="center"]
 ===== Conversational Hint Generation (`/getHintWithQuery` endpoint)
 
 ---
-1. Similar to `/getHint`, but incorporates a specific user query.  
-2. Filters to prevent direct revelation of the answer.  
-3. Builds and sends the prompt to the LLM, parses and returns the conversational hint.
+1. Similar to `/getHint`, but incorporates a user-specific query.  
+2. Filters to prevent direct answer disclosure.  
+3. Builds and sends the prompt to the LLM, parses, and returns the conversational hint.
 
 [[level3-concepts]]
 == Level 3 (Refinements / Concepts)
@@ -183,11 +183,11 @@ image::BuildingBlockViewHintRequest.png["Get Hint Flow Diagram", align="center"]
 
 1. WebApp requests questions by category from the Gateway.  
 2. Gateway routes to LLM Service (`/generateQuestions`).  
-3. LLM Service requests base data from Wikidata Service via Gateway.  
+3. LLM Service fetches base data from Wikidata Service via Gateway.  
 4. Wikidata Service returns cached data.  
 5. LLM Service formats and sends a prompt to the external LLM.  
 6. LLM responds in JSON; LLM Service parses and validates.  
-7. LLM Service unifies text and image and calls `/addQuestion` through Gateway.  
+7. LLM Service merges text and image, then calls `/addQuestion` via Gateway.  
 8. Gateway routes to Question Service, which stores it in the database.  
 9. LLM Service returns the questions to the original caller.
 
@@ -196,9 +196,9 @@ image::BuildingBlockViewHintRequest.png["Get Hint Flow Diagram", align="center"]
 
 **Responsible component:** History Service
 
-When `/stats` is called:
-* Retrieves all game records for the user.  
-* Calculates aggregated statistics in-memory (total points, number of games, win/loss ratio, averages, most played category).  
-* Returns results, including the 3 most outstanding games.
+When `/stats` is called:  
+* Retrieves all user game records.  
+* Calculates aggregated statistics in memory (total points, number of games, win/loss ratio, averages, most played category).  
+* Returns results, including the top 3 games.
 
-> ⚠️ For users with very large histories, performance may degrade if not paginated.
+> ⚠️ For users with very large histories, performance may degrade if all records are loaded into memory.
