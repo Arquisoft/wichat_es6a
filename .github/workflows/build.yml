@@ -16,7 +16,7 @@ jobs:
         node-version: 22
     - run: npm --prefix users/authservice ci
     - run: npm --prefix users/userservice ci
-    - run: npm --prefix users/questionsService ci
+    - run: npm --prefix questionsService ci
     - run: npm --prefix llmservice ci
     - run: npm --prefix wikidataservice ci
     - run: npm --prefix historyservice ci
@@ -24,7 +24,7 @@ jobs:
     - run: npm --prefix gatewayservice ci
     - run: npm --prefix users/authservice test -- --coverage
     - run: npm --prefix users/userservice test -- --coverage
-    - run: npm --prefix users/questionsService test -- --coverage
+    - run: npm --prefix questionsService test -- --coverage
     - run: npm --prefix llmservice test -- --coverage
     - run: npm --prefix wikidataservice test -- --coverage
     - run: npm --prefix historyservice test -- --coverage
