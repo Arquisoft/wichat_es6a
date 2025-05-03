@@ -471,18 +471,19 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_types_of_decisions">4.1. Types of Decisions</a></li>
 </ul>
 </li>
-<li><a href="#section-building-block-view">5. 5. Building Block View</a>
+<li><a href="#section-building-block-view">5. Building Block View</a>
 <ul class="sectlevel2">
-<li><a href="#_5_0_high_level_system_overview_context_recap">5.1. 5.0 High-Level System Overview (Context Recap)</a></li>
-<li><a href="#_5_1_whitebox_overall_system_level_1">5.2. 5.1 Whitebox Overall System (Level 1)</a></li>
+<li><a href="#_high_level_system_overview_context_recap">5.1. High-Level System Overview (Context Recap)</a></li>
+<li><a href="#_whitebox_overall_system_level_1">5.2. Whitebox Overall System (Level 1)</a></li>
+<li><a href="#_important_interfaces_summary">5.3. Important Interfaces (Summary)</a></li>
 </ul>
 </li>
-<li><a href="#_5_2_level_2_refinements">6. 5.2 Level 2 (Refinements)</a>
+<li><a href="#level2-refinements">6. Level 2 (Refinements)</a>
 <ul class="sectlevel2">
-<li><a href="#_5_2_1_white_box_llm_service_hint_service">6.1. 5.2.1 White Box LLM Service (Hint Service)</a></li>
+<li><a href="#_white_box_llm_service_hint_service">6.1. White Box LLM Service (Hint Service)</a></li>
 </ul>
 </li>
-<li><a href="#_5_3_level_3_refinements_concepts">7. 5.3 Level 3 (Refinements / Concepts)</a>
+<li><a href="#level3-concepts">7. Level 3 (Refinements / Concepts)</a>
 <ul class="sectlevel2">
 <li><a href="#_concept_question_generation_and_storage_flow">7.1. Concept: Question Generation and Storage Flow</a></li>
 <li><a href="#_concept_statistics_calculation">7.2. Concept: Statistics Calculation</a></li>
@@ -882,7 +883,26 @@ together with a mapping table showing the relationships between channels and inp
 <div class="sect2">
 <h3 id="_types_of_decisions">4.1. Types of Decisions</h3>
 <div class="sect3">
-<h4 id="_technical_decisions">4.1.1. Technical Decisions</h4>
+<h4 id="_1_organizational_decisions">4.1.1. 1. Organizational Decisions</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Adopting a Kanban-style project management</strong>:
+The team employs a Kanban approach to organize and visualize the software development process. Tasks are represented on a Kanban board, facilitating prioritization and fostering team-wide transparency. This methodology enhances focus by limiting work in progress (WIP), promoting continuous delivery and helping the team identify process bottlenecks early.</p>
+</li>
+<li>
+<p><strong>Using GitHub Flow as the development workflow</strong>:
+GitHub Flow is adopted to ensure a clear and collaborative development process. It encourages the use of short-lived feature branches and enforces Pull Request-based code reviews. This ensures that every change is peer-reviewed before integration, increasing stability and maintaining consistent code quality.</p>
+</li>
+<li>
+<p><strong>Continuous Integration with GitHub Actions and SonarQube</strong>:
+A CI pipeline is implemented using GitHub Actions to automatically run tests and code quality checks on every push. SonarQube is integrated to analyze code for bugs, vulnerabilities, code smells, and duplications. These tools provide immediate feedback, ensuring issues are addressed before deployment and reinforcing best practices.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_2_technical_decisions">4.1.2. 2. Technical Decisions</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -957,7 +977,7 @@ Swagger (OpenAPI) is integrated to document all API endpoints interactively. Dev
 </div>
 </div>
 <div class="sect3">
-<h4 id="_quality_and_maintainability_decisions">4.1.2. Quality and Maintainability Decisions</h4>
+<h4 id="_3_quality_and_maintainability_decisions">4.1.3. 3. Quality and Maintainability Decisions</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -996,77 +1016,78 @@ The codebase is designed following modular principles, where each component or m
 </div>
 </div>
 <div class="sect1">
-<h2 id="section-building-block-view">5. 5. Building Block View</h2>
+<h2 id="section-building-block-view">5. Building Block View</h2>
 <div class="sectionbody">
+<hr>
 <div class="paragraph">
 <p>This view shows the static decomposition of the WIChat system into its main building blocks (components, services) and outlines their responsibilities and primary relationships.</p>
 </div>
-<hr>
 <div class="sect2">
-<h3 id="_5_0_high_level_system_overview_context_recap">5.1. 5.0 High-Level System Overview (Context Recap)</h3>
+<h3 id="_high_level_system_overview_context_recap">5.1. High-Level System Overview (Context Recap)</h3>
+<hr>
 <div class="paragraph">
-<p>The following diagram shows the WIChat system as a whole (blackbox), interacting with the primary user and external data/service providers (Wikidata, LLM). This corresponds to the <strong>Context View</strong> (Chapter 3).</p>
+<p>The following diagram shows the WIChat system as a whole (blackbox), interacting with the primary user and external data/service providers (Wikidata, LLM).</p>
 </div>
 <div class="imageblock text-center">
 <div class="content">
-<img src="./images/BuildingBlockViewOverviewDiagram.png" alt="High-Level Context Diagram">
+<img src="./images/BuildingBlockViewFirst.png" alt="High-Level Context Diagram">
 </div>
 </div>
-<hr>
 </div>
 <div class="sect2">
-<h3 id="_5_1_whitebox_overall_system_level_1">5.2. 5.1 Whitebox Overall System (Level 1)</h3>
+<h3 id="_whitebox_overall_system_level_1">5.2. Whitebox Overall System (Level 1)</h3>
+<hr>
 <div class="paragraph">
 <p>This section describes the top-level decomposition of the WIChat trivia game system into its internal microservices and components.</p>
 </div>
 <div class="sect3">
 <h4 id="_overview_diagram_level_1">5.2.1. Overview Diagram (Level 1)</h4>
+<hr>
 <div class="paragraph">
 <p>The following diagram shows the main internal building blocks (Level 1) of the WIChat system and their primary interactions.</p>
 </div>
 <div class="imageblock text-center">
 <div class="content">
-<img src="./images/05_LEVEL2.png" alt="Level 1 Whitebox Diagram for WIChat System">
+<img src="./images/BuildingBlockView2.png" alt="Level 1 Whitebox Diagram for WIChat System">
 </div>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_motivation">5.2.2. Motivation</h4>
+<hr>
 <div class="paragraph">
-<p>The WIChat system architecture is decomposed into microservices (Level 1) to achieve:</p>
+<p>El sistema WIChat se descompone en microservicios (Level 1) para:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Separation of Concerns:</strong> Isolating UI (<code>WebApp</code>), API routing/aggregation (<code>Gateway Service</code>), user management (<code>Users Manager</code>), authentication (<code>Auth Service</code>), question logic/generation (<code>Question Service</code>), game history/stats (<code>History Service</code>), Wikidata interaction/caching (<code>Wikidata Service</code>), and AI hints (<code>LLM Service</code>).</p>
+<p><strong>Separation of Concerns:</strong> UI (<code>WebApp</code>), routing/agrupación (<code>Gateway Service</code>), gestión de usuarios (<code>Users Service</code>), autenticación (<code>Auth Service</code>), lógica de preguntas (<code>Question Service</code>), historial/estadísticas (<code>History Service</code>), interacción/caché con Wikidata (<code>Wikidata Service</code>), sugerencias IA (<code>LLM Service</code>).</p>
 </li>
 <li>
-<p><strong>Independent Scalability:</strong> Each service can be scaled independently based on specific load patterns (e.g., <code>Question Service</code> during gameplay, <code>Auth Service</code> during login peaks).</p>
+<p><strong>Independent Scalability:</strong> Escalar cada servicio según demanda (ej. <code>Question Service</code> durante el juego, <code>Auth Service</code> en picos de inicio de sesión).</p>
 </li>
 <li>
-<p><strong>Technological Flexibility:</strong> Allows using potentially different technologies for each service and facilitates independent updates or replacements (e.g., changing the LLM provider).</p>
+<p><strong>Technological Flexibility:</strong> Permite distintas tecnologías por servicio y actualizaciones independientes.</p>
 </li>
 <li>
-<p><strong>Maintainability &amp; Testability:</strong> Smaller, focused services are easier to manage, test, and deploy.</p>
+<p><strong>Maintainability &amp; Testability:</strong> Servicios más pequeños son más fáciles de gestionar, probar y desplegar.</p>
 </li>
 <li>
-<p><strong>Resilience:</strong> Failure in one non-critical service (e.g., <code>LLM Service</code>) should minimally impact core gameplay.</p>
+<p><strong>Resilience:</strong> Fallos en servicios no críticos (ej. <code>LLM Service</code>) afectan mínimamente la jugabilidad.</p>
 </li>
 </ul>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_level_1_building_blocks_blackboxes">5.2.3. Level 1 Building Blocks (Blackboxes)</h4>
-<div class="paragraph">
-<p>The following building blocks constitute the WIChat system at Level 1.</p>
-</div>
+<hr>
 <div class="sect4">
-<h5 id="_5_1_1_webapp_frontend">5.1.1 <code>WebApp</code> (Frontend)</h5>
+<h5 id="_webapp_frontend"><code>WebApp</code> (Frontend)</h5>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Responsibility</strong></dt>
 <dd>
-<p>Provides the interactive web UI for the trivia game. Displays questions, answers, images, score, streak, user profile, statistics. Handles user input (answers, lifelines, login, registration, profile edits). Communicates exclusively with the <code>Gateway Service</code>.</p>
+<p>Proporciona la interfaz web interactiva. Muestra preguntas, respuestas, imágenes, puntuación, estadísticas y perfil de usuario. Comunica únicamente con el <code>Gateway Service</code>.</p>
 </dd>
 <dt class="hdlist1"><strong>Interfaces (Consumed)</strong></dt>
 <dd>
@@ -1077,127 +1098,111 @@ The codebase is designed following modular principles, where each component or m
 <hr>
 </div>
 <div class="sect4">
-<h5 id="_5_1_2_gateway_service">5.1.2 <code>Gateway Service</code></h5>
+<h5 id="_gateway_service"><code>Gateway Service</code></h5>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Responsibility</strong></dt>
 <dd>
-<p>Single entry point for the <code>WebApp</code>. Routes API requests to appropriate backend microservices (<code>Auth</code>, <code>Users</code>, <code>Questions</code>, <code>History</code>, <code>LLM</code>, <code>Wikidata</code>). Handles CORS, basic request validation. Exposes aggregated API documentation (Swagger) and observability metrics (Prometheus). Performs health checks on downstream services.</p>
-<div class="dlist">
-<dl>
+<p>Punto de entrada único. Enruta peticiones a microservicios (<code>Auth</code>, <code>Users</code>, <code>Questions</code>, <code>History</code>, <code>LLM</code>, <code>Wikidata</code>), gestiona CORS, validación básica, expone Swagger y métricas (Prometheus), verifica estado de downstream services.</p>
+</dd>
 <dt class="hdlist1"><strong>Interfaces</strong></dt>
 <dd>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Provided:</strong> Gateway API (REST) towards <code>WebApp</code>, <code>/metrics</code>, <code>/health</code>, <code>/api-doc</code>.</p>
+<p><strong>Provided:</strong> Gateway API (REST), <code>/metrics</code>, <code>/health</code>, <code>/api-doc</code>.</p>
 </li>
 <li>
-<p><strong>Consumed:</strong> Auth Service API, Users Service API, Question Service API, History Service API, LLM Service API, Wikidata Service API.</p>
+<p><strong>Consumed:</strong> APIs de Auth, Users, Question, History, LLM, Wikidata.</p>
 </li>
 </ul>
 </div>
 </dd>
-</dl>
-</div>
-</dd>
 <dt class="hdlist1"><strong>Technology</strong></dt>
 <dd>
-<p>Node.js, Express, Axios</p>
+<p>Node.js, Express, Axios.</p>
 </dd>
 </dl>
 </div>
 <hr>
 </div>
 <div class="sect4">
-<h5 id="_5_1_3_auth_service">5.1.3 <code>Auth Service</code></h5>
+<h5 id="_auth_service"><code>Auth Service</code></h5>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Responsibility</strong></dt>
 <dd>
-<p>Handles user authentication. Validates credentials against data likely stored via <code>Users Service</code>/<code>Database</code>. Issues authentication tokens (e.g., JWT).</p>
-<div class="dlist">
-<dl>
+<p>Autenticación de usuarios (validación y emisión de tokens JWT).</p>
+</dd>
 <dt class="hdlist1"><strong>Interfaces</strong></dt>
 <dd>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Provided:</strong> Internal API (e.g., REST <code>/login</code>) consumed by <code>Gateway Service</code>.</p>
+<p><strong>Provided:</strong> <code>/login</code> (REST).</p>
 </li>
 <li>
-<p><strong>Consumed:</strong> Potentially <code>Users Service</code> API or <code>Database</code> Access Interface.</p>
+<p><strong>Consumed:</strong> Users Service o acceso directo a base de datos.</p>
 </li>
 </ul>
 </div>
 </dd>
-</dl>
-</div>
-</dd>
 <dt class="hdlist1"><strong>Technology</strong></dt>
 <dd>
-<p>Node.js/Express (Assumed)</p>
+<p>Node.js/Express.</p>
 </dd>
 </dl>
 </div>
 <hr>
 </div>
 <div class="sect4">
-<h5 id="_5_1_4_users_service">5.1.4 <code>Users Service</code></h5>
+<h5 id="_users_service"><code>Users Service</code></h5>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Responsibility</strong></dt>
 <dd>
-<p>Manages user data CRUD operations (Create, Read, Update, Delete). Handles profile picture storage/retrieval. Stores/retrieves user data via the <code>Database</code>.</p>
-<div class="dlist">
-<dl>
+<p>CRUD de usuarios, gestión de avatar.</p>
+</dd>
 <dt class="hdlist1"><strong>Interfaces</strong></dt>
 <dd>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Provided:</strong> Internal API (e.g., REST <code>/adduser</code>, <code>/user/&#8230;&#8203;</code>) consumed by <code>Gateway Service</code>.</p>
+<p><strong>Provided:</strong> <code>/addUser</code>, <code>/user/{id}</code> (REST).</p>
 </li>
 <li>
-<p><strong>Consumed:</strong> <code>Database</code> Access Interface.</p>
+<p><strong>Consumed:</strong> Base de datos.</p>
 </li>
 </ul>
 </div>
 </dd>
-</dl>
-</div>
-</dd>
 <dt class="hdlist1"><strong>Technology</strong></dt>
 <dd>
-<p>Node.js/Express (Assumed)</p>
+<p>Node.js/Express.</p>
 </dd>
 </dl>
 </div>
 <hr>
 </div>
 <div class="sect4">
-<h5 id="_5_1_5_question_service">5.1.5 <code>Question Service</code></h5>
+<h5 id="_question_service"><code>Question Service</code></h5>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Responsibility</strong></dt>
 <dd>
-<p>Manages storage/retrieval of trivia questions <strong>after</strong> generation by <code>LLM Service</code>. Provides endpoints like <code>/addQuestion</code>, <code>/questions</code>. Interacts with the <code>Database</code>.</p>
-<div class="dlist">
-<dl>
+<p>Almacenamiento y recuperación de preguntas generadas.</p>
+</dd>
 <dt class="hdlist1"><strong>Interfaces</strong></dt>
 <dd>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Provided:</strong> Internal API (e.g., REST <code>/addQuestion</code>, <code>/questions</code>) consumed by <code>Gateway Service</code>.</p>
+<p><strong>Provided:</strong> <code>/addQuestion</code>, <code>/questions</code> (REST).</p>
 </li>
 <li>
-<p><strong>Consumed:</strong> <code>Database</code> Access Interface.</p>
+<p><strong>Consumed:</strong> Base de datos.</p>
 </li>
 </ul>
-</div>
-</dd>
-</dl>
 </div>
 </dd>
 </dl>
@@ -1205,141 +1210,114 @@ The codebase is designed following modular principles, where each component or m
 <hr>
 </div>
 <div class="sect4">
-<h5 id="_5_1_6_history_service">5.1.6 <code>History Service</code></h5>
+<h5 id="_history_service"><code>History Service</code></h5>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Responsibility</strong></dt>
 <dd>
-<p>Persists completed game history per user. Calculates and provides aggregate statistics (<code>/stats</code>). Provides endpoints to retrieve past games (<code>/getBestGames</code>, <code>/getAllGames</code>).</p>
-<div class="dlist">
-<dl>
+<p>Persiste historial de juegos y calcula estadísticas agregadas.</p>
+</dd>
 <dt class="hdlist1"><strong>Interfaces</strong></dt>
 <dd>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Provided:</strong> Internal API (e.g., REST <code>/addGame</code>, <code>/stats</code>, etc.) consumed by <code>Gateway Service</code>.</p>
+<p><strong>Provided:</strong> <code>/addGame</code>, <code>/stats</code>, <code>/getBestGames</code>, <code>/getAllGames</code>.</p>
 </li>
 <li>
-<p><strong>Consumed:</strong> <code>Database</code> Access Interface (Mongoose).</p>
+<p><strong>Consumed:</strong> Base de datos (Mongoose).</p>
 </li>
 </ul>
 </div>
 </dd>
-</dl>
-</div>
-</dd>
 <dt class="hdlist1"><strong>Technology</strong></dt>
 <dd>
-<p>Node.js, Express, Mongoose</p>
+<p>Node.js, Express, Mongoose.</p>
 </dd>
 </dl>
 </div>
 <hr>
 </div>
 <div class="sect4">
-<h5 id="_5_1_7_wikidata_service">5.1.7 <code>Wikidata Service</code></h5>
+<h5 id="_wikidata_service"><code>Wikidata Service</code></h5>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Responsibility</strong></dt>
 <dd>
-<p>Acts as a facade and cache for Wikidata. Fetches raw data and image URLs from external Wikidata SPARQL endpoint. Processes data. Caches entries in its own <code>Database</code> partition. Provides an internal API for retrieving cached data. Handles cache initialization/refresh.</p>
-<div class="dlist">
-<dl>
+<p>Fachada y caché para Wikidata. Consulta SPARQL, procesa y almacena en caché.</p>
+</dd>
 <dt class="hdlist1"><strong>Interfaces</strong></dt>
 <dd>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Provided:</strong> Internal API (e.g., REST <code>/api/entries/&#8230;&#8203;</code>) consumed by <code>Gateway Service</code>.</p>
+<p><strong>Provided:</strong> <code>/api/entries/{…}</code>.</p>
 </li>
 <li>
-<p><strong>Consumed:</strong> Wikidata SPARQL Endpoint (External).</p>
-</li>
-<li>
-<p><strong>Consumed:</strong> <code>Database</code> Access Interface (Mongoose, for cache).</p>
+<p><strong>Consumed:</strong> Wikidata SPARQL y base de datos (Mongoose).</p>
 </li>
 </ul>
 </div>
-</dd>
-</dl>
-</div>
-</dd>
-<dt class="hdlist1"><strong>Technology</strong></dt>
-<dd>
-<p>Node.js, Express, Mongoose</p>
 </dd>
 </dl>
 </div>
 <hr>
 </div>
 <div class="sect4">
-<h5 id="_5_1_8_llm_service_hint_service">5.1.8 <code>LLM Service</code> (Hint Service)</h5>
+<h5 id="_llm_service_hint_service"><code>LLM Service</code> (Hint Service)</h5>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Responsibility</strong></dt>
 <dd>
-<p>Orchestrates question generation and provides hints. Fetches base data+imageURLs via <code>Gateway</code> &#8594; <code>Wikidata Service</code>. Uses external LLMs (Gemini) for text generation. Combines text + image. Triggers question storage via <code>Gateway</code> &#8594; <code>Question Service</code>. Generates hints via external LLM.</p>
-<div class="dlist">
-<dl>
+<p>Orquesta generación de preguntas y sugerencias. Obtiene datos base de Wikidata, llama al LLM externo, formatea y persiste preguntas.</p>
+</dd>
 <dt class="hdlist1"><strong>Interfaces</strong></dt>
 <dd>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Provided:</strong> Internal API (e.g., REST <code>/generateQuestions</code>, <code>/getHint</code>) consumed by <code>Gateway Service</code>.</p>
+<p><strong>Provided:</strong> <code>/generateQuestions</code>, <code>/getHint</code>, <code>/getHintWithQuery</code>.</p>
 </li>
 <li>
-<p><strong>Consumed:</strong> <code>Wikidata Service</code> API (via Gateway), External LLM API (Gemini), <code>Gateway Service</code> API (<code>/addQuestion</code>).</p>
+<p><strong>Consumed:</strong> Gateway → Wikidata Service, LLM API externo, Gateway → Question Service.</p>
 </li>
 </ul>
 </div>
 </dd>
-</dl>
-</div>
-</dd>
 <dt class="hdlist1"><strong>Technology</strong></dt>
 <dd>
-<p>Node.js, Express, Axios, @google/genai</p>
+<p>Node.js, Express, Axios, @google/genai.</p>
 </dd>
 </dl>
 </div>
 <hr>
 </div>
 <div class="sect4">
-<h5 id="_5_1_9_database">5.1.9 <code>Database</code></h5>
+<h5 id="_database"><code>Database</code></h5>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Responsibility</strong></dt>
 <dd>
-<p>Provides persistent storage for: User data (<code>Users Service</code>), Game history/stats (<code>History Service</code>), Generated questions (<code>Question Service</code>), Cached Wikidata entries (<code>Wikidata Service</code>).</p>
-<div class="dlist">
-<dl>
+<p>Almacena persistente: usuarios, historial, preguntas, caché de Wikidata.</p>
+</dd>
 <dt class="hdlist1"><strong>Interfaces</strong></dt>
 <dd>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Provided:</strong> Database connection/query interface (MongoDB driver interface). Consumed by backend services.</p>
-</li>
-</ul>
-</div>
-</dd>
-</dl>
-</div>
+<p>Driver de MongoDB consumido por servicios.</p>
 </dd>
 <dt class="hdlist1"><strong>Technology</strong></dt>
 <dd>
-<p>MongoDB</p>
+<p>MongoDB.</p>
 </dd>
 </dl>
 </div>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_important_interfaces_summary">5.2.4. Important Interfaces (Summary)</h4>
+</div>
+<div class="sect2">
+<h3 id="_important_interfaces_summary">5.3. Important Interfaces (Summary)</h3>
+<hr>
 <div class="paragraph text-center">
-<p><em>Summary of key interfaces between Level 1 components and external systems.</em></p>
+<p><em>Summary de interfaces clave.</em></p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -1350,7 +1328,7 @@ The codebase is designed following modular principles, where each component or m
 </colgroup>
 <thead>
 <tr>
-<th class="tableblock halign-center valign-top">Interface Name       </th>
+<th class="tableblock halign-center valign-top">Interface Name</th>
 <th class="tableblock halign-left valign-top">Description</th>
 <th class="tableblock halign-center valign-top">Provided By</th>
 <th class="tableblock halign-center valign-top">Consumed By</th>
@@ -1358,63 +1336,63 @@ The codebase is designed following modular principles, where each component or m
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock">Gateway API (REST)   </p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>API for WebApp (auth, game, hints, user profile, stats, wikidata proxy).</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Gateway API (REST)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>API para WebApp (auth, juego, sugerencias, perfil, stats, proxy).</code></p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">Gateway Service</p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">WebApp</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock">Auth Service API     </p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal API for login/token validation.</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Auth Service API</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>API interna para login/token.</code></p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">Auth Service</p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">Gateway Service</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock">Users Service API     </p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal API for user CRUD operations.</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Users Service API</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CRUD de usuarios.</code></p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">Users Service</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">Gateway Service, potentially Auth Service</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Gateway Service, Auth Service</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock">Question Service API </p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal API for storing/retrieving generated questions.</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Question Service API</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Guardar/recuperar preguntas.</code></p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">Question Service</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">Gateway Service (and LLM Service via Gateway)</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Gateway Service (y LLM Service)</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock">History Service API   </p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal API for storing game results and retrieving stats/history.</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">History Service API</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Guardar resultados y stats.</code></p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">History Service</p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">Gateway Service</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock">Wikidata Service API </p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal API for retrieving cached/processed Wikidata entries.</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Wikidata Service API</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Datos procesados de Wikidata.</code></p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">Wikidata Service</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">Gateway Service (and LLM Service via Gateway)</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Gateway Service (y LLM Service)</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock">LLM Service API       </p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal API for generating questions and hints.</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">LLM Service API</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Generación de preguntas y sugerencias.</code></p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">LLM Service</p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">Gateway Service</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock">Database Access       </p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Internal interface (MongoDB Driver) to the shared database.</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Database Access</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Interface de consulta de MongoDB.</code></p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">Database</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">Auth, Users, Questions, History, Wikidata Services</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Todos los servicios</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock">Wikidata SPARQL       </p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>External endpoint for querying raw Wikidata.</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Wikidata SPARQL</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Endpoint externo para datos brutos.</code></p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">Wikidata (External)</p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">Wikidata Service (internally)</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Wikidata Service</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-center valign-top"><p class="tableblock">External LLM API     </p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>External API for AI text generation (hints, questions).</code></p></td>
-<td class="tableblock halign-center valign-top"><p class="tableblock">LLM Provider (External)</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">External LLM API</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Proveedor de IA para texto.</code></p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">LLM Provider</p></td>
 <td class="tableblock halign-center valign-top"><p class="tableblock">LLM Service</p></td>
 </tr>
 </tbody>
@@ -1422,166 +1400,153 @@ The codebase is designed following modular principles, where each component or m
 </div>
 </div>
 </div>
-</div>
 <div class="sect1">
-<h2 id="_5_2_level_2_refinements">6. 5.2 Level 2 (Refinements)</h2>
+<h2 id="level2-refinements">6. Level 2 (Refinements)</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>This section details the internal structures or key logic flows of selected Level 1 building blocks that warrant further explanation due to their complexity or importance.</p>
-</div>
+<hr>
 <div class="sect2">
-<h3 id="_5_2_1_white_box_llm_service_hint_service">6.1. 5.2.1 White Box LLM Service (Hint Service)</h3>
+<h3 id="_white_box_llm_service_hint_service">6.1. White Box LLM Service (Hint Service)</h3>
 <div class="sect3">
 <h4 id="_motivation_llm_service_focus">6.1.1. Motivation (LLM Service Focus)</h4>
-<div class="paragraph">
-<p>This service encapsulates complex logic for interacting with external AI (LLM) and data providers (Wikidata Service via Gateway). It coordinates multiple steps to generate trivia questions and provide hints, acting as a central intelligence hub for game content generation.</p>
-</div>
-<div class="paragraph">
-<p>Understanding its flow is key to understanding how game content is created and assisted.</p>
-</div>
 <hr>
+<div class="paragraph">
+<p>Este servicio encapsula la lógica compleja de interacción con proveedores externos (LLM, Wikidata Service) y coordina múltiples pasos para generar preguntas y sugerencias.</p>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_internal_logic_flow_responsibilities">6.1.2. Internal Logic Flow / Responsibilities</h4>
 <div class="sect4">
-<h5 id="_question_generation_orchestration_generatequestions_endpoint">• Question Generation Orchestration (<code>/generateQuestions</code> endpoint)</h5>
+<h5 id="_question_generation_orchestration_generatequestions_endpoint">Question Generation Orchestration (<code>/generateQuestions</code> endpoint)</h5>
+<hr>
 <div class="imageblock text-center">
 <div class="content">
-<img src="./images/BuildingBlockViewGenerateQuestions.png" alt="Generation Questions flow diagram">
+<img src="./images/BuildingBlockViewGenerateQuestions.png" alt="Generation Questions Flow Diagram">
 </div>
 </div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Recibe categoría y número de preguntas del Gateway Service.</p>
+</li>
+<li>
+<p>Solicita datos base (incluyendo <code>imageUrl</code>) al Wikidata Service vía Gateway.</p>
+</li>
+<li>
+<p>Para cada entrada:</p>
 <div class="ulist">
 <ul>
 <li>
-<p>Receives category and count request from Gateway Service.</p>
+<p>Formatea la información textual (<code>formatEntryInfo</code>).</p>
 </li>
 <li>
-<p>Requests base data entries (including <code>imageUrl</code>) from Wikidata Service (via Gateway&#8217;s <code>/api/entries/&#8230;&#8203;</code> proxy).</p>
+<p>Construye un prompt detallado para el LLM externo (Gemini/Empathy).</p>
 </li>
 <li>
-<p>For each entry:</p>
+<p>Llama al API del LLM externo (<code>sendQuestionToLLM</code>).</p>
 </li>
 <li>
-<p>Formats textual information (<code>formatEntryInfo</code>).</p>
+<p>Parsea y valida la respuesta JSON (<code>parseJsonResponse</code>), reintentando si es necesario.</p>
 </li>
 <li>
-<p>Constructs a detailed prompt for the external LLM (Gemini/Empathy) to create a question and four multiple-choice answers (in JSON).</p>
+<p>Combina el texto generado con el <code>imageUrl</code>.</p>
 </li>
 <li>
-<p>Calls external LLM API via <code>sendQuestionToLLM</code>.</p>
-</li>
-<li>
-<p>Parses and validates the LLM&#8217;s JSON response (<code>parseJsonResponse</code>), with retries if needed.</p>
-</li>
-<li>
-<p>Combines the LLM-generated text with the <code>imageUrl</code>.</p>
-</li>
-<li>
-<p>Calls Gateway&#8217;s <code>/addQuestion</code> endpoint (routes to Question Service) to persist the question + image.</p>
-</li>
-<li>
-<p>Aggregates generated questions and returns the list to Gateway Service.</p>
+<p>Persiste la pregunta mediante el endpoint <code>/addQuestion</code> del Gateway.</p>
 </li>
 </ul>
+</div>
+</li>
+<li>
+<p>Agrega todas las preguntas generadas y las devuelve al Gateway Service.</p>
+</li>
+</ol>
 </div>
 <hr>
 </div>
 <div class="sect4">
-<h5 id="_hint_generation_gethint_endpoint">• Hint Generation (<code>/getHint</code> endpoint)</h5>
+<h5 id="_hint_generation_gethint_endpoint">Hint Generation (<code>/getHint</code> endpoint)</h5>
+<hr>
 <div class="imageblock text-center">
 <div class="content">
-<img src="./images/BuildingBlockViewHintRequest.png" alt="get hint flow diagram">
+<img src="./images/BuildingBlockViewHintRequest.png" alt="Get Hint Flow Diagram">
 </div>
 </div>
-<div class="ulist">
-<ul>
+<div class="olist arabic">
+<ol class="arabic">
 <li>
-<p>Receives current question text and answer options from Gateway Service.</p>
+<p>Recibe el texto de la pregunta y opciones de respuesta del Gateway Service.</p>
 </li>
 <li>
-<p>Constructs a prompt asking the LLM for a hint without revealing the correct answer.</p>
+<p>Construye un prompt que solicite una pista sin revelar la respuesta correcta.</p>
 </li>
 <li>
-<p>Calls external LLM API via <code>sendQuestionToLLM</code>.</p>
+<p>Llama al API del LLM externo y parsea la respuesta.</p>
 </li>
 <li>
-<p>Parses and returns a single hint sentence.</p>
+<p>Devuelve una única oración como pista.</p>
 </li>
-</ul>
+</ol>
 </div>
 <hr>
 </div>
 <div class="sect4">
-<h5 id="_conversational_hint_generation_gethintwithquery_endpoint">• Conversational Hint Generation (<code>/getHintWithQuery</code> endpoint)</h5>
-<div class="ulist">
-<ul>
-<li>
-<p>Similar to <code>/getHint</code> but incorporates a user-specific query.</p>
-</li>
-<li>
-<p>Filters requests to prevent direct answer reveals.</p>
-</li>
-<li>
-<p>Constructs a prompt asking the LLM to answer the user&#8217;s query related to the game question, <strong>without giving away the solution</strong>.</p>
-</li>
-<li>
-<p>Calls external LLM API, parses response, and returns the conversational hint.</p>
-</li>
-</ul>
-</div>
+<h5 id="_conversational_hint_generation_gethintwithquery_endpoint">Conversational Hint Generation (<code>/getHintWithQuery</code> endpoint)</h5>
 <hr>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Similar a <code>/getHint</code>, pero incorpora una consulta específica del usuario.</p>
+</li>
+<li>
+<p>Filtra para prevenir revelaciones directas de la respuesta.</p>
+</li>
+<li>
+<p>Construye y envía el prompt al LLM, parsea y retorna la pista conversacional.</p>
+</li>
+</ol>
+</div>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_5_3_level_3_refinements_concepts">7. 5.3 Level 3 (Refinements / Concepts)</h2>
+<h2 id="level3-concepts">7. Level 3 (Refinements / Concepts)</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>This level describes cross-cutting concepts or further details.</p>
-</div>
 <hr>
 <div class="sect2">
 <h3 id="_concept_question_generation_and_storage_flow">7.1. Concept: Question Generation and Storage Flow</h3>
 <div class="paragraph">
-<p><strong>Involved Components:</strong>
-Gateway Service, LLM Service, Wikidata Service, Question Service, Database, External Wikidata, External LLM.</p>
-</div>
-<div class="paragraph">
-<p><strong>Flow:</strong></p>
+<p><strong>Componentes involucrados:</strong> Gateway Service, LLM Service, Wikidata Service, Question Service, Database, Wikidata SPARQL, LLM Externo.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>WebApp requests new questions for a category via Gateway.</p>
+<p>WebApp solicita preguntas por categoría al Gateway.</p>
 </li>
 <li>
-<p>Gateway routes the request to LLM Service (<code>/generateQuestions</code>).</p>
+<p>Gateway enruta a LLM Service (<code>/generateQuestions</code>).</p>
 </li>
 <li>
-<p>LLM Service requests base data + image URL from Wikidata Service (via Gateway <code>/api/entries/&#8230;&#8203;</code>).</p>
+<p>LLM Service pide datos base al Wikidata Service vía Gateway.</p>
 </li>
 <li>
-<p>Wikidata Service returns cached/processed data (originating from external Wikidata SPARQL).</p>
+<p>Wikidata Service devuelve datos cacheados.</p>
 </li>
 <li>
-<p>LLM Service formats text and prompts external LLM.</p>
+<p>LLM Service formatea y envía prompt al LLM externo.</p>
 </li>
 <li>
-<p>LLM Service receives, parses, and validates the LLM JSON response.</p>
+<p>LLM responde en JSON; LLM Service parsea y valida.</p>
 </li>
 <li>
-<p>LLM Service combines LLM text with original image URL.</p>
+<p>LLM Service unifica texto e imagen, y llama <code>/addQuestion</code> vía Gateway.</p>
 </li>
 <li>
-<p>LLM Service calls Gateway’s <code>/addQuestion</code> to store the complete question.</p>
+<p>Gateway enruta a Question Service, que guarda en la base de datos.</p>
 </li>
 <li>
-<p>Gateway routes <code>/addQuestion</code> to Question Service, which saves it in the Database.</p>
-</li>
-<li>
-<p>LLM Service returns the generated question(s) to the original caller (likely WebApp).</p>
+<p>LLM Service retorna las preguntas al llamador original.</p>
 </li>
 </ol>
 </div>
@@ -1590,20 +1555,18 @@ Gateway Service, LLM Service, Wikidata Service, Question Service, Database, Exte
 <div class="sect2">
 <h3 id="_concept_statistics_calculation">7.2. Concept: Statistics Calculation</h3>
 <div class="paragraph">
-<p><strong>Responsible Component:</strong>
-<code>History Service</code></p>
+<p><strong>Componente responsable:</strong> History Service</p>
 </div>
 <div class="paragraph">
-<p><strong>Description:</strong>
-When <code>/stats</code> is called:
-- Retrieves <strong>all</strong> game history records for the user from the Database.
-- Calculates aggregate statistics (total points, games played, win/loss ratio, averages, most played category) in memory.
-- Returns the result including the top 3 games played.</p>
+<p>Cuando se llama a <code>/stats</code>:
+* Recupera todos los registros de juegos del usuario.
+* Calcula en memoria estadísticas agregadas (puntos totales, número de juegos, ratio victoria/derrota, medias, categoría más jugada).
+* Devuelve resultados, incluyendo las 3 partidas más destacadas.</p>
 </div>
 <div class="quoteblock">
 <blockquote>
 <div class="paragraph">
-<p>⚠️ Performance might degrade for users with very large game histories.</p>
+<p>⚠️ Para usuarios con historiales muy extensos, el rendimiento podría verse afectado al cargar y procesar todos los registros en memoria.</p>
 </div>
 </blockquote>
 </div>
