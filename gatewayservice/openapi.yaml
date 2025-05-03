@@ -825,6 +825,66 @@ paths:
                     type: string
                     description: Error information.
                     example: Internal Server Error
+  /update-username:
+    put:
+      summary: Update username in game history.
+      operationId: updateUsernameInHistory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                actualUserName:
+                  type: string
+                  description: Current username to be updated.
+                  example: olduser
+                newUsername:
+                  type: string
+                  description: New username to replace the current one.
+                  example: newuser
+              required:
+                - actualUserName
+                - newUsername
+      responses:
+        "200":
+          description: Username in game history updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates if the update was successful.
+                    example: true
+                  message:
+                    type: string
+                    description: Success message.
+                    example: Nombre de usuario actualizado en el historial
+        "400":
+          description: Invalid username data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Datos de actualización inválidos
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
   /addQuestion:
     post:
       summary: Add a new question to the database.

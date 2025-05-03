@@ -7,22 +7,20 @@ const swaggerUi = require('swagger-ui-express');
 const fs = require("fs")
 const YAML = require('yaml');
 
-let connectDatabase;
+const isTest = process.env.NODE_ENV === "test";
+
+const MONGO_URI = isTest
+  ? "mongodb://localhost:27017/testdb"
+  : process.env.MONGO_URI || "mongodb://mongodb-wichat_es6a:27017/wichatdb";
+
+mongoose.connect(MONGO_URI)
+  .then(() => console.log(`Conectado a MongoDB en ${MONGO_URI}`))
+  .catch(err => console.error("Error en la conexión a MongoDB:", err.message));
+
+  
 let UserGame;
 
-try{
-  
-  connectDatabase = require("/usr/src/llmservice/config/database.js"); //NOSONAR
-  connectDatabase(mongoose);
-  UserGame = require("/usr/src/llmservice/models/history-model")(mongoose); //NOSONAR
-}catch (error) {
-
-  connectDatabase = require("../llmservice/config/database.js");
-  connectDatabase(mongoose);
-  
-  UserGame = require("../llmservice/models/history-model")(mongoose); 
-}
-
+UserGame = require("./models/history-model")(mongoose); 
 
 const app = express();
 const port = process.env.PORT || 8010;
@@ -268,6 +266,29 @@ app.post("/addGame", async (req, res) => {
       message: "Internal server error",
       error: error.message
     });
+  }
+});
+
+// PUT /update-username
+app.put('/update-username', async (req, res) => {
+  const { actualUserName, newUsername } = req.body;
+
+  if (!actualUserName || !newUsername) {
+    return res.status(400).json({ error: 'Both actualUserName and newUsername are required' });
+  }
+
+  try {
+    await UserGame.updateMany(
+      { username: actualUserName },
+      { $set: { username: newUsername } }
+    );
+
+    res.json({
+      message: 'Username updated in user games successfully',
+    });
+  } catch (error) {
+    console.error('Error updating username in history:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 

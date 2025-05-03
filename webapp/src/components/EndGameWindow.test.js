@@ -30,6 +30,46 @@ describe("FullScreenScoreWindow", () => {
     useLocation.mockReturnValue(defaultLocationState);
   });
 
+  it("navigates to the correct routes when action buttons are clicked for non-logged-in user", () => {
+    // Ensure user is not logged in
+    localStorage.removeItem("username");
+    render(<FullScreenScoreWindow />);
+  
+    // Verify "Jugar otra vez" button navigation
+    const playAgainButton = screen.getByRole("button", { name: /Jugar otra vez/i });
+    fireEvent.click(playAgainButton);
+    expect(mockNavigate).toHaveBeenCalledWith("/game-options");
+  
+    // Verify "Estadísticas" button is not present
+    expect(screen.queryByRole("button", { name: /Estadísticas/i })).not.toBeInTheDocument();
+  
+    // Verify "Menú principal" button navigation
+    const homeButton = screen.getByRole("button", { name: /Menú principal/i });
+    fireEvent.click(homeButton);
+    expect(mockNavigate).toHaveBeenCalledWith("/home");
+  });
+  
+  it("navigates to the correct routes when action buttons are clicked for logged-in user", () => {
+    // Simulate logged-in user
+    localStorage.setItem("username", "testUser");
+    render(<FullScreenScoreWindow />);
+  
+    // Verify "Jugar otra vez" button navigation
+    const playAgainButton = screen.getByRole("button", { name: /Jugar otra vez/i });
+    fireEvent.click(playAgainButton);
+    expect(mockNavigate).toHaveBeenCalledWith("/game-options");
+  
+    // Verify "Estadísticas" button is present and navigates correctly
+    const statsButton = screen.getByRole("button", { name: /Estadísticas/i });
+    fireEvent.click(statsButton);
+    expect(mockNavigate).toHaveBeenCalledWith("/statistics");
+  
+    // Verify "Menú principal" button navigation
+    const homeButton = screen.getByRole("button", { name: /Menú principal/i });
+    fireEvent.click(homeButton);
+    expect(mockNavigate).toHaveBeenCalledWith("/home");
+  });
+
   it("renders header text and chips for category and difficulty", () => {
     render(<FullScreenScoreWindow />);
 
@@ -89,19 +129,6 @@ describe("FullScreenScoreWindow", () => {
     expect(screen.queryAllByText("5").length).toBeGreaterThan(0);
     expect(screen.getByText("50 seg")).toBeInTheDocument();
     expect(screen.getByText("5.0 seg")).toBeInTheDocument();
-  });
-
-  it("navigates to the correct routes when action buttons are clicked", () => {
-    render(<FullScreenScoreWindow />);
-
-    fireEvent.click(screen.getByRole("button", { name: /Jugar otra vez/i }));
-    expect(mockNavigate).toHaveBeenCalledWith("/game-options");
-
-    fireEvent.click(screen.getByRole("button", { name: /Estadísticas/i }));
-    expect(mockNavigate).toHaveBeenCalledWith("/statistics");
-
-    fireEvent.click(screen.getByRole("button", { name: /Menú principal/i }));
-    expect(mockNavigate).toHaveBeenCalledWith("/home");
   });
 
   it("handles missing location state gracefully", () => {

@@ -3,10 +3,12 @@ const { MongoMemoryServer } = require('mongodb-memory-server');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
+// Mock fetch
+require('jest-fetch-mock').enableMocks();
+
 let app;
 let mongoServer;
 let User;
-let History;
 
 const TEST_USER = process.env.TEST_USER || 'testuser';
 const TEST_PASS = process.env.TEST_PASS || 'testpassword';
@@ -21,9 +23,7 @@ beforeAll(async () => {
   await mongoose.connect(mongoUri, {});
 
   // Cargar los modelos usando el mongoose de test
-  User = require('../../llmservice/models/user-model')(mongoose);
-  History = require('../../llmservice/models/history-model')(mongoose);
-
+  User = require('./models/user-model')(mongoose);
   app = require('./user-service');
 });
 
@@ -76,6 +76,7 @@ describe('User Service', () => {
     const anotherUser = new User({ username: ALT_USER, password: ALT_PASS });
     await anotherUser.save();
 
+    fetch.mockResponseOnce(JSON.stringify({ message: 'Username updated in user games successfully' }));
     const response = await request(app).put(`/user/${userId}/username`).send({ username: ALT_USER });
     expect(response.status).toBe(400);
   });

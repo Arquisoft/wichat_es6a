@@ -8,21 +8,22 @@ const swaggerUi = require('swagger-ui-express');
 const fs = require("fs")
 const YAML = require('yaml');
 
+const gatewayServiceUrl = process.env.GATEWAY_SERVICE_URL || "http://localhost:8000";
+
+const isTest = process.env.NODE_ENV === "test";
+
+const MONGO_URI = isTest
+  ? "mongodb://localhost:27017/testdb"
+  : process.env.MONGO_URI || "mongodb://mongodb-wichat_es6a:27017/wichatdb";
+
+mongoose.connect(MONGO_URI)
+  .then(() => console.log(`Conectado a MongoDB en ${MONGO_URI}`))
+  .catch(err => console.error("Error en la conexión a MongoDB:", err.message));
 
 let User; 
-let History; 
 
-try {
-  const connectDatabase = require("/usr/src/llmservice/config/database.js"); //NOSONAR
-  connectDatabase(mongoose);
-  User = require("/usr/src/llmservice/models/user-model")(mongoose); //NOSONAR
-  History = require("/usr/src/llmservice/models/history-model")(mongoose); //NOSONAR
-} catch (error) {
-  const connectDatabase = require("../../llmservice/config/database.js");
-  connectDatabase(mongoose);
-  User = require("../../llmservice/models/user-model")(mongoose);
-  History = require("../../llmservice/models/history-model")(mongoose);
-}
+User = require("./models/user-model")(mongoose);
+
 
 const app = express();
 const port = 8001;
@@ -139,12 +140,16 @@ app.put('/user/:id/username', async (req, res) => {
     user.username = newUsername;
     await user.save();
 
-    // Actualizar el nombre de usuario en todas las partidas del usuario
-    // Actualizar todos los registros de "History" (partidas) donde el campo "username" sea igual al antiguo nombre de usuario
-    await History.updateMany(
-      { username: actualUserName },
-      { $set: { username: newUsername } }
-    );
+    fetch(gatewayServiceUrl +"/update-username", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        actualUserName: actualUserName,
+        newUsername: newUsername,
+      }),
+    })
 
     res.status(200).json({ message: 'Username actualizado correctamente' });
   } catch (error) {

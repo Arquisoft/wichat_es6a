@@ -15,8 +15,6 @@ describe('Servicio Gateway', () => {
   const questionServiceUrl = 'http://localhost:8005';
   const wikidataServiceUrl = 'http://localhost:8020';
 
-  
-
   afterEach(() => {
     mock.reset(); // Resetea los mocks después de cada prueba
   });
@@ -107,7 +105,7 @@ describe('Servicio Gateway', () => {
       });
     });
 
-      describe('POST /adduser', () => {
+    describe('POST /adduser', () => {
       it('debería crear un usuario correctamente', async () => {
         const userData = { username: 'nuevousuario', password: 'contraseña123' };
         mock.onPost(`${userServiceUrl}/adduser`).reply(200, { id: '123', ...userData });
@@ -337,6 +335,43 @@ describe('Servicio Gateway', () => {
         const response = await request(server).post('/addGame').send({});
         expect(response.status).toBe(400);
         expect(response.body).toEqual({ error: 'Datos de partida inválidos' });
+      });
+    });
+
+    describe('PUT /update-username', () => {
+      it('debería actualizar el nombre de usuario en el historial correctamente', async () => {
+        const updateData = { actualUserName: 'olduser', newUsername: 'newuser' };
+        const historyResponse = { success: true, message: 'Nombre de usuario actualizado en el historial' };
+        mock.onPut(`${historyServiceUrl}/update-username`).reply(200, historyResponse);
+
+        const response = await request(server)
+          .put('/update-username')
+          .send(updateData);
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual(historyResponse);
+      });
+
+      it('debería devolver 400 si el servicio de historial rechaza la actualización', async () => {
+        const updateData = { actualUserName: 'olduser', newUsername: 'newuser' };
+        const errorResponse = { error: 'Datos de actualización inválidos' };
+        mock.onPut(`${historyServiceUrl}/update-username`).reply(400, errorResponse);
+
+        const response = await request(server)
+          .put('/update-username')
+          .send(updateData);
+        expect(response.status).toBe(400);
+        expect(response.body).toEqual(errorResponse);
+      });
+
+      it('debería devolver 500 si el servicio de historial falla sin respuesta', async () => {
+        const updateData = { actualUserName: 'olduser', newUsername: 'newuser' };
+        mock.onPut(`${historyServiceUrl}/update-username`).networkError();
+
+        const response = await request(server)
+          .put('/update-username')
+          .send(updateData);
+        expect(response.status).toBe(500);
+        expect(response.body).toEqual({ error: 'Internal Server Error' });
       });
     });
   });

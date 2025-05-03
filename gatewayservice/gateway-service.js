@@ -454,6 +454,35 @@ app.post("/addGame", async (req, res) => {
   }
 });
 
+app.put("/update-username", async (req, res) => {
+  console.log("Datos recibidos en /update-username:", req.body);
+
+  try {
+    const historyResponse = await axios.put(
+      historyServiceUrl + '/update-username', // NOSONAR
+      req.body,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    res.json(historyResponse.data);
+  } catch (error) {
+    failedRequestsCounter.inc({
+      service: "history",
+      endpoint: "/update-username",
+      status: error.response?.status || 500,
+    });
+
+    res
+      .status(error.response?.status || 500)
+      .json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+
 /* ENDPOINTS DEL SERVICIO DE PREGUNTAS */
 
 app.post("/addQuestion", async (req, res) => {
