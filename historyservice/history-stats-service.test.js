@@ -23,7 +23,7 @@ jest.mock('../llmservice/models/history-model', () => {
 // Mock de la conexión a la base de datos
 jest.mock('../llmservice/config/database', () => jest.fn());
 
-const UserGame = require('../llmservice/models/history-model')(mongoose);
+const UserGame = require('../users/questionsService/models/history-model')(mongoose);
 
 // Importar el app exportado del servicio
 const app = require('./history-stats-service'); // Ajusta la ruta al archivo de tu servicio

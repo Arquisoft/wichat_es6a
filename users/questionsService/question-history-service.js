@@ -3,17 +3,21 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 
-let Questions;
 
-try {
-  const connectDatabase = require("/usr/src/llmservice/config/database"); //NOSONAR
-  connectDatabase(mongoose);
-  Questions = require("/usr/src/llmservice/models/questions-model")(mongoose); //NOSONAR
-} catch (error) {
-  const connectDatabase = require("../../llmservice/config/database");
-  connectDatabase(mongoose);
-  Questions = require("../../llmservice/models/questions-model")(mongoose);
-}
+const isTest = process.env.NODE_ENV === "test";
+
+const MONGO_URI = isTest
+  ? "mongodb://localhost:27017/testdb"
+  : process.env.MONGO_URI || "mongodb://mongodb-wichat_es6a:27017/wichatdb";
+
+mongoose.connect(MONGO_URI)
+  .then(() => console.log(`Conectado a MongoDB en ${MONGO_URI}`))
+  .catch(err => console.error("Error en la conexión a MongoDB:", err.message));
+
+
+let Questions;
+Questions = require("./models/questions-model")(mongoose);
+
 
 const swaggerUi = require("swagger-ui-express");
 const fs = require("fs");
