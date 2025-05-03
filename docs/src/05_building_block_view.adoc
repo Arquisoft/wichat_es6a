@@ -126,19 +126,19 @@ _Summary of key interfaces._
 |===
 
 [[level2-refinements]]
-== Level 2 (Refinements)
+=== Level 2 (Refinements)
 
 ---
-=== White Box LLM Service (Hint Service)
+==== White Box LLM Service (Hint Service)
 
-==== Motivation (LLM Service Focus)
+===== Motivation (LLM Service Focus)
 
 ---
 This service encapsulates the complex logic of interacting with external providers (LLM, Wikidata Service) and coordinates multiple steps to generate questions and hints.
 
-==== Internal Logic Flow / Responsibilities
+===== Internal Logic Flow / Responsibilities
 
-===== Question Generation Orchestration (`/generateQuestions` endpoint)
+====== Question Generation Orchestration (`/generateQuestions` endpoint)
 
 ---
 image::BuildingBlockViewGenerateQuestions.png["Generation Questions Flow Diagram", align="center"]
@@ -155,7 +155,7 @@ image::BuildingBlockViewGenerateQuestions.png["Generation Questions Flow Diagram
 4. Aggregates all generated questions and returns them to the Gateway Service.
 
 ---
-===== Hint Generation (`/getHint` endpoint)
+====== Hint Generation (`/getHint` endpoint)
 
 ---
 image::BuildingBlockViewHintRequest.png["Get Hint Flow Diagram", align="center"]
@@ -166,7 +166,7 @@ image::BuildingBlockViewHintRequest.png["Get Hint Flow Diagram", align="center"]
 4. Returns a single-sentence hint.
 
 ---
-===== Conversational Hint Generation (`/getHintWithQuery` endpoint)
+====== Conversational Hint Generation (`/getHintWithQuery` endpoint)
 
 ---
 1. Similar to `/getHint`, but incorporates a user-specific query.  
@@ -174,10 +174,10 @@ image::BuildingBlockViewHintRequest.png["Get Hint Flow Diagram", align="center"]
 3. Builds and sends the prompt to the LLM, parses, and returns the conversational hint.
 
 [[level3-concepts]]
-== Level 3 (Refinements / Concepts)
+=== Level 3 (Refinements / Concepts)
 
 ---
-=== Concept: Question Generation and Storage Flow
+==== Concept: Question Generation and Storage Flow
 
 **Involved components:** Gateway Service, LLM Service, Wikidata Service, Question Service, Database, Wikidata SPARQL, External LLM.
 
@@ -192,7 +192,7 @@ image::BuildingBlockViewHintRequest.png["Get Hint Flow Diagram", align="center"]
 9. LLM Service returns the questions to the original caller.
 
 ---
-=== Concept: Statistics Calculation
+==== Concept: Statistics Calculation
 
 **Responsible component:** History Service
 
