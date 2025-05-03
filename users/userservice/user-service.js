@@ -225,13 +225,23 @@ const allowedExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp'];
 app.get('/user/:id/profile-pic', async (req, res) => {
   try {
     const userId = req.params.id;
-    const baseDir = path.join(__dirname, 'uploads', 'profile_pics');
 
-    // Buscar archivo con cualquier extensión permitida
+    //Validación estricta: solo letras, números, guiones y guiones bajos
+    if (!/^[a-zA-Z0-9_-]+$/.test(userId)) {
+      return res.status(400).send('Invalid user ID');
+    }
+
+    const baseDir = path.join(__dirname, 'uploads', 'profile_pics');
     let found = false;
 
     for (const ext of allowedExtensions) {
-      const imagePath = path.join(baseDir, `${userId}${ext}`);
+      const imagePath = path.resolve(baseDir, `${userId}${ext}`);
+
+      // Asegurarse que la ruta está dentro de baseDir
+      if (!imagePath.startsWith(baseDir)) {
+        return res.status(400).send('Invalid path');
+      }
+
       if (fs.existsSync(imagePath)) {
         found = true;
         return res.sendFile(imagePath);
@@ -239,13 +249,14 @@ app.get('/user/:id/profile-pic', async (req, res) => {
     }
 
     if (!found) {
-      return res.status(404).json({ error: 'Profile picture not found' });
+      res.status(404).send('Image not found');
     }
-
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
   }
 });
+
 
 
 // 🗑️ Eliminar imagen de perfil
