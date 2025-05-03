@@ -138,7 +138,7 @@ describe("StatisticsWindow", () => {
       await user.click(screen.getByRole("button", { name: /Show More/i }));
 
       expect(await screen.findByRole("alert")).toHaveTextContent(
-        /No user found/i
+        /You are not logged in/i
       );
     });
   });

@@ -50,7 +50,7 @@ const StatisticsWindow = () => {
     const username = localStorage.getItem("username");
 
     if (!username) {
-      setError("No user found. Please log in.");
+      setError("You are not logged in. Please log in to see your statistics.");
       setLoading(false);
       return;
     }
@@ -92,7 +92,7 @@ const StatisticsWindow = () => {
   const showAllGames = () => {
     const username = localStorage.getItem("username");
     if (!username) {
-      setError("No user found. Please log in.");
+      setError("You are not logged in. Please log in to see your statistics.");
       return;
     }
 
