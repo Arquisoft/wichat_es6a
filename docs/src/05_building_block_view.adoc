@@ -10,9 +10,9 @@ This view shows the static decomposition of the WIChat system into its main buil
 
 === 5.0 High-Level System Overview (Context Recap)
 
-The following diagram shows the WIChat system as a whole (blackbox), interacting with the primary user and external data/service providers (Wikidata, LLM). This corresponds to the **Context View** (Chapter 3).
+The following diagram shows the WIChat system as a whole (blackbox), interacting with the primary user and external data/service providers (Wikidata, LLM).
 
-image::BuildingBlockViewOverviewDiagram.png["High-Level Context Diagram", align="center"]
+image::BuildingBlockViewFirst.png["High-Level Context Diagram", align="center"]
 
 '''
 
@@ -25,7 +25,7 @@ This section describes the top-level decomposition of the WIChat trivia game sys
 The following diagram shows the main internal building blocks (Level 1) of the WIChat system and their primary interactions.
 
 
-image::05_LEVEL2.png["Level 1 Whitebox Diagram for WIChat System", align="center"]
+image::BuildingBlockView2.png["Level 1 Whitebox Diagram for WIChat System", align="center"]
 
 ==== Motivation
 
