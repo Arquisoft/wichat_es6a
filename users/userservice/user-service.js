@@ -220,21 +220,27 @@ app.post('/user/:id/profile-pic', upload.single('profilePic'), async (req, res) 
 });
 
 
-// 📸 Obtener imagen de perfil
+const allowedExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp'];
+
 app.get('/user/:id/profile-pic', async (req, res) => {
   try {
     const userId = req.params.id;
-    const imagePath = path.join(__dirname, 'uploads', 'profile_pics', `${userId}.png`);  // Ruta completa a la imagen
+    const baseDir = path.join(__dirname, 'uploads', 'profile_pics');
 
-    // Verificar si el archivo existe
-    fs.access(imagePath, fs.constants.F_OK, (err) => {  // NOSONAR
-      if (err) {
-        return res.status(404).json({ error: 'Profile picture not found' });
+    // Buscar archivo con cualquier extensión permitida
+    let found = false;
+
+    for (const ext of allowedExtensions) {
+      const imagePath = path.join(baseDir, `${userId}${ext}`);
+      if (fs.existsSync(imagePath)) {
+        found = true;
+        return res.sendFile(imagePath);
       }
+    }
 
-      // Si el archivo existe, devolverlo como un archivo binario
-      res.sendFile(imagePath);
-    });
+    if (!found) {
+      return res.status(404).json({ error: 'Profile picture not found' });
+    }
 
   } catch (error) {
     res.status(500).json({ error: error.message });
