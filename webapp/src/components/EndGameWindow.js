@@ -4,7 +4,6 @@ import {
   Typography,
   Grid,
   Button,
-  Divider,
   Chip,
   Avatar,
   LinearProgress
@@ -40,6 +39,7 @@ export default function FullScreenScoreWindow() {
   const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
   const averageTimePerQuestion = totalQuestions > 0 ? (timeTaken / totalQuestions).toFixed(1) : 0;
   const win = correctAnswers >= totalQuestions / 2;
+  const isLoggedIn = !!localStorage.getItem("username");
 
   return (
     <Box sx={{
@@ -280,25 +280,27 @@ export default function FullScreenScoreWindow() {
           >
             Jugar otra vez
           </Button>
-          <Button
-            variant="outlined"
-            startIcon={<BarChart />}
-            onClick={() => navigate("/statistics")}
-            sx={{
-              px: 4,
-              py: 1.5,
-              fontSize: '1.1rem',
-              borderRadius: 50,
-              borderColor: 'rgba(255,255,255,0.5)',
-              color: '#ffffff',
-              '&:hover': {
-                bgcolor: 'rgba(255,255,255,0.1)',
-                borderColor: '#ffffff'
-              }
-            }}
-          >
-            Estadísticas
-          </Button>
+          {isLoggedIn && (
+            <Button
+              variant="outlined"
+              startIcon={<BarChart />}
+              onClick={() => navigate("/statistics")}
+              sx={{
+                px: 4,
+                py: 1.5,
+                fontSize: '1.1rem',
+                borderRadius: 50,
+                borderColor: 'rgba(255,255,255,0.5)',
+                color: '#ffffff',
+                '&:hover': {
+                  bgcolor: 'rgba(255,255,255,0.1)',
+                  borderColor: '#ffffff'
+                }
+              }}
+            >
+              Estadísticas
+            </Button>
+          )}
           <Button
             variant="text"
             startIcon={<Home />}
