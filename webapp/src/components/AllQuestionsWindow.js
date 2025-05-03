@@ -40,7 +40,7 @@ const AllQuestionsWindow = () => {
       setLoading(true); // Ensure loading is true at the start
       setError(null); // Clear previous errors
       try {
-        const response = await fetch(`http://localhost:8005/questions`);
+        const response = await fetch(`http://localhost:8000/questions`);
         if (!response.ok)
           throw new Error(
             `Network response was not ok (status: ${response.status})`
@@ -186,71 +186,88 @@ const AllQuestionsWindow = () => {
               {/* Increased spacing */}
               {questions.length > 0 ? (
                 questions.map((q, index) => (
-                  <Grid
-                    item
-                    xs={12}
-                    key={q._id || index}
-                    sx={{
-                      // Use question ID if available
-                      animation: `${fadeIn} 0.5s ease-out forwards`,
-                      animationDelay: `${index * 0.05}s`, // Staggered fade-in
-                      opacity: 0, // Start hidden for animation
-                    }}
-                  >
-                    <Paper
-                      elevation={2} // Subtle elevation for each question card
-                      sx={{
-                        padding: 2.5,
-                        borderRadius: "12px", // Rounded corners for question cards
-                        backgroundColor: "rgba(255, 255, 255, 0.95)", // Slightly different background
-                        borderLeft: "5px solid #1e88e5", // Accent border
-                      }}
-                    >
-                      <Typography
-                        variant="body1"
-                        sx={{ fontWeight: "600", color: "#1c4966", mb: 1.5 }}
-                      >
-                        <strong>Pregunta {index + 1}:</strong> {q.question}
-                      </Typography>
-                      <List dense sx={{ padding: 0 }}>
-                        {" "}
-                        {/* Use dense list */}
-                        {/* Correct Answer */}
-                        <ListItem sx={{ paddingLeft: 0 }}>
-                          <ListItemIcon
-                            sx={{ minWidth: "30px", color: "success.main" }}
-                          >
-                            <CheckCircleOutlineIcon fontSize="small" />
-                          </ListItemIcon>
-                          <ListItemText
-                            primary={q.correctAnswer}
-                            primaryTypographyProps={{
-                              variant: "body2",
-                              fontWeight: "bold",
-                              color: "success.dark",
-                            }}
-                          />
-                        </ListItem>
-                        {/* Incorrect Answers */}
-                        {q.incorrectAnswers?.map((ans, i) => (
-                          <ListItem key={i} sx={{ paddingLeft: 0 }}>
-                            <ListItemIcon
-                              sx={{ minWidth: "30px", color: "text.secondary" }}
-                            >
-                              <RadioButtonUncheckedIcon fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText
-                              primary={ans}
-                              primaryTypographyProps={{
-                                variant: "body2",
-                                color: "text.secondary",
-                              }}
-                            />
-                          </ListItem>
-                        ))}
-                      </List>
-                    </Paper>
-                  </Grid>
+                  <Grid item xs={12} key={q._id || index}
+  sx={{
+    animation: `${fadeIn} 0.5s ease-out forwards`,
+    animationDelay: `${index * 0.05}s`,
+    opacity: 0,
+  }}
+>
+  <Paper
+    elevation={2}
+    sx={{
+      padding: 2.5,
+      borderRadius: "12px",
+      backgroundColor: "rgba(255, 255, 255, 0.95)",
+      borderLeft: "5px solid #1e88e5",
+    }}
+  >
+    {/* Pregunta arriba */}
+    <Typography
+      variant="body1"
+      sx={{ fontWeight: "600", color: "#1c4966", mb: 2 }}
+    >
+      <strong>Pregunta {index + 1}:</strong> {q.question}
+    </Typography>
+
+    {/* Respuestas e imagen en fila */}
+    <Grid container spacing={2}>
+      {/* Respuestas a la izquierda */}
+      <Grid item xs={12} md={8}>
+        <List dense sx={{ padding: 0 }}>
+          <ListItem sx={{ paddingLeft: 0 }}>
+            <ListItemIcon sx={{ minWidth: "30px", color: "success.main" }}>
+              <CheckCircleOutlineIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText
+              primary={q.correctAnswer}
+              primaryTypographyProps={{
+                variant: "body2",
+                fontWeight: "bold",
+                color: "success.dark",
+              }}
+            />
+          </ListItem>
+          {q.incorrectAnswers?.map((ans, i) => (
+            <ListItem key={i} sx={{ paddingLeft: 0 }}>
+              <ListItemIcon
+                sx={{ minWidth: "30px", color: "text.secondary" }}
+              >
+                <RadioButtonUncheckedIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText
+                primary={ans}
+                primaryTypographyProps={{
+                  variant: "body2",
+                  color: "text.secondary",
+                }}
+              />
+            </ListItem>
+          ))}
+        </List>
+      </Grid>
+
+      {/* Imagen a la derecha */}
+      {q.imageUrl && (
+        <Grid item xs={12} md={4}>
+          <Box
+            component="img"
+            src={q.imageUrl}
+            alt={`Imagen de la pregunta ${index + 1}`}
+            sx={{
+              width: "100%",
+              maxHeight: 200,
+              objectFit: "contain",
+              borderRadius: 2,
+              boxShadow: 2,
+            }}
+          />
+        </Grid>
+      )}
+    </Grid>
+  </Paper>
+</Grid>
+
                 ))
               ) : (
                 <Grid item xs={12}>
