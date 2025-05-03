@@ -67,8 +67,16 @@ if (fs.existsSync(openapiPath)) {
 // Only connect and start server if the file is run directly
 if (require.main === module) {
     // Only connect to database if running the server normally
-    const connectDatabase = require('/usr/src/llmservice/config/database'); //NOSONAR
-    connectDatabase(mongoose);
+    const isTest = process.env.NODE_ENV === "test";
+    
+    const MONGO_URI = isTest
+      ? "mongodb://localhost:27017/testdb"
+      : process.env.MONGO_URI || "mongodb://mongodb-wichat_es6a:27017/wichatdb";
+    
+    mongoose.connect(MONGO_URI)
+      .then(() => console.log(`Conectado a MongoDB en ${MONGO_URI}`))
+      .catch(err => console.error("Error en la conexión a MongoDB:", err.message));
+    
 
     app.listen(port, () => {
         console.log(`Auth Service listening at http://localhost:${port}`);

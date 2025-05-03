@@ -1,10 +1,7 @@
-// wikidataservice/wikidata-service.js
-
 const express = require("express");
 const mongoose = require("mongoose");
 const WikiQueries = require("./wikidataQueries");
 const WikidataCacheService = require("./wikidataCacheService");
-const connectDatabase = require("/usr/src/llmservice/config/database"); //NOSONAR
 
 const swaggerUi  = require('swagger-ui-express'); 
 const fs = require("fs");
@@ -15,8 +12,15 @@ const port = 8020;
 
 app.use(express.json());
 
-// Conectar a MongoDB usando la configuración centralizada
-connectDatabase(mongoose);
+const isTest = process.env.NODE_ENV === "test";
+
+const MONGO_URI = isTest
+  ? "mongodb://localhost:27017/testdb"
+  : process.env.MONGO_URI || "mongodb://mongodb-wichat_es6a:27017/wichatdb";
+
+mongoose.connect(MONGO_URI)
+  .then(() => console.log(`Conectado a MongoDB en ${MONGO_URI}`))
+  .catch(err => console.error("Error en la conexión a MongoDB:", err.message));
 
 mongoose.connection.once("open", () => {
   // Inicializar la base de datos con entradas si es necesario

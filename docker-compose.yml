@@ -41,6 +41,7 @@ services:
       - mynetwork
     environment:
       MONGODB_URI: mongodb://mongodb-wichat_es6a:27017/wichatdb
+      GATEWAY_SERVICE_URL: http://gatewayservice:8000
     volumes:
       - ./llmservice:/usr/src/llmservice 
 
@@ -155,8 +156,7 @@ services:
       - mynetwork
     environment:
       MONGODB_URI: mongodb://mongodb-wichat_es6a:27017/wichatdb
-    volumes:
-      - ./llmservice:/usr/src/llmservice 
+    
   
   wikidataservice:
     container_name: wikidataservice-wichat_es6a
