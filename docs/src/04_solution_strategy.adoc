@@ -1,9 +1,7 @@
 [[section-solution-strategy]]
 == Solution Strategy
 
-=== Types of Decisions
-
-==== Organizational Decisions
+=== Organizational Decisions
 
 * **Adopting a Kanban-style project management**:  
   The team employs a Kanban approach to organize and visualize the software development process. Tasks are represented on a Kanban board, facilitating prioritization and fostering team-wide transparency. This methodology enhances focus by limiting work in progress (WIP), promoting continuous delivery and helping the team identify process bottlenecks early.
@@ -14,7 +12,7 @@
 * **Continuous Integration with GitHub Actions and SonarQube**:  
   A CI pipeline is implemented using GitHub Actions to automatically run tests and code quality checks on every push. SonarQube is integrated to analyze code for bugs, vulnerabilities, code smells, and duplications. These tools provide immediate feedback, ensuring issues are addressed before deployment and reinforcing best practices.
 
-==== Technical Decisions
+=== Technical Decisions
 
 * **Starting the project from scratch with custom configuration**:  
   While a reference project exists, the development team opted to build the system from the ground up. This decision fosters a deeper understanding of the architecture, eliminates dependencies on legacy code, and enables customization aligned with current needs. The prior implementation serves strictly as a conceptual guide.
@@ -67,7 +65,7 @@
 * **Using Swagger for API documentation**:  
   Swagger (OpenAPI) is integrated to document all API endpoints interactively. Developers can view, test, and understand the API via a visual interface, which streamlines both internal development and third-party integration efforts.
 
-==== Quality and Maintainability Decisions
+=== Quality and Maintainability Decisions
 
 * **Using GitHub Flow and Pull Requests for code review**:  
   Pull Requests are enforced across all feature and bug-fix branches. Each submission is subject to peer review, ensuring that standards are met, potential defects are caught early, and collaboration remains transparent.
