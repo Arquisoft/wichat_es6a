@@ -7,22 +7,19 @@ const swaggerUi = require('swagger-ui-express');
 const fs = require("fs")
 const YAML = require('yaml');
 
-let connectDatabase;
 let UserGame;
 
-try{
-  
-  connectDatabase = require("/usr/src/llmservice/config/database.js"); //NOSONAR
-  connectDatabase(mongoose);
-  UserGame = require("/usr/src/llmservice/models/history-model")(mongoose); //NOSONAR
-}catch (error) {
+const isTest = process.env.NODE_ENV === "test";
 
-  connectDatabase = require("../llmservice/config/database.js");
-  connectDatabase(mongoose);
-  
-  UserGame = require("../llmservice/models/history-model")(mongoose); 
-}
+const MONGO_URI = isTest
+  ? "mongodb://localhost:27017/testdb"
+  : process.env.MONGO_URI || "mongodb://mongodb-wichat_es6a:27017/wichatdb";
 
+mongoose.connect(MONGO_URI)
+  .then(() => console.log(`Conectado a MongoDB en ${MONGO_URI}`))
+  .catch(err => console.error("Error en la conexión a MongoDB:", err.message));
+
+UserGame = require("./models/history-model")(mongoose); //NOSONAR
 
 const app = express();
 const port = process.env.PORT || 8010;
