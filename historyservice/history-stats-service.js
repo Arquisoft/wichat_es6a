@@ -268,6 +268,29 @@ app.post("/addGame", async (req, res) => {
   }
 });
 
+// PUT /update-username
+app.put('/update-username', async (req, res) => {
+  const { actualUserName, newUsername } = req.body;
+
+  if (!actualUserName || !newUsername) {
+    return res.status(400).json({ error: 'Both actualUserName and newUsername are required' });
+  }
+
+  try {
+    await UserGame.updateMany(
+      { username: actualUserName },
+      { $set: { username: newUsername } }
+    );
+
+    res.json({
+      message: 'Username updated in user games successfully',
+    });
+  } catch (error) {
+    console.error('Error updating username in history:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // **Configuración de Swagger**
 let openapiPath = './openapi.yaml'
 if (fs.existsSync(openapiPath)) {

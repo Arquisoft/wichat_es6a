@@ -8,21 +8,22 @@ const swaggerUi = require('swagger-ui-express');
 const fs = require("fs")
 const YAML = require('yaml');
 
+const gatewayServiceUrl = process.env.GATEWAY_SERVICE_URL || "http://localhost:8000";
+
+const isTest = process.env.NODE_ENV === "test";
+
+const MONGO_URI = isTest
+  ? "mongodb://localhost:27017/testdb"
+  : process.env.MONGO_URI || "mongodb://mongodb-wichat_es6a:27017/wichatdb";
+
+mongoose.connect(MONGO_URI)
+  .then(() => console.log(`Conectado a MongoDB en ${MONGO_URI}`))
+  .catch(err => console.error("Error en la conexión a MongoDB:", err.message));
 
 let User; 
-let History; 
 
-try {
-  const connectDatabase = require("/usr/src/llmservice/config/database.js"); //NOSONAR
-  connectDatabase(mongoose);
-  User = require("/usr/src/llmservice/models/user-model")(mongoose); //NOSONAR
-  History = require("/usr/src/llmservice/models/history-model")(mongoose); //NOSONAR
-} catch (error) {
-  const connectDatabase = require("../../llmservice/config/database.js");
-  connectDatabase(mongoose);
-  User = require("../../llmservice/models/user-model")(mongoose);
-  History = require("../../llmservice/models/history-model")(mongoose);
-}
+User = require("./models/user-model")(mongoose);
+
 
 const app = express();
 const port = 8001;
@@ -139,12 +140,16 @@ app.put('/user/:id/username', async (req, res) => {
     user.username = newUsername;
     await user.save();
 
-    // Actualizar el nombre de usuario en todas las partidas del usuario
-    // Actualizar todos los registros de "History" (partidas) donde el campo "username" sea igual al antiguo nombre de usuario
-    await History.updateMany(
-      { username: actualUserName },
-      { $set: { username: newUsername } }
-    );
+    fetch(gatewayServiceUrl +"/update-username", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        actualUserName: actualUserName,
+        newUsername: newUsername,
+      }),
+    })
 
     res.status(200).json({ message: 'Username actualizado correctamente' });
   } catch (error) {
@@ -220,26 +225,43 @@ app.post('/user/:id/profile-pic', upload.single('profilePic'), async (req, res) 
 });
 
 
-// 📸 Obtener imagen de perfil
+const allowedExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp'];
+
 app.get('/user/:id/profile-pic', async (req, res) => {
   try {
     const userId = req.params.id;
-    const imagePath = path.join(__dirname, 'uploads', 'profile_pics', `${userId}.png`);  // Ruta completa a la imagen
 
-    // Verificar si el archivo existe
-    fs.access(imagePath, fs.constants.F_OK, (err) => {  // NOSONAR
-      if (err) {
-        return res.status(404).json({ error: 'Profile picture not found' });
+    //Validación estricta: solo letras, números, guiones y guiones bajos
+    if (!/^[a-zA-Z0-9_-]+$/.test(userId)) {
+      return res.status(400).send('Invalid user ID');
+    }
+
+    const baseDir = path.join(__dirname, 'uploads', 'profile_pics');
+    let found = false;
+
+    for (const ext of allowedExtensions) {
+      const imagePath = path.resolve(baseDir, `${userId}${ext}`);
+
+      // Asegurarse que la ruta está dentro de baseDir
+      if (!imagePath.startsWith(baseDir)) {
+        return res.status(400).send('Invalid path');
       }
 
-      // Si el archivo existe, devolverlo como un archivo binario
-      res.sendFile(imagePath);
-    });
+      if (fs.existsSync(imagePath)) {
+        found = true;
+        return res.sendFile(imagePath);
+      }
+    }
 
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    if (!found) {
+      res.status(404).send('Image not found');
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
   }
 });
+
 
 
 // 🗑️ Eliminar imagen de perfil
