@@ -1,229 +1,204 @@
 ifndef::imagesdir[:imagesdir: ../images]
-:icons: font // Enable font icons for admonitions
+:icons: font
 
 [[section-building-block-view]]
-== 5. Building Block View
+== Building Block View
 
+---
 This view shows the static decomposition of the WIChat system into its main building blocks (components, services) and outlines their responsibilities and primary relationships.
 
-'''
+=== High-Level System Overview (Context Recap)
 
-=== 5.0 High-Level System Overview (Context Recap)
-
+---
 The following diagram shows the WIChat system as a whole (blackbox), interacting with the primary user and external data/service providers (Wikidata, LLM).
 
 image::BuildingBlockViewFirst.png["High-Level Context Diagram", align="center"]
 
-'''
+=== Whitebox Overall System (Level 1)
 
-=== 5.1 Whitebox Overall System (Level 1)
-
+---
 This section describes the top-level decomposition of the WIChat trivia game system into its internal microservices and components.
 
 ==== Overview Diagram (Level 1)
 
+---
 The following diagram shows the main internal building blocks (Level 1) of the WIChat system and their primary interactions.
-
 
 image::BuildingBlockView2.png["Level 1 Whitebox Diagram for WIChat System", align="center"]
 
 ==== Motivation
 
-The WIChat system architecture is decomposed into microservices (Level 1) to achieve:
+---
+El sistema WIChat se descompone en microservicios (Level 1) para:
 
-* **Separation of Concerns:** Isolating UI (`WebApp`), API routing/aggregation (`Gateway Service`), user management (`Users Manager`), authentication (`Auth Service`), question logic/generation (`Question Service`), game history/stats (`History Service`), Wikidata interaction/caching (`Wikidata Service`), and AI hints (`LLM Service`).
-* **Independent Scalability:** Each service can be scaled independently based on specific load patterns (e.g., `Question Service` during gameplay, `Auth Service` during login peaks).
-* **Technological Flexibility:** Allows using potentially different technologies for each service and facilitates independent updates or replacements (e.g., changing the LLM provider).
-* **Maintainability & Testability:** Smaller, focused services are easier to manage, test, and deploy.
-* **Resilience:** Failure in one non-critical service (e.g., `LLM Service`) should minimally impact core gameplay.
+* **Separation of Concerns:** UI (`WebApp`), routing/agrupación (`Gateway Service`), gestión de usuarios (`Users Service`), autenticación (`Auth Service`), lógica de preguntas (`Question Service`), historial/estadísticas (`History Service`), interacción/caché con Wikidata (`Wikidata Service`), sugerencias IA (`LLM Service`).
+* **Independent Scalability:** Escalar cada servicio según demanda (ej. `Question Service` durante el juego, `Auth Service` en picos de inicio de sesión).
+* **Technological Flexibility:** Permite distintas tecnologías por servicio y actualizaciones independientes.
+* **Maintainability & Testability:** Servicios más pequeños son más fáciles de gestionar, probar y desplegar.
+* **Resilience:** Fallos en servicios no críticos (ej. `LLM Service`) afectan mínimamente la jugabilidad.
 
 ==== Level 1 Building Blocks (Blackboxes)
 
-The following building blocks constitute the WIChat system at Level 1.
-
-===== 5.1.1 `WebApp` (Frontend)
-*Responsibility*:: Provides the interactive web UI for the trivia game. Displays questions, answers, images, score, streak, user profile, statistics. Handles user input (answers, lifelines, login, registration, profile edits). Communicates exclusively with the `Gateway Service`.
+---
+===== `WebApp` (Frontend)
+*Responsibility*:: Proporciona la interfaz web interactiva. Muestra preguntas, respuestas, imágenes, puntuación, estadísticas y perfil de usuario. Comunica únicamente con el `Gateway Service`.  
 *Interfaces (Consumed)*:: Gateway API (REST/WebSocket).
 
 ---
-
-===== 5.1.2 `Gateway Service`
-*Responsibility*:: Single entry point for the `WebApp`. Routes API requests to appropriate backend microservices (`Auth`, `Users`, `Questions`, `History`, `LLM`, `Wikidata`). Handles CORS, basic request validation. Exposes aggregated API documentation (Swagger) and observability metrics (Prometheus). Performs health checks on downstream services.
-*Interfaces*:::
-    * *Provided:* Gateway API (REST) towards `WebApp`, `/metrics`, `/health`, `/api-doc`.
-    * *Consumed:* Auth Service API, Users Service API, Question Service API, History Service API, LLM Service API, Wikidata Service API.
-*Technology*:: Node.js, Express, Axios
-
----
-
-===== 5.1.3 `Auth Service`
-*Responsibility*:: Handles user authentication. Validates credentials against data likely stored via `Users Service`/`Database`. Issues authentication tokens (e.g., JWT).
-*Interfaces*:::
-    * *Provided:* Internal API (e.g., REST `/login`) consumed by `Gateway Service`.
-    * *Consumed:* Potentially `Users Service` API or `Database` Access Interface.
-*Technology*:: Node.js/Express (Assumed)
+===== `Gateway Service`
+*Responsibility*:: Punto de entrada único. Enruta peticiones a microservicios (`Auth`, `Users`, `Questions`, `History`, `LLM`, `Wikidata`), gestiona CORS, validación básica, expone Swagger y métricas (Prometheus), verifica estado de downstream services.  
+*Interfaces*::  
+* *Provided:* Gateway API (REST), `/metrics`, `/health`, `/api-doc`.  
+* *Consumed:* APIs de Auth, Users, Question, History, LLM, Wikidata.  
+*Technology*:: Node.js, Express, Axios.
 
 ---
-
-===== 5.1.4 `Users Service`
-*Responsibility*:: Manages user data CRUD operations (Create, Read, Update, Delete). Handles profile picture storage/retrieval. Stores/retrieves user data via the `Database`.
-*Interfaces*:::
-    * *Provided:* Internal API (e.g., REST `/adduser`, `/user/...`) consumed by `Gateway Service`.
-    * *Consumed:* `Database` Access Interface.
-*Technology*:: Node.js/Express (Assumed)
-
----
-
-===== 5.1.5 `Question Service`
-*Responsibility*:: Manages storage/retrieval of trivia questions *after* generation by `LLM Service`. Provides endpoints like `/addQuestion`, `/questions`. Interacts with the `Database`.
-*Interfaces*:::
-    * *Provided:* Internal API (e.g., REST `/addQuestion`, `/questions`) consumed by `Gateway Service`.
-    * *Consumed:* `Database` Access Interface.
+===== `Auth Service`
+*Responsibility*:: Autenticación de usuarios (validación y emisión de tokens JWT).  
+*Interfaces*::  
+* *Provided:* `/login` (REST).  
+* *Consumed:* Users Service o acceso directo a base de datos.  
+*Technology*:: Node.js/Express.
 
 ---
-
-===== 5.1.6 `History Service`
-*Responsibility*:: Persists completed game history per user. Calculates and provides aggregate statistics (`/stats`). Provides endpoints to retrieve past games (`/getBestGames`, `/getAllGames`).
-*Interfaces*:::
-    * *Provided:* Internal API (e.g., REST `/addGame`, `/stats`, etc.) consumed by `Gateway Service`.
-    * *Consumed:* `Database` Access Interface (Mongoose).
-*Technology*:: Node.js, Express, Mongoose
-
----
-
-===== 5.1.7 `Wikidata Service`
-*Responsibility*:: Acts as a facade and cache for Wikidata. Fetches raw data and image URLs from external Wikidata SPARQL endpoint. Processes data. Caches entries in its own `Database` partition. Provides an internal API for retrieving cached data. Handles cache initialization/refresh.
-*Interfaces*:::
-    * *Provided:* Internal API (e.g., REST `/api/entries/...`) consumed by `Gateway Service`.
-    * *Consumed:* Wikidata SPARQL Endpoint (External).
-    * *Consumed:* `Database` Access Interface (Mongoose, for cache).
-*Technology*:: Node.js, Express, Mongoose
+===== `Users Service`
+*Responsibility*:: CRUD de usuarios, gestión de avatar.  
+*Interfaces*::  
+* *Provided:* `/addUser`, `/user/{id}` (REST).  
+* *Consumed:* Base de datos.  
+*Technology*:: Node.js/Express.
 
 ---
-
-===== 5.1.8 `LLM Service` (Hint Service)
-*Responsibility*:: Orchestrates question generation and provides hints. Fetches base data+imageURLs via `Gateway` -> `Wikidata Service`. Uses external LLMs (Gemini) for text generation. Combines text + image. Triggers question storage via `Gateway` -> `Question Service`. Generates hints via external LLM.
-*Interfaces*:::
-    * *Provided:* Internal API (e.g., REST `/generateQuestions`, `/getHint`) consumed by `Gateway Service`.
-    * *Consumed:* `Wikidata Service` API (via Gateway), External LLM API (Gemini), `Gateway Service` API (`/addQuestion`).
-*Technology*:: Node.js, Express, Axios, @google/genai
+===== `Question Service`
+*Responsibility*:: Almacenamiento y recuperación de preguntas generadas.  
+*Interfaces*::  
+* *Provided:* `/addQuestion`, `/questions` (REST).  
+* *Consumed:* Base de datos.
 
 ---
+===== `History Service`
+*Responsibility*:: Persiste historial de juegos y calcula estadísticas agregadas.  
+*Interfaces*::  
+* *Provided:* `/addGame`, `/stats`, `/getBestGames`, `/getAllGames`.  
+* *Consumed:* Base de datos (Mongoose).  
+*Technology*:: Node.js, Express, Mongoose.
 
-===== 5.1.9 `Database`
-*Responsibility*:: Provides persistent storage for: User data (`Users Service`), Game history/stats (`History Service`), Generated questions (`Question Service`), Cached Wikidata entries (`Wikidata Service`).
-*Interfaces*:::
-    * *Provided:* Database connection/query interface (MongoDB driver interface). Consumed by backend services.
-*Technology*:: MongoDB
+---
+===== `Wikidata Service`
+*Responsibility*:: Fachada y caché para Wikidata. Consulta SPARQL, procesa y almacena en caché.  
+*Interfaces*::  
+* *Provided:* `/api/entries/{…}`.  
+* *Consumed:* Wikidata SPARQL y base de datos (Mongoose).
 
+---
+===== `LLM Service` (Hint Service)
+*Responsibility*:: Orquesta generación de preguntas y sugerencias. Obtiene datos base de Wikidata, llama al LLM externo, formatea y persiste preguntas.  
+*Interfaces*::  
+* *Provided:* `/generateQuestions`, `/getHint`, `/getHintWithQuery`.  
+* *Consumed:* Gateway → Wikidata Service, LLM API externo, Gateway → Question Service.  
+*Technology*:: Node.js, Express, Axios, @google/genai.
 
-==== Important Interfaces (Summary)
+---
+===== `Database`
+*Responsibility*:: Almacena persistente: usuarios, historial, preguntas, caché de Wikidata.  
+*Interfaces*:: Driver de MongoDB consumido por servicios.  
+*Technology*:: MongoDB.
 
+=== Important Interfaces (Summary)
+
+---
 [.text-center]
-_Summary of key interfaces between Level 1 components and external systems._
+_Summary de interfaces clave._
 
 [cols="^1,3m,^1,^2", options="header"]
 |===
-| Interface Name        | Description | Provided By | Consumed By
-| Gateway API (REST)    | API for WebApp (auth, game, hints, user profile, stats, wikidata proxy). | Gateway Service | WebApp
-| Auth Service API      | Internal API for login/token validation. | Auth Service | Gateway Service
-| Users Service API     | Internal API for user CRUD operations. | Users Service | Gateway Service, potentially Auth Service
-| Question Service API  | Internal API for storing/retrieving generated questions. | Question Service | Gateway Service (and LLM Service via Gateway)
-| History Service API   | Internal API for storing game results and retrieving stats/history. | History Service | Gateway Service
-| Wikidata Service API  | Internal API for retrieving cached/processed Wikidata entries. | Wikidata Service | Gateway Service (and LLM Service via Gateway)
-| LLM Service API       | Internal API for generating questions and hints. | LLM Service | Gateway Service
-| Database Access       | Internal interface (MongoDB Driver) to the shared database. | Database | Auth, Users, Questions, History, Wikidata Services
-| Wikidata SPARQL       | External endpoint for querying raw Wikidata. | Wikidata (External) | Wikidata Service (internally)
-| External LLM API      | External API for AI text generation (hints, questions). | LLM Provider (External) | LLM Service
+| Interface Name         | Description                                                    | Provided By        | Consumed By
+| Gateway API (REST)     | API para WebApp (auth, juego, sugerencias, perfil, stats, proxy). | Gateway Service    | WebApp
+| Auth Service API       | API interna para login/token.                                   | Auth Service       | Gateway Service
+| Users Service API      | CRUD de usuarios.                                               | Users Service      | Gateway Service, Auth Service
+| Question Service API   | Guardar/recuperar preguntas.                                    | Question Service   | Gateway Service (y LLM Service)
+| History Service API    | Guardar resultados y stats.                                     | History Service    | Gateway Service
+| Wikidata Service API   | Datos procesados de Wikidata.                                   | Wikidata Service   | Gateway Service (y LLM Service)
+| LLM Service API        | Generación de preguntas y sugerencias.                          | LLM Service        | Gateway Service
+| Database Access        | Interface de consulta de MongoDB.                               | Database           | Todos los servicios
+| Wikidata SPARQL        | Endpoint externo para datos brutos.                             | Wikidata (External)| Wikidata Service
+| External LLM API       | Proveedor de IA para texto.                                     | LLM Provider       | LLM Service
 |===
-## 5.2 Level 2 (Refinements)
 
-This section details the internal structures or key logic flows of selected Level 1 building blocks that warrant further explanation due to their complexity or importance.
-
-### 5.2.1 White Box LLM Service (Hint Service)
-
-#### Motivation (LLM Service Focus)
-
-This service encapsulates complex logic for interacting with external AI (LLM) and data providers (Wikidata Service via Gateway). It coordinates multiple steps to generate trivia questions and provide hints, acting as a central intelligence hub for game content generation.
-
-Understanding its flow is key to understanding how game content is created and assisted.
+[[level2-refinements]]
+== Level 2 (Refinements)
 
 ---
+=== White Box LLM Service (Hint Service)
 
-#### Internal Logic Flow / Responsibilities
-
-##### • Question Generation Orchestration (`/generateQuestions` endpoint)
-
-image::BuildingBlockViewGenerateQuestions.png["Generation Questions flow diagram",align="center"]
-
-- Receives category and count request from Gateway Service.
-- Requests base data entries (including `imageUrl`) from Wikidata Service (via Gateway's `/api/entries/...` proxy).
-- For each entry:
-  - Formats textual information (`formatEntryInfo`).
-  - Constructs a detailed prompt for the external LLM (Gemini/Empathy) to create a question and four multiple-choice answers (in JSON).
-  - Calls external LLM API via `sendQuestionToLLM`.
-  - Parses and validates the LLM's JSON response (`parseJsonResponse`), with retries if needed.
-  - Combines the LLM-generated text with the `imageUrl`.
-  - Calls Gateway's `/addQuestion` endpoint (routes to Question Service) to persist the question + image.
-- Aggregates generated questions and returns the list to Gateway Service.
+==== Motivation (LLM Service Focus)
 
 ---
+Este servicio encapsula la lógica compleja de interacción con proveedores externos (LLM, Wikidata Service) y coordina múltiples pasos para generar preguntas y sugerencias.
 
-##### • Hint Generation (`/getHint` endpoint)
+==== Internal Logic Flow / Responsibilities
 
-image::BuildingBlockViewHintRequest.png["get hint flow diagram",align="center"]
-
-- Receives current question text and answer options from Gateway Service.
-- Constructs a prompt asking the LLM for a hint without revealing the correct answer.
-- Calls external LLM API via `sendQuestionToLLM`.
-- Parses and returns a single hint sentence.
+===== Question Generation Orchestration (`/generateQuestions` endpoint)
 
 ---
+image::BuildingBlockViewGenerateQuestions.png["Generation Questions Flow Diagram", align="center"]
 
-##### • Conversational Hint Generation (`/getHintWithQuery` endpoint)
-
-- Similar to `/getHint` but incorporates a user-specific query.
-- Filters requests to prevent direct answer reveals.
-- Constructs a prompt asking the LLM to answer the user's query related to the game question, **without giving away the solution**.
-- Calls external LLM API, parses response, and returns the conversational hint.
-
----
-
-## 5.3 Level 3 (Refinements / Concepts)
-
-This level describes cross-cutting concepts or further details.
-
----
-
-### Concept: Question Generation and Storage Flow
-
-**Involved Components:**  
-Gateway Service, LLM Service, Wikidata Service, Question Service, Database, External Wikidata, External LLM.
-
-**Flow:**
-
-1. WebApp requests new questions for a category via Gateway.
-2. Gateway routes the request to LLM Service (`/generateQuestions`).
-3. LLM Service requests base data + image URL from Wikidata Service (via Gateway `/api/entries/...`).
-4. Wikidata Service returns cached/processed data (originating from external Wikidata SPARQL).
-5. LLM Service formats text and prompts external LLM.
-6. LLM Service receives, parses, and validates the LLM JSON response.
-7. LLM Service combines LLM text with original image URL.
-8. LLM Service calls Gateway’s `/addQuestion` to store the complete question.
-9. Gateway routes `/addQuestion` to Question Service, which saves it in the Database.
-10. LLM Service returns the generated question(s) to the original caller (likely WebApp).
+1. Recibe categoría y número de preguntas del Gateway Service.  
+2. Solicita datos base (incluyendo `imageUrl`) al Wikidata Service vía Gateway.  
+3. Para cada entrada:  
+   * Formatea la información textual (`formatEntryInfo`).  
+   * Construye un prompt detallado para el LLM externo (Gemini/Empathy).  
+   * Llama al API del LLM externo (`sendQuestionToLLM`).  
+   * Parsea y valida la respuesta JSON (`parseJsonResponse`), reintentando si es necesario.  
+   * Combina el texto generado con el `imageUrl`.  
+   * Persiste la pregunta mediante el endpoint `/addQuestion` del Gateway.  
+4. Agrega todas las preguntas generadas y las devuelve al Gateway Service.
 
 ---
+===== Hint Generation (`/getHint` endpoint)
 
-### Concept: Statistics Calculation
+---
+image::BuildingBlockViewHintRequest.png["Get Hint Flow Diagram", align="center"]
 
-**Responsible Component:**  
-`History Service`
+1. Recibe el texto de la pregunta y opciones de respuesta del Gateway Service.  
+2. Construye un prompt que solicite una pista sin revelar la respuesta correcta.  
+3. Llama al API del LLM externo y parsea la respuesta.  
+4. Devuelve una única oración como pista.
 
-**Description:**  
-When `/stats` is called:
-- Retrieves *all* game history records for the user from the Database.
-- Calculates aggregate statistics (total points, games played, win/loss ratio, averages, most played category) in memory.
-- Returns the result including the top 3 games played.
+---
+===== Conversational Hint Generation (`/getHintWithQuery` endpoint)
 
-> ⚠️ Performance might degrade for users with very large game histories.
+---
+1. Similar a `/getHint`, pero incorpora una consulta específica del usuario.  
+2. Filtra para prevenir revelaciones directas de la respuesta.  
+3. Construye y envía el prompt al LLM, parsea y retorna la pista conversacional.
+
+[[level3-concepts]]
+== Level 3 (Refinements / Concepts)
+
+---
+=== Concept: Question Generation and Storage Flow
+
+**Componentes involucrados:** Gateway Service, LLM Service, Wikidata Service, Question Service, Database, Wikidata SPARQL, LLM Externo.
+
+1. WebApp solicita preguntas por categoría al Gateway.  
+2. Gateway enruta a LLM Service (`/generateQuestions`).  
+3. LLM Service pide datos base al Wikidata Service vía Gateway.  
+4. Wikidata Service devuelve datos cacheados.  
+5. LLM Service formatea y envía prompt al LLM externo.  
+6. LLM responde en JSON; LLM Service parsea y valida.  
+7. LLM Service unifica texto e imagen, y llama `/addQuestion` vía Gateway.  
+8. Gateway enruta a Question Service, que guarda en la base de datos.  
+9. LLM Service retorna las preguntas al llamador original.
+
+---
+=== Concept: Statistics Calculation
+
+**Componente responsable:** History Service
+
+Cuando se llama a `/stats`:
+* Recupera todos los registros de juegos del usuario.  
+* Calcula en memoria estadísticas agregadas (puntos totales, número de juegos, ratio victoria/derrota, medias, categoría más jugada).  
+* Devuelve resultados, incluyendo las 3 partidas más destacadas.
+
+> ⚠️ Para usuarios con historiales muy extensos, el rendimiento podría verse afectado al cargar y procesar todos los registros en memoria.
