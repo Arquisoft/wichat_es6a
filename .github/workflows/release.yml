@@ -14,12 +14,18 @@ jobs:
         node-version: 22
     - run: npm --prefix users/authservice ci
     - run: npm --prefix users/userservice ci
+    - run: npm --prefix questionsService ci
     - run: npm --prefix llmservice ci
-    - run: npm --prefix gatewayservice ci
+    - run: npm --prefix wikidataservice ci
+    - run: npm --prefix historyservice ci
     - run: npm --prefix webapp ci
+    - run: npm --prefix gatewayservice ci
     - run: npm --prefix users/authservice test -- --coverage
     - run: npm --prefix users/userservice test -- --coverage
+    - run: npm --prefix questionsService test -- --coverage
     - run: npm --prefix llmservice test -- --coverage
+    - run: npm --prefix wikidataservice test -- --coverage
+    - run: npm --prefix historyservice test -- --coverage
     - run: npm --prefix gatewayservice test -- --coverage
     - run: npm --prefix webapp test -- --coverage
     - name: Analyze with SonarCloud
@@ -36,9 +42,12 @@ jobs:
         node-version: 22
     - run: npm --prefix users/authservice install
     - run: npm --prefix users/userservice install
+    - run: npm --prefix questionsService install
     - run: npm --prefix llmservice install
-    - run: npm --prefix gatewayservice install
+    - run: npm --prefix wikidataservice install
+    - run: npm --prefix historyservice install
     - run: npm --prefix webapp install
+    - run: npm --prefix gatewayservice install
     - run: npm --prefix webapp run build
     - run: npm --prefix webapp run test:e2e
   docker-push-webapp:
