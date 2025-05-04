@@ -96,7 +96,7 @@ const EditProfile = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
-  const [image, setImage] = useState(null);
+  const [, setImage] = useState(null);
   const [profilePic, setProfilePic] = useState(null);
   const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState("");
@@ -129,7 +129,7 @@ const EditProfile = () => {
         setProfilePic(imageUrl);
       })
       .catch(error => console.error("Error al cargar la imagen de perfil:", error));
-  }, []);
+  }, [user_Id]);
 
   if (loading) {
     return (

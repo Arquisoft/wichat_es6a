@@ -326,7 +326,6 @@ async init(category, difficulty) {
     }
 
     const currentQ = this.questions[this.questionIndex];
-    let wasCorrect = false; // Variable para saber si fue correcta
 
     // Si NO es timeout, verificar la respuesta seleccionada
     if (!isTimeout) {
@@ -334,7 +333,6 @@ async init(category, difficulty) {
       if (index >= 0 && index < currentQ.answers.length) {
         if (currentQ.answers[index].isCorrect) {
           console.log("Respuesta Correcta!");
-          wasCorrect = true;
           this.correctAnswers++;
           this.consecutiveCorrectAnswers++;
 
@@ -398,9 +396,6 @@ async init(category, difficulty) {
         }
       }, 0); // 0ms timeout para ponerlo al final de la cola de eventos actual
     }
-
-    // Devolver si la respuesta fue correcta podría ser útil para la UI
-    // return wasCorrect; // Descomentar si GameWindow necesita saberlo inmediatamente
   }
 
   // Devuelve el objeto Question completo de la pregunta actual

@@ -16,7 +16,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [message, setMessage] = useState("");
+  const [message] = useState("");
 
   const apiEndpoint = "http://localhost:8000";
 
