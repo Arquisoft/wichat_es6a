@@ -125,6 +125,8 @@ const ChatClues = forwardRef(({ actualQuestion, answers }, ref) => {
             sx={{
               flexGrow: 1,
               overflowY: "auto",
+              minHeight: "250px",
+              maxHeight: "250px",
               mb: 1,
               px: 1,
               display: "flex",
