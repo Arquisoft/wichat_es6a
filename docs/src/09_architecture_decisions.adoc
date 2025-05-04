@@ -64,13 +64,18 @@ This drastically reduces perceived latency and improves responsiveness when star
 
 # Technology Decisions
 
-- https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-Javascript[JavaScript]
-- https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-Node.js[Node.js]
-- https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-React[React]
-- https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-MongoDB[MongoDB]
-- https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-Docker[Docker]
-- https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-Grafana-and-Prometheus[Grafana and Prometheus]
-- https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-Gemini[Gemini]
+- https://github.com/Arquisoft/wichat_es6a/wiki/Technology-Decisions-%E2%80%90-Javascript[JavaScript]
+- https://github.com/Arquisoft/wichat_es6a/wiki/Technology-Decisions-%E2%80%90-Node.js[Node.js]
+- https://github.com/Arquisoft/wichat_es6a/wiki/Technology-Decisions-%E2%80%90-React[React]
+- https://github.com/Arquisoft/wichat_es6a/wiki/Technology-Decisions-%E2%80%90-MongoDB[MongoDB]
+- https://github.com/Arquisoft/wichat_es6a/wiki/Technology-Decisions-%E2%80%90-Docker[Docker]
+- https://github.com/Arquisoft/wichat_es6a/wiki/Technology-Decisions-%E2%80%90-Grafana-and-Prometheus[Grafana and Prometheus]
+- https://github.com/Arquisoft/wichat_es6a/wiki/Technology-Decisions-%E2%80%90-Gemini[Gemini]
+- https://github.com/Arquisoft/wichat_es6a/wiki/Technology-Decisions-%E2%80%90-Wikidata[Wikidata]
+- https://github.com/Arquisoft/wichat_es6a/wiki/Technology-Decisions-%E2%80%90-GitHub-Actions[GitHub Actions]
+- https://github.com/Arquisoft/wichat_es6a/wiki/Technology-Decisions-%E2%80%90-SonarQube[SonarQube]
+
+
 
 Each decision was made based on the project requirements, the team’s prior experience, and the technologies provided in the base template.
 
