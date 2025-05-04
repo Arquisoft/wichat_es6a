@@ -1042,7 +1042,7 @@ export default function HowToPlayWindow() {
               fontWeight: "bold",
               borderRadius: 50,
               bgcolor: `linear-gradient(90deg, ${colors.lightCyan}, ${colors.nonPhotoBlue})`,
-              color: colors.federalBlue,
+              color: colors.white,
               border: `3px solid ${colors.honoluluBlue}`,
               boxShadow: `0 4px 12px rgba(0,0,0,0.2)`,
               transition: "all 0.3s ease",
