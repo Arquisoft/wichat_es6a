@@ -173,7 +173,7 @@ export default function HowToPlayWindow() {
               sx={{
                 background: `linear-gradient(135deg, ${colors.lightCyan}, ${colors.pacificCyan})`,
                 backgroundSize: "200% 200%",
-                animation: `${gradientAnimation} 6s ease infinite, ${fadeIn} 1s ease-out`,
+                animation: `${gradientAnimation} 6s ease infinite, ${fadeIn} 1s ease-out, ${borderPulse} 4s ease-in-out infinite`,
                 p: 4,
                 borderRadius: 16,
                 border: `2px solid ${colors.honoluluBlue}`,
@@ -181,7 +181,6 @@ export default function HowToPlayWindow() {
                 backdropFilter: "blur(10px)",
                 backgroundColor: `rgba(255,255,255,0.1)`,
                 transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                animation: `${borderPulse} 4s ease-in-out infinite`,
                 "&:hover": {
                   transform: "scale(1.02)",
                   boxShadow: `0 12px 24px rgba(0,0,0,0.2)`,
@@ -321,7 +320,7 @@ export default function HowToPlayWindow() {
               sx={{
                 background: `linear-gradient(135deg, ${colors.lightCyan}, ${colors.pacificCyan})`,
                 backgroundSize: "200% 200%",
-                animation: `${gradientAnimation} 6s ease infinite, ${fadeIn} 1.2s ease-out`,
+                animation: `${gradientAnimation} 6s ease infinite, ${fadeIn} 1.2s ease-out, ${borderPulse} 4s ease-in-out infinite`,
                 p: 4,
                 borderRadius: 16,
                 border: `2px solid ${colors.honoluluBlue}`,
@@ -329,7 +328,6 @@ export default function HowToPlayWindow() {
                 backdropFilter: "blur(10px)",
                 backgroundColor: `rgba(255,255,255,0.1)`,
                 transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                animation: `${borderPulse} 4s ease-in-out infinite`,
                 "&:hover": {
                   transform: "scale(1.02)",
                   boxShadow: `0 12px 24px rgba(0,0,0,0.2)`,
@@ -524,7 +522,7 @@ export default function HowToPlayWindow() {
               sx={{
                 background: `linear-gradient(135deg, ${colors.lightCyan}, ${colors.pacificCyan})`,
                 backgroundSize: "200% 200%",
-                animation: `${gradientAnimation} 6s ease infinite, ${fadeIn} 1.4s ease-out`,
+                animation: `${gradientAnimation} 6s ease infinite, ${fadeIn} 1.4s ease-out, ${borderPulse} 4s ease-in-out infinite`,
                 p: 4,
                 borderRadius: 16,
                 border: `2px solid ${colors.honoluluBlue}`,
@@ -532,7 +530,6 @@ export default function HowToPlayWindow() {
                 backdropFilter: "blur(10px)",
                 backgroundColor: `rgba(255,255,255,0.1)`,
                 transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                animation: `${borderPulse} 4s ease-in-out infinite`,
                 "&:hover": {
                   transform: "scale(1.02)",
                   boxShadow: `0 12px 24px rgba(0,0,0,0.2)`,
@@ -654,7 +651,7 @@ export default function HowToPlayWindow() {
               sx={{
                 background: `linear-gradient(135deg, ${colors.lightCyan}, ${colors.pacificCyan})`,
                 backgroundSize: "200% 200%",
-                animation: `${gradientAnimation} 6s ease infinite, ${fadeIn} 1.6s ease-out`,
+                animation: `${gradientAnimation} 6s ease infinite, ${fadeIn} 1.6s ease-out, ${borderPulse} 4s ease-in-out infinite`,
                 p: 4,
                 borderRadius: 16,
                 border: `2px solid ${colors.honoluluBlue}`,
@@ -662,7 +659,6 @@ export default function HowToPlayWindow() {
                 backdropFilter: "blur(10px)",
                 backgroundColor: `rgba(255,255,255,0.1)`,
                 transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                animation: `${borderPulse} 4s ease-in-out infinite`,
                 "&:hover": {
                   transform: "scale(1.02)",
                   boxShadow: `0 12px 24px rgba(0,0,0,0.2)`,
@@ -866,7 +862,7 @@ export default function HowToPlayWindow() {
               sx={{
                 background: `linear-gradient(135deg, ${colors.lightCyan}, ${colors.pacificCyan})`,
                 backgroundSize: "200% 200%",
-                animation: `${gradientAnimation} 6s ease infinite, ${fadeIn} 1.8s ease-out`,
+                animation: `${gradientAnimation} 6s ease infinite, ${fadeIn} 1.8s ease-out, ${borderPulse} 4s ease-in-out infinite`,
                 p: 4,
                 borderRadius: 16,
                 border: `2px solid ${colors.honoluluBlue}`,
@@ -874,7 +870,6 @@ export default function HowToPlayWindow() {
                 backdropFilter: "blur(10px)",
                 backgroundColor: `rgba(255,255,255,0.1)`,
                 transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                animation: `${borderPulse} 4s ease-in-out infinite`,
                 "&:hover": {
                   transform: "scale(1.02)",
                   boxShadow: `0 12px 24px rgba(0,0,0,0.2)`,
