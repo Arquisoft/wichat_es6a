@@ -15,6 +15,7 @@ import GameOptions from "./components/GameOptions";
 import Navbar from "./components/Navbar"; 
 import EditProfile from "./components/editProfileWindow";
 import AllQuestionsWindow from "./components/AllQuestionsWindow";
+import InfoWindow from "./components/HowToPlayWindow";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/login" element={<Auth />} />
+        <Route path="/how-to-play" element={<InfoWindow />} />
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/game" element={<GameWindow />} />
