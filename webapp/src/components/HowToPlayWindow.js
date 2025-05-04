@@ -28,75 +28,87 @@ const gradientAnimation = keyframes`
   100% { background-position: 0% 50%; }
 `;
 
-export default function GameInfoWindow() {
+export default function HowToPlayWindow() {
   const navigate = useNavigate();
 
   return (
-    <Box sx={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      color: '#ffffff',
-      p: 3,
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
-      {/* Encabezado */}
-      <Box textAlign="center" mt={4} mb={6}>
-  <Avatar
-    sx={{
-      bgcolor: 'rgba(255,255,255,0.2)',
-      width: 100,
-      height: 100,
-      mx: 'auto',
-      mb: 3,
-      backdropFilter: 'blur(5px)'
-    }}
-  >
-    <Info sx={{ fontSize: 50 }} />
-  </Avatar>
-
-  <Typography
-    variant="h3"
-    fontWeight="bold"
-    gutterBottom
-    textAlign="center" 
-  >
-    Cómo jugar a WICHAT
-  </Typography>
-
-  <Chip
-    label="Guía del jugador"
-    icon={<Info />}
-    sx={{
-      bgcolor: 'rgba(255,255,255,0.15)',
-      color: '#ffffff',
-      fontSize: '1rem',
-      py: 1.5
-    }}
-  />
-</Box>
-      {/* Contenido principal */}
-      <Box sx={{
-        flex: 1,
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        color: '#ffffff',
+        p: 3,
         display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        maxWidth: '1200px',
-        mx: 'auto',
-        width: '100%'
-      }}>
-        <Grid container spacing={4} sx={{ mb: 6 }}>
+        flexDirection: 'column'
+      }}
+      data-testid="game-info-window"
+    >
+      {/* Encabezado */}
+      <Box textAlign="center" mt={4} mb={6} data-testid="header-section">
+        <Avatar
+          sx={{
+            bgcolor: 'rgba(255,255,255,0.2)',
+            width: 100,
+            height: 100,
+            mx: 'auto',
+            mb: 3,
+            backdropFilter: 'blur(5px)'
+          }}
+          data-testid="avatar-header"
+        >
+          <Info sx={{ fontSize: 50 }} />
+        </Avatar>
+
+        <Typography
+          variant="h3"
+          fontWeight="bold"
+          gutterBottom
+          textAlign="center"
+          data-testid="header-title"
+        >
+          Cómo jugar a WICHAT
+        </Typography>
+
+        <Chip
+          label="Guía del jugador"
+          icon={<Info />}
+          sx={{
+            bgcolor: 'rgba(255,255,255,0.15)',
+            color: '#ffffff',
+            fontSize: '1rem',
+            py: 1.5
+          }}
+          data-testid="header-chip"
+        />
+      </Box>
+      {/* Contenido principal */}
+      <Box
+        sx={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          maxWidth: '1200px',
+          mx: 'auto',
+          width: '100%'
+        }}
+        data-testid="main-content"
+      >
+        <Grid container spacing={4} sx={{ mb: 6 }} data-testid="content-grid">
           {/* Introducción */}
-          <Grid item xs={12}>
-            <Card sx={{
-              background: 'linear-gradient(135deg, #e0f2ff, #c2e5ff, #a8d8ff)',
-              backgroundSize: '200% 200%',
-              animation: `${gradientAnimation} 15s ease infinite`,
-              p: 4,
-              borderRadius: 4,
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(0,0,0,0.2)'
-            }}>
+          <Grid item xs={12} data-testid="introduction-grid">
+            <Card
+              sx={{
+                background: 'linear-gradient(135deg, #e0f2ff, #c2e5ff, #a8d8ff)',
+                backgroundSize: '200% 200%',
+                animation: `${gradientAnimation} 15s ease infinite`,
+                p: 4,
+                borderRadius: 4,
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(0,0,0,0.2)'
+              }}
+              data-testid="introduction-card"
+            >
               <Typography
                 variant="h5"
                 gutterBottom
@@ -106,21 +118,38 @@ export default function GameInfoWindow() {
                   mb: 3,
                   color: '#000000'
                 }}
+                data-testid="introduction-title"
               >
                 <Info sx={{ mr: 2, fontSize: '2rem', color: '#01579B' }} />
                 Introducción
               </Typography>
-              <CardContent>
-                <Typography variant="body1" sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}>
+              <CardContent data-testid="introduction-content">
+                <Typography
+                  variant="body1"
+                  sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}
+                  data-testid="introduction-text-1"
+                >
                   Bienvenido a WICHAT, un emocionante juego de trivia donde podrás poner a prueba tus conocimientos sobre múltiples temáticas. Esta guía te ayudará a entender las mecánicas básicas del juego para que puedas utilizar todas tus habilidades y obtener la mayor puntuación posible.
                 </Typography>
-                <Typography variant="body1" sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}>
+                <Typography
+                  variant="body1"
+                  sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}
+                  data-testid="introduction-text-2"
+                >
                   El juego consiste en responder una serie de preguntas de opción múltiple, en las que solo una respuesta es correcta. Para ayudarte, podrás hacer uso de varios comodines que te facilitarán encontrar la respuesta adecuada, aunque con una penalización en la puntuación.
                 </Typography>
-                <Typography variant="body1" sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}>
+                <Typography
+                  variant="body1"
+                  sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}
+                  data-testid="introduction-text-3"
+                >
                   Cada pregunta viene acompañada de una imagen que te ayudará a ponerte en contexto y, en ocasiones, te proporcionará una pista extra. Pero no todo es bueno, debes tener cuidado, pues cada pregunta tiene un límite de tiempo para ser respondida. Deberás jugar bien tus cartas para alzarte con la victoria.
                 </Typography>
-                <Typography variant="body1" sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}>
+                <Typography
+                  variant="body1"
+                  sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}
+                  data-testid="introduction-text-4"
+                >
                   Si bien la puntuación obtenida es importante para ganar, deberás responder al menos la mitad de las preguntas correctamente. Podrás consultar tus estadísticas en el juego siempre que inicies sesión.
                 </Typography>
                 <CardMedia
@@ -135,23 +164,27 @@ export default function GameInfoWindow() {
                     mt: 2,
                     mx: 'auto'
                   }}
+                  data-testid="introduction-image"
                 />
               </CardContent>
             </Card>
           </Grid>
 
           {/* Comodines */}
-          <Grid item xs={12} md={6}>
-            <Card sx={{
-              background: 'linear-gradient(135deg, #e0f2ff, #c2e5ff, #a8d8ff)',
-              backgroundSize: '200% 200%',
-              animation: `${gradientAnimation} 15s ease infinite`,
-              p: 4,
-              borderRadius: 4,
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(0,0,0,0.2)',
-              height: '100%'
-            }}>
+          <Grid item xs={12} md={6} data-testid="wildcards-grid">
+            <Card
+              sx={{
+                background: 'linear-gradient(135deg, #e0f2ff, #c2e5ff, #a8d8ff)',
+                backgroundSize: '200% 200%',
+                animation: `${gradientAnimation} 15s ease infinite`,
+                p: 4,
+                borderRadius: 4,
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(0,0,0,0.2)',
+                height: '100%'
+              }}
+              data-testid="wildcards-card"
+            >
               <Typography
                 variant="h5"
                 gutterBottom
@@ -161,20 +194,33 @@ export default function GameInfoWindow() {
                   mb: 3,
                   color: '#000000'
                 }}
+                data-testid="wildcards-title"
               >
                 <Star sx={{ mr: 2, fontSize: '2rem', color: '#F57C00' }} />
                 Comodines
               </Typography>
-              <CardContent>
-                <Typography variant="body1" sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}>
+              <CardContent data-testid="wildcards-content">
+                <Typography
+                  variant="body1"
+                  sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}
+                  data-testid="wildcards-text-1"
+                >
                   Los comodines son elementos especiales que te dan ventajas únicas para ayudarte a encontrar la solución correcta, pero cuidado, también acarrearán una penalización en la puntuación obtenida en esa pregunta. Podrás encontrarlos a la derecha de la imagen de la pregunta.
                 </Typography>
-                <Typography variant="body1" sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}>
+                <Typography
+                  variant="body1"
+                  sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}
+                  data-testid="wildcards-text-2"
+                >
                   Aquí tienes los comodines disponibles y su habilidad:
                 </Typography>
-                <Box component="ul" sx={{ pl: 2, mb: 3 }}>
+                <Box component="ul" sx={{ pl: 2, mb: 3 }} data-testid="wildcards-list">
                   <li>
-                    <Typography variant="body2" sx={{ color: '#000000', textAlign: 'justify' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: '#000000', textAlign: 'justify' }}
+                      data-testid="wildcard-pista"
+                    >
                       <strong>Comodín Pista</strong>: Este comodín activará el chat con la IA y hará que esta te proporcione una pista aleatoria generada por ella. Tiene una penalización de 15 puntos.
                     </Typography>
                     <CardMedia
@@ -189,10 +235,15 @@ export default function GameInfoWindow() {
                         mt: 2,
                         mx: 'auto'
                       }}
+                      data-testid="wildcard-pista-image"
                     />
                   </li>
                   <li>
-                    <Typography variant="body2" sx={{ color: '#000000', textAlign: 'justify' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: '#000000', textAlign: 'justify' }}
+                      data-testid="wildcard-preguntar-ia"
+                    >
                       <strong>Comodín Preguntar IA</strong>: Este comodín activará también el chat con la IA y te permitirá que tú mismo le preguntes lo que quieras, pero cuidado, no pienses que te dará la solución tan fácilmente. Tiene una penalización de 25 puntos.
                     </Typography>
                     <CardMedia
@@ -207,10 +258,15 @@ export default function GameInfoWindow() {
                         mt: 2,
                         mx: 'auto'
                       }}
+                      data-testid="wildcard-preguntar-ia-image"
                     />
                   </li>
                   <li>
-                    <Typography variant="body2" sx={{ color: '#000000', textAlign: 'justify' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: '#000000', textAlign: 'justify' }}
+                      data-testid="wildcard-50-50"
+                    >
                       <strong>Comodín 50/50</strong>: Este comodín descartará dos de las respuestas incorrectas, haciendo que solo tengas que elegir entre dos opciones y aumentando tus posibilidades de acierto a un 50%. Este comodín tiene una penalización de 40 puntos.
                     </Typography>
                     <CardMedia
@@ -225,6 +281,7 @@ export default function GameInfoWindow() {
                         mt: 2,
                         mx: 'auto'
                       }}
+                      data-testid="wildcard-50-50-image"
                     />
                   </li>
                 </Box>
@@ -233,17 +290,20 @@ export default function GameInfoWindow() {
           </Grid>
 
           {/* Modos de Juego */}
-          <Grid item xs={12} md={6}>
-            <Card sx={{
-              background: 'linear-gradient(135deg, #e0f2ff, #c2e5ff, #a8d8ff)',
-              backgroundSize: '200% 200%',
-              animation: `${gradientAnimation} 15s ease infinite`,
-              p: 4,
-              borderRadius: 4,
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(0,0,0,0.2)',
-              height: '100%'
-            }}>
+          <Grid item xs={12} md={6} data-testid="game-modes-grid">
+            <Card
+              sx={{
+                background: 'linear-gradient(135deg, #e0f2ff, #c2e5ff, #a8d8ff)',
+                backgroundSize: '200% 200%',
+                animation: `${gradientAnimation} 15s ease infinite`,
+                p: 4,
+                borderRadius: 4,
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(0,0,0,0.2)',
+                height: '100%'
+              }}
+              data-testid="game-modes-card"
+            >
               <Typography
                 variant="h5"
                 gutterBottom
@@ -253,18 +313,31 @@ export default function GameInfoWindow() {
                   mb: 3,
                   color: '#000000'
                 }}
+                data-testid="game-modes-title"
               >
                 <VideogameAsset sx={{ mr: 2, fontSize: '2rem', color: '#AD1457' }} />
                 Modos de juego
               </Typography>
-              <CardContent>
-                <Typography variant="body1" sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}>
+              <CardContent data-testid="game-modes-content">
+                <Typography
+                  variant="body1"
+                  sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}
+                  data-testid="game-modes-text-1"
+                >
                   WICHAT ofrece varios modos de juego para que elijas la categoría que más te guste como temática para tus preguntas. Puedes elegir entre 7 temáticas diferentes que van desde monumentos hasta Fórmula 1, permitiéndote demostrar tus conocimientos en estos campos específicos. Si no te decides por ninguna, puedes probar el modo variado, que combinará preguntas aleatoriamente de todas las categorías disponibles, permitiéndote explorar todas ellas.
                 </Typography>
-                <Typography variant="body1" sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}>
+                <Typography
+                  variant="body1"
+                  sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}
+                  data-testid="game-modes-text-2"
+                >
                   El modo de juego deberás seleccionarlo siempre antes de comenzar una partida, ya que no podrás cambiarlo una vez que hayas comenzado. El modo de juego jugado aparecerá también reflejado en las estadísticas de la partida si has iniciado sesión.
                 </Typography>
-                <Typography variant="body1" sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}>
+                <Typography
+                  variant="body1"
+                  sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}
+                  data-testid="game-modes-text-3"
+                >
                   Los modos de juego disponibles son:
                 </Typography>
                 <CardMedia
@@ -279,23 +352,27 @@ export default function GameInfoWindow() {
                     mt: 2,
                     mx: 'auto'
                   }}
+                  data-testid="game-modes-image"
                 />
               </CardContent>
             </Card>
           </Grid>
 
           {/* Dificultades */}
-          <Grid item xs={12} md={6}>
-            <Card sx={{
-              background: 'linear-gradient(135deg, #e0f2ff, #c2e5ff, #a8d8ff)',
-              backgroundSize: '200% 200%',
-              animation: `${gradientAnimation} 15s ease infinite`,
-              p: 4,
-              borderRadius: 4,
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(0,0,0,0.2)',
-              height: '100%'
-            }}>
+          <Grid item xs={12} md={6} data-testid="difficulties-grid">
+            <Card
+              sx={{
+                background: 'linear-gradient(135deg, #e0f2ff, #c2e5ff, #a8d8ff)',
+                backgroundSize: '200% 200%',
+                animation: `${gradientAnimation} 15s ease infinite`,
+                p: 4,
+                borderRadius: 4,
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(0,0,0,0.2)',
+                height: '100%'
+              }}
+              data-testid="difficulties-card"
+            >
               <Typography
                 variant="h5"
                 gutterBottom
@@ -305,23 +382,40 @@ export default function GameInfoWindow() {
                   mb: 3,
                   color: '#000000'
                 }}
+                data-testid="difficulties-title"
               >
                 <Tune sx={{ mr: 2, fontSize: '2rem', color: '#7B1FA2' }} />
                 Dificultades
               </Typography>
-              <CardContent>
-                <Typography variant="body1" sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}>
+              <CardContent data-testid="difficulties-content">
+                <Typography
+                  variant="body1"
+                  sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}
+                  data-testid="difficulties-text-1"
+                >
                   Además de elegir temática para tus partidas, WICHAT te permite seleccionar también la dificultad en la que vas a jugar. La aplicación cuenta con tres niveles de dificultad: fácil, medio y difícil. La dificultad afecta únicamente al número de preguntas de la partida y al tiempo que tendrás para responderlas. A mayor dificultad, menos tiempo tendrás para responder y más preguntas tendrás que responder correctamente para ganar.
                 </Typography>
-                <Typography variant="body1" sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}>
+                <Typography
+                  variant="body1"
+                  sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}
+                  data-testid="difficulties-text-2"
+                >
                   Deberás seleccionar la dificultad antes de comenzar una partida, junto con la temática, y no podrás cambiarla una vez que hayas comenzado.
                 </Typography>
-                <Typography variant="body1" sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}>
+                <Typography
+                  variant="body1"
+                  sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}
+                  data-testid="difficulties-text-3"
+                >
                   Información de las dificultades:
                 </Typography>
-                <Box component="ul" sx={{ pl: 2, mb: 3 }}>
+                <Box component="ul" sx={{ pl: 2, mb: 3 }} data-testid="difficulties-list">
                   <li>
-                    <Typography variant="body2" sx={{ color: '#000000', textAlign: 'justify' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: '#000000', textAlign: 'justify' }}
+                      data-testid="difficulty-easy"
+                    >
                       <strong>Fácil</strong>:
                     </Typography>
                     <CardMedia
@@ -336,10 +430,15 @@ export default function GameInfoWindow() {
                         mt: 2,
                         mx: 'auto'
                       }}
+                      data-testid="difficulty-easy-image"
                     />
                   </li>
                   <li>
-                    <Typography variant="body2" sx={{ color: '#000000', textAlign: 'justify' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: '#000000', textAlign: 'justify' }}
+                      data-testid="difficulty-medium"
+                    >
                       <strong>Medio</strong>:
                     </Typography>
                     <CardMedia
@@ -354,10 +453,15 @@ export default function GameInfoWindow() {
                         mt: 2,
                         mx: 'auto'
                       }}
+                      data-testid="difficulty-medium-image"
                     />
                   </li>
                   <li>
-                    <Typography variant="body2" sx={{ color: '#000000', textAlign: 'justify' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: '#000000', textAlign: 'justify' }}
+                      data-testid="difficulty-hard"
+                    >
                       <strong>Difícil</strong>:
                     </Typography>
                     <CardMedia
@@ -372,6 +476,7 @@ export default function GameInfoWindow() {
                         mt: 2,
                         mx: 'auto'
                       }}
+                      data-testid="difficulty-hard-image"
                     />
                   </li>
                 </Box>
@@ -380,17 +485,20 @@ export default function GameInfoWindow() {
           </Grid>
 
           {/* Puntuación */}
-          <Grid item xs={12} md={6}>
-            <Card sx={{
-              background: 'linear-gradient(135deg, #e0f2ff, #c2e5ff, #a8d8ff)',
-              backgroundSize: '200% 200%',
-              animation: `${gradientAnimation} 15s ease infinite`,
-              p: 4,
-              borderRadius: 4,
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(0,0,0,0.2)',
-              height: '100%'
-            }}>
+          <Grid item xs={12} md={6} data-testid="scoring-grid">
+            <Card
+              sx={{
+                background: 'linear-gradient(135deg, #e0f2ff, #c2e5ff, #a8d8ff)',
+                backgroundSize: '200% 200%',
+                animation: `${gradientAnimation} 15s ease infinite`,
+                p: 4,
+                borderRadius: 4,
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(0,0,0,0.2)',
+                height: '100%'
+              }}
+              data-testid="scoring-card"
+            >
               <Typography
                 variant="h5"
                 gutterBottom
@@ -400,18 +508,29 @@ export default function GameInfoWindow() {
                   mb: 3,
                   color: '#000000'
                 }}
+                data-testid="scoring-title"
               >
                 <Score sx={{ mr: 2, fontSize: '2rem', color: '#388E3C' }} />
                 Puntuación
               </Typography>
-              <CardContent>
-                <Typography variant="body1" sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}>
+              <CardContent data-testid="scoring-content">
+                <Typography
+                  variant="body1"
+                  sx={{ mb: 3, color: '#000000', textAlign: 'justify' }}
+                  data-testid="scoring-text-1"
+                >
                   Tu puntuación refleja tu habilidad en el juego, así como tus conocimientos sobre la temática jugada. Cada pregunta acertada en WICHAT te otorgará 100 puntos, mientras que las preguntas falladas no te otorgarán ni quitarán puntos. Puedes consultar en todo momento de tu partida tu puntuación actual a la derecha de la pregunta. También, al terminar la partida, se te mostrará tu puntuación final, así como las estadísticas de la partida. Hay varias mecánicas que alteran la obtención de los puntos y estas son:
                 </Typography>
-                <Box component="ul" sx={{ pl: 2, mb: 3 }}>
+                <Box component="ul" sx={{ pl: 2, mb: 3 }} data-testid="scoring-list">
                   <li>
-                    <Typography variant="body2" sx={{ color: '#000000', textAlign: 'justify' }}>
-                      <strong>Comodines</strong>: Los comodines son ayudas para resolver las preguntas en tu partida, pero estos acarrearán una penalización en la puntuación. Por lo tanto, si aciertas una pregunta habiendo usado uno, obtendrás menos puntos; en caso de fallarla, no te preocupes, no se te restarán de los ya obtenidos. Puedes consultar las penalizaciones de cada comodín en la sección correspondiente de esta guía.
+                    <Typography
+                      variant="body2"
+                      sx={{ color: '#000000', textAlign: 'justify' }}
+                      data-testid="scoring-wildcards"
+                    >
+                      <strong>Comodines</strong>: Los comodines son ayudas para resolver las preguntas en tu partida, pero estos acarrearán una penalización en la puntuación. Por lo tanto, si aciertas una pregunta habiendo usado
+
+ uno, obtendrás menos puntos; en caso de fallarla, no te preocupes, no se te restarán de los ya obtenidos. Puedes consultar las penalizaciones de cada comodín en la sección correspondiente de esta guía.
                     </Typography>
                     <CardMedia
                       component="img"
@@ -425,10 +544,15 @@ export default function GameInfoWindow() {
                         mt: 2,
                         mx: 'auto'
                       }}
+                      data-testid="scoring-wildcards-image"
                     />
                   </li>
                   <li>
-                    <Typography variant="body2" sx={{ color: '#000000', textAlign: 'justify' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: '#000000', textAlign: 'justify' }}
+                      data-testid="scoring-streak"
+                    >
                       <strong>Racha de aciertos</strong>: WICHAT cuenta con un sistema de racha que te recompensa por acertar preguntas de forma consecutiva. Tu racha actual se muestra a la derecha de tu puntuación, acompañada del icono de una llama roja. Por cada pregunta acertada consecutivamente, aumentará tu racha en 1 y, con ello, los puntos ganados. Por cada punto de racha acumulado, se te otorgarán 20 puntos extra en la puntuación de la pregunta.
                     </Typography>
                     <CardMedia
@@ -443,6 +567,7 @@ export default function GameInfoWindow() {
                         mt: 2,
                         mx: 'auto'
                       }}
+                      data-testid="scoring-streak-image"
                     />
                   </li>
                 </Box>
@@ -452,13 +577,16 @@ export default function GameInfoWindow() {
         </Grid>
 
         {/* Botones de acción */}
-        <Box sx={{ 
-          display: 'flex',
-          justifyContent: 'center',
-          gap: 3,
-          flexWrap: 'wrap',
-          mb: 4
-        }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: 3,
+            flexWrap: 'wrap',
+            mb: 4
+          }}
+          data-testid="action-buttons"
+        >
           <Button
             variant="contained"
             startIcon={<Home />}
@@ -476,6 +604,7 @@ export default function GameInfoWindow() {
               },
               transition: 'all 0.3s ease'
             }}
+            data-testid="home-button"
           >
             Menú principal
           </Button>
