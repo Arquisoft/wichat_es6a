@@ -3,9 +3,66 @@ ifndef::imagesdir[:imagesdir: ../images]
 [[section-design-decisions]]
 # Architecture Decisions
 
-To document the architectural decisions of the project, we have created individual pages in the GitHub Wiki. This approach allows us to provide a detailed explanation of each decision without cluttering the main documentation. Each page includes the rationale behind the decision, as well as its advantages and disadvantages.
+## Service-Oriented System
+Our system follows a service-based architecture, where each service is responsible for a specific domain of functionality. This modular approach enhances scalability, separation of concerns, and maintainability.
 
-## Technology Decisions
+Some core services include:
+
+- AuthService: Handles user authentication and token management.
+
+- UserService: Manages user profiles, roles, and preferences.
+
+- QuestionService: Stores and retrieves generated quiz questions.
+
+- LLMService: Coordinates AI-based content generation (e.g., questions and hints).
+
+- WikidataService: Provides trivia data retrieved from structured knowledge sources.
+
+Each service is stateless, autonomous, and communicates with others via HTTP calls through the Gateway.
+
+## Gateway Service
+The Gateway acts as the central entry point for all external clients. It is responsible for:
+
+- Routing requests to the appropriate internal services.
+
+- Centralizing authentication, authorization, and input validation.
+
+- Abstracting internal service structure from external consumers.
+
+This simplifies client interaction and ensures consistent policies across the system.
+
+## Example Workflow of How the Architecture Works
+
+To better understand how our service-based architecture operates in practice, we describe two typical workflows that involve several services working together: **question generation** and **AI-powered hint generation**.
+
+
+### Question Generation
+
+When an admin user requests a batch of quiz questions, the system coordinates several services:
+
+- The **frontend** sends a request to the **Gateway**, which routes it to the service responsible for AI interactions.
+- This service fetches relevant trivia data from a knowledge base and uses an external **LLM provider** to generate questions based on that data.
+- Each generated question is then stored via another service that manages persistent storage.
+- Finally, the response is sent back through the Gateway to the user.
+
+This is a good example of how services collaborate, each handling a specific responsibility: routing, LLM integration, data retrieval, and persistence.
+
+---
+
+## Bulk Question Generation and Caching
+To address the delay experienced when starting a game due to real-time question generation, we introduced a pre-generation and caching strategy.
+
+- When a new game starts, the system first attempts to load questions from the database.
+
+- If no suitable cached questions are found, it generates a batch of questions on the fly using the LLM and Wikidata services.
+
+- These questions are then saved to the database for reuse in future games.
+
+This drastically reduces perceived latency and improves responsiveness when starting a new game session.
+
+---
+
+# Technology Decisions
 
 - https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-Javascript[JavaScript]
 - https://github.com/Arquisoft/wichat_es6a/wiki/Architecture-Decisions-%E2%80%90-Node.js[Node.js]
