@@ -4,7 +4,7 @@ ifndef::imagesdir[:imagesdir: ../images]
 == Introduction and Goals
 
 === Context and Motivation
-WIChat is a web-based question-and-answer application where users must guess the location of an image. The platform automatically generates questions based on Wikidata and allows users to receive hints through an external language model (LLM). This functionality adds a conversational component to the game, enhancing the user experience.
+WIChat is a web-based question-and-answer application where users answer a series of questions from various categories within a set time limit. The platform automatically generates questions based on Wikidata and allows users to receive hints through an external language model (LLM). This functionality adds a conversational component to the game, enhancing the user experience.
 
 RTVE has contracted ChattySw to update an experimental version of the online contest previously developed by HappySw, incorporating new interactive hint functionalities and improving the gameplay experience.
 

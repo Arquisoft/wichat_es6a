@@ -15,14 +15,29 @@ defineFeature(feature, test => {
   });
 
   test('Successful login and navigation to Stats page', ({ given, when, then }) => {
-    const username = "admin";
-    const password = "admin";
+    const username = "test4";
+    const password = "test4";
 
     given('A registered user with valid credentials', async () => {
-      await expect(page).toFill('input[name="username"]', username);
-      await expect(page).toFill('input[name="password"]', password);
-      await page.click('[data-testid="login-button"]');
-      await page.waitForNavigation({ waitUntil: 'networkidle0' });
+       // Registramos al usuario antes de hacer login
+       await page.goto('http://localhost:3000/login', { waitUntil: 'networkidle0' });
+       await expect(page).toClick("button", { text: "Don't have an account? Register here." });
+ 
+       await page.waitForSelector('input[name="username"]');
+       await page.waitForSelector('input[name="password"]');
+ 
+       await expect(page).toFill('input[name="username"]', username);
+       await expect(page).toFill('input[name="password"]', password);
+       await expect(page).toClick('button', { text: 'Add User' });
+       await expect(page).toMatchElement("div", { text: "User added successfully" });
+ 
+       // Luego vamos al login
+       await page.goto('http://localhost:3000/login', { waitUntil: 'networkidle0' });
+ 
+       await expect(page).toFill('input[name="username"]', username);
+       await expect(page).toFill('input[name="password"]', password);
+       await page.click('[data-testid="login-button"]');
+       await page.waitForNavigation({ waitUntil: 'networkidle0' });
     });
 
     when('I log in and click on the "Stats" link in the navbar', async () => {
