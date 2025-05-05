@@ -2,9 +2,9 @@
 :toc:
 :sectnums:
 
-== 13. Test Documentation
+== Quality and Test Documentation
 
-This section provides a structured overview of the automated tests implemented in the `wichat_es6a` project.
+This section provides a structured overview of the automated tests implemented in the project.
 
 === historyservice
 
