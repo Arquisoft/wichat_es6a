@@ -1,21 +1,38 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
-  TextField, Button, Box, Avatar, Typography, Paper, Alert, 
-  Card, CardContent, CardActions, Fade, IconButton, Tooltip
+  TextField,
+  Button,
+  Box,
+  Avatar,
+  Typography,
+  Paper,
+  Alert,
+  Card,
+  CardContent,
+  CardActions,
+  Fade,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
-import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SaveIcon from '@mui/icons-material/Save';
-
+import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
+const apiEndpoint =
+  process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
 // Definimos las funciones fuera del componente
-export const handleImageChange = async (event, user_Id, setProfilePic, setImage) => {
+export const handleImageChange = async (
+  event,
+  user_Id,
+  setProfilePic,
+  setImage
+) => {
   const file = event.target.files[0];
   if (file) {
     const formData = new FormData();
     formData.append("profilePic", file);
     try {
-      await axios.post(`http://localhost:8000/user/${user_Id}/profile-pic`, formData, {
+      await axios.post(`${apiEndpoint}/user/${user_Id}/profile-pic`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -33,7 +50,7 @@ export const handleImageChange = async (event, user_Id, setProfilePic, setImage)
 
 export const handleDeleteImage = async (user_Id, setImage, setProfilePic) => {
   try {
-    await axios.delete(`http://localhost:8000/user/${user_Id}/profile-pic`, {
+    await axios.delete(`${apiEndpoint}/user/${user_Id}/profile-pic`, {
       headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
     });
     setImage(null);
@@ -45,27 +62,44 @@ export const handleDeleteImage = async (user_Id, setImage, setProfilePic) => {
   }
 };
 
-export const handleSaveUsername = (newUsername, setUsernameError, setPasswordSuccess, user_Id) => {
+export const handleSaveUsername = (
+  newUsername,
+  setUsernameError,
+  setPasswordSuccess,
+  user_Id
+) => {
   if (!newUsername) {
     setUsernameError("El nombre de usuario no puede estar vacío.");
     return;
   }
-  axios.put(`http://localhost:8000/user/${user_Id}/username`, { username: newUsername }, {
-    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-  })
+  axios
+    .put(
+      `${apiEndpoint}/user/${user_Id}/username`,
+      { username: newUsername },
+      {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      }
+    )
     .then(() => {
       setUsernameError("");
       setPasswordSuccess("Nombre de usuario actualizado con éxito.");
       localStorage.setItem("username", newUsername);
       window.location.reload();
     })
-    .catch(error => {
+    .catch((error) => {
       console.error("Error al guardar el nombre de usuario:", error);
       setUsernameError(error.response?.data?.error || "Error inesperado.");
     });
 };
 
-export const handleSavePassword = (currentPassword, newPassword, repeatPassword, setPasswordError, setPasswordSuccess, user_Id) => {
+export const handleSavePassword = (
+  currentPassword,
+  newPassword,
+  repeatPassword,
+  setPasswordError,
+  setPasswordSuccess,
+  user_Id
+) => {
   if (newPassword !== repeatPassword) {
     setPasswordError("Las nuevas contraseñas no coinciden.");
     return;
@@ -74,18 +108,23 @@ export const handleSavePassword = (currentPassword, newPassword, repeatPassword,
     setPasswordError("Por favor, ingresa tu contraseña actual.");
     return;
   }
-  axios.put(`http://localhost:8000/user/${user_Id}/password`, {
-    currentPassword,
-    newPassword,
-    confirmPassword: repeatPassword
-  }, {
-    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-  })
+  axios
+    .put(
+      `${apiEndpoint}/user/${user_Id}/password`,
+      {
+        currentPassword,
+        newPassword,
+        confirmPassword: repeatPassword,
+      },
+      {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      }
+    )
     .then(() => {
       setPasswordError("");
       setPasswordSuccess("Contraseña actualizada con éxito.");
     })
-    .catch(error => {
+    .catch((error) => {
       console.error("Error al guardar la contraseña:", error);
       setPasswordError("Error al cambiar la contraseña.");
     });
@@ -103,28 +142,29 @@ const EditProfile = () => {
   const [usernameError, setUsernameError] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const baseURL = "http://localhost:8000/";
   const user_Id = localStorage.getItem("_id");
 
   useEffect(() => {
-    axios.get(baseURL + "user/" + user_Id, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-    })
-      .then(response => {
+    axios
+      .get(apiEndpoint + "/user/" + user_Id, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+      .then((response) => {
         const { username } = response.data;
         setNewUsername(username);
         setLoading(false);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Error al cargar los datos del perfil:", error);
         setLoading(false);
       });
 
-    axios.get(baseURL + `user/${user_Id}/profile-pic`, {
-      responseType: 'blob',
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-    })
-      .then(response => {
+    axios
+      .get(apiEndpoint + `/user/${user_Id}/profile-pic`, {
+        responseType: "blob",
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+      .then((response) => {
         const imageUrl = URL.createObjectURL(response.data);
         setProfilePic(imageUrl);
       })
@@ -133,8 +173,17 @@ const EditProfile = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-        <Typography variant="h6" color="white">Cargando perfil...</Typography>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <Typography variant="h6" color="white">
+          Cargando perfil...
+        </Typography>
       </Box>
     );
   }
@@ -145,7 +194,8 @@ const EditProfile = () => {
         sx={{
           minHeight: "100vh",
           width: "100vw",
-          background: "linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #6b7280 100%)", // Gradiente azul-gris
+          background:
+            "linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #6b7280 100%)", // Gradiente azul-gris
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -162,7 +212,8 @@ const EditProfile = () => {
             left: 0,
             width: "100%",
             height: "100%",
-            background: "radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%)",
+            background:
+              "radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%)",
             zIndex: 0,
           }}
         />
@@ -194,19 +245,29 @@ const EditProfile = () => {
                 <Avatar
                   alt={newUsername}
                   src={profilePic || "/default-profile-img.jpg"}
-                  sx={{ width: 150, height: 150, mx: "auto", mb: 3, border: "4px solid #1976d2" }}
+                  sx={{
+                    width: 150,
+                    height: 150,
+                    mx: "auto",
+                    mb: 3,
+                    border: "4px solid #1976d2",
+                  }}
                 />
                 <input
                   type="file"
                   accept="image/*"
                   style={{ display: "none" }}
                   id="profile-pic-input"
-                  onChange={(e) => handleImageChange(e, user_Id, setProfilePic, setImage)}
+                  onChange={(e) =>
+                    handleImageChange(e, user_Id, setProfilePic, setImage)
+                  }
                 />
                 <Tooltip title="Cambiar imagen">
                   <IconButton
                     color="primary"
-                    onClick={() => document.getElementById("profile-pic-input").click()}
+                    onClick={() =>
+                      document.getElementById("profile-pic-input").click()
+                    }
                     size="large"
                   >
                     <PhotoCameraIcon fontSize="large" />
@@ -214,7 +275,13 @@ const EditProfile = () => {
                 </Tooltip>
                 {profilePic && (
                   <Tooltip title="Eliminar imagen">
-                    <IconButton color="error" onClick={() => handleDeleteImage(user_Id, setImage, setProfilePic)} size="large">
+                    <IconButton
+                      color="error"
+                      onClick={() =>
+                        handleDeleteImage(user_Id, setImage, setProfilePic)
+                      }
+                      size="large"
+                    >
                       <DeleteIcon fontSize="large" />
                     </IconButton>
                   </Tooltip>
@@ -236,7 +303,11 @@ const EditProfile = () => {
                   onChange={(e) => setNewUsername(e.target.value)}
                   sx={{ mb: 3 }}
                 />
-                {usernameError && <Alert severity="error" sx={{ mb: 2 }}>{usernameError}</Alert>}
+                {usernameError && (
+                  <Alert severity="error" sx={{ mb: 2 }}>
+                    {usernameError}
+                  </Alert>
+                )}
               </CardContent>
               <CardActions sx={{ px: 3, pb: 3 }}>
                 <Button
@@ -244,7 +315,14 @@ const EditProfile = () => {
                   color="primary"
                   startIcon={<SaveIcon />}
                   fullWidth
-                  onClick={() => handleSaveUsername(newUsername, setUsernameError, setPasswordSuccess, user_Id)}
+                  onClick={() =>
+                    handleSaveUsername(
+                      newUsername,
+                      setUsernameError,
+                      setPasswordSuccess,
+                      user_Id
+                    )
+                  }
                   size="large"
                 >
                   Guardar Nombre
@@ -285,8 +363,16 @@ const EditProfile = () => {
                   onChange={(e) => setRepeatPassword(e.target.value)}
                   sx={{ mb: 3 }}
                 />
-                {passwordError && <Alert severity="error" sx={{ mb: 2 }}>{passwordError}</Alert>}
-                {passwordSuccess && <Alert severity="success" sx={{ mb: 2 }}>{passwordSuccess}</Alert>}
+                {passwordError && (
+                  <Alert severity="error" sx={{ mb: 2 }}>
+                    {passwordError}
+                  </Alert>
+                )}
+                {passwordSuccess && (
+                  <Alert severity="success" sx={{ mb: 2 }}>
+                    {passwordSuccess}
+                  </Alert>
+                )}
               </CardContent>
               <CardActions sx={{ px: 3, pb: 3 }}>
                 <Button
@@ -294,14 +380,22 @@ const EditProfile = () => {
                   color="primary"
                   startIcon={<SaveIcon />}
                   fullWidth
-                  onClick={() => handleSavePassword(currentPassword, newPassword, repeatPassword, setPasswordError, setPasswordSuccess, user_Id)}
+                  onClick={() =>
+                    handleSavePassword(
+                      currentPassword,
+                      newPassword,
+                      repeatPassword,
+                      setPasswordError,
+                      setPasswordSuccess,
+                      user_Id
+                    )
+                  }
                   size="large"
                 >
                   Guardar Contraseña
                 </Button>
               </CardActions>
             </Card>
-
           </Box>
         </Paper>
       </Box>

@@ -24,11 +24,8 @@ const port = process.env.PORT || 8010;
 
 // Middleware
 app.use(express.json());
-app.use(cors({
-  origin: "http://localhost:8000",
-  methods: "GET,POST,PUT,DELETE",
-  allowedHeaders: "Content-Type,Authorization,username"
-}));
+
+app.use(cors());
 
 // Helper function to normalize difficulty
 const normalizeDifficulty = (diff) => {

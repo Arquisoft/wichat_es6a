@@ -34,8 +34,8 @@ const StatisticsWindow = () => {
   const [showMore, setShowMore] = useState(false); // State for Show More
   const navigate = useNavigate();
 
-  const servicesBaseUrl = "http://localhost:8000"; // Base URL for the services
-  // Generar partículas (estrellas y trofeos)
+  const apiEndpoint =
+    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000"; // Generar partículas (estrellas y trofeos)
   const particleCount = 20;
   const particles = Array.from({ length: particleCount }, (_, index) => ({
     id: index,
@@ -55,7 +55,7 @@ const StatisticsWindow = () => {
       return;
     }
 
-    fetch(servicesBaseUrl+ "/stats", {
+    fetch(apiEndpoint + "/stats", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -100,7 +100,7 @@ const StatisticsWindow = () => {
     setStats((prev) => ({ ...prev, bestGames: [] }));
 
     // Call /getAllGames endpoint
-    fetch(servicesBaseUrl + "/getAllGames", {
+    fetch(apiEndpoint + "/getAllGames", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -135,7 +135,7 @@ const StatisticsWindow = () => {
     setStats((prev) => ({ ...prev, bestGames: [] }));
 
     // Call /getBestGames endpoint
-    fetch(servicesBaseUrl + "/getBestGames", {
+    fetch(apiEndpoint + "/getBestGames", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -369,8 +369,7 @@ const StatisticsWindow = () => {
                                     sx={{ mr: 1 }}
                                   />
                                   <Typography variant="body2">
-                                    Category:{" "}
-                                    {game.category || "N/A"}
+                                    Category: {game.category || "N/A"}
                                   </Typography>
                                 </Box>
                                 <Box display="flex" alignItems="center" mt={1}>
