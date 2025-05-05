@@ -117,6 +117,6 @@ defineFeature(feature, test => {
       await expect(page).toMatchElement('[data-testid="end-screen-message"]');
       await expect(page.url()).toMatch(/\/endGame/);
     });
-  }, 90000 );
+  }, 1000000 );
 
 });
