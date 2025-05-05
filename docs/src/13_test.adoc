@@ -1,0 +1,132 @@
+== Test Documentation
+
+This section provides a structured overview of the automated tests implemented in the project.
+
+=== Unit Testing
+
+==== historyservice
+
+Tests related to storage and processing of chat and game history.
+
+* `hitory-model.test.js`: Tests the model responsible for storing and retrieving chat history.
+* `history-stats-service.test.js`: Validates statistical calculations on historical data.
+
+==== questionsService
+
+Tests for handling questions and user-question interaction history.
+
+* `questions-model.test.js`: Ensures question model logic behaves as expected.
+* `question-history-service.test.js`: Tests logic related to question selection and historical storage.
+
+==== webapp (Frontend React components)
+
+Tests for UI components and their auxiliary logic.
+
+* `HowToPlayWindow.test.js`: Verifies tutorial/instruction modal behavior.
+* `editProfileWindowAuxFunc.test.js`: Tests helper functions for profile editing.
+* `gameOptions.test.js`: Validates correct handling of game configuration inputs.
+* `editProfileWindow.test.js`: UI test for editing user profile.
+* `QuestionTimer.test.js`: Checks timer countdown and time expiration behavior.
+* `AddUser.test.js`: Tests component for adding new users.
+* `GameWindow.test.js`: UI and state transition checks for the main game view.
+* `ChatClues.test.js`: Ensures clues are displayed properly during the game.
+* `home.test.js`: Tests the landing page behavior.
+* `StatisticsWindow.test.js`: Ensures user stats display correctly.
+* `allQuestionsWindow.test.js`: Tests display of all answered questions.
+* `Game.test.js`: Core game logic integration test.
+* `navBar.test.js`: Ensures the navbar displays and routes correctly.
+* `EndGameWindow.test.js`: Validates the end-of-game summary screen.
+* `Login.test.js`: Tests login UI behavior and validation.
+* `Auth.test.js`: Authentication-related logic and routing tests.
+
+==== gatewayservice
+
+* `gateway-service.test.js`: Validates core functionalities of the gateway layer and inter-service routing.
+
+==== llmservice
+
+Tests for interactions with the language model backend.
+
+* `llm-service.test.js`: Main test suite for verifying service logic.
+* `getRandomEntriesAuxiliaryFunction.test.js`: Tests helper for random entry selection.
+* `generate-questions.test.js`: Validates question generation logic.
+* `parseJSONAuxFunction.test.js`: Tests robustness of JSON parsing.
+* `sendQuestionToLLM.test.js`: Ensures API communication with LLM works correctly.
+* `llm-service-AuxiliaryFunctions.test.js`: Collection of miscellaneous helper function tests.
+
+==== wikidataservice
+
+Tests for caching and querying Wikidata.
+
+* `wikidataCacheService.test.js`: Validates caching behavior.
+* `wikidata-service.test.js`: Tests high-level query logic.
+* `wikidataQueries.test.js`: Ensures individual query builders function correctly.
+
+==== userservice
+
+* `auth-service.test.js`: Tests user authentication logic.
+* `user-model.test.js`: Model tests for user creation, validation, and retrieval.
+* `user-service.test.js`: Service-level tests for managing user data.
+
+=== Load Testing with Gatling
+
+A load test was performed using the Gatling tool to evaluate the performance of the application under stress.
+
+==== Objective
+
+To assess the behavior of critical endpoints under high user concurrency conditions.
+
+==== Test Design
+
+- **Tool**: Gatling
+- **Endpoints tested**:
+  - `POST /adduser` (user registration)
+  - `POST /login` (user authentication)
+- **Simulated users**: 1000
+- **Ramp-up duration**: 60 seconds
+- **Pause strategy**: Controlled pauses between actions to simulate realistic user behavior
+- **Assertions**:
+  - Maximum response time must be ≤ 5000 ms
+  - At least 95% of requests must succeed (HTTP 200 or 201)
+
+==== Results
+
+- The system respected the maximum response time threshold of 5000 ms.
+- Success rate consistently exceeded 95%.
+- HTML reports (index.html and request-specific reports) confirmed that both login and registration endpoints handled the load without significant performance degradation.
+
+==== Conclusion
+
+The system demonstrated robustness and scalability, successfully supporting high traffic without compromising stability or performance.
+
+=== End-to-End (E2E) Testing
+
+End-to-End tests were implemented using the `jest-cucumber` and `puppeteer` frameworks. These tests simulate real user behavior interacting with the application through the browser, ensuring the system works as a whole.
+
+==== Tools and Frameworks
+- **Test Runner**: Jest
+- **BDD Layer**: jest-cucumber
+- **Automation**: Puppeteer
+- **Execution**: Locally and in CI (GitHub Actions compatible)
+
+==== E2E Scenarios Implemented
+
+* `register-form.feature` + `01-register-form.steps.js`:
+  - Simulates a new user registering on the platform.
+  - Verifies the presence of a success message upon form submission.
+
+* `login-form.feature` + `02-login-form.steps.js`:
+  - Simulates login of a previously registered user.
+  - Verifies redirection to `/home` on success.
+
+* `stats-access.feature` + `04-stats-access.steps.js`:
+  - Simulates a user logging in and navigating to the statistics page.
+  - Ensures redirection to `/statistics` occurs successfully.
+
+* `questions-access.feature` + `05-questions-access.steps.js`:
+  - Simulates a user logging in and accessing the questions page.
+  - Validates redirection to `/questions`.
+
+==== Conclusion
+
+These E2E tests cover critical user flows including registration, authentication, and navigation. They are crucial for regression testing and confidence in the deployed UI.
