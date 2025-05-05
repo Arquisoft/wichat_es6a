@@ -146,7 +146,7 @@ const EditProfile = () => {
 
   useEffect(() => {
     axios
-      .get(apiEndpoint + "user/" + user_Id, {
+      .get(apiEndpoint + "/user/" + user_Id, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
       .then((response) => {
@@ -160,7 +160,7 @@ const EditProfile = () => {
       });
 
     axios
-      .get(apiEndpoint + `user/${user_Id}/profile-pic`, {
+      .get(apiEndpoint + `/user/${user_Id}/profile-pic`, {
         responseType: "blob",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
