@@ -79,7 +79,7 @@ const StatisticsWindow = () => {
 
   useEffect(() => {
     fetchStats();
-  }, []);
+  }, [fetchStats]);
 
   // Define difficulty colors
   const difficultyColors = {

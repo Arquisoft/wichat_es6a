@@ -40,33 +40,34 @@ const Navbar = () => {
   const apiEndpoint =
     process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
 
-  useEffect(() => {
-    let currentImageUrl = null;
-    if (userId) {
-      axios
-        .get(`${apiEndpoint}/user/${userId}/profile-pic`, {
-          responseType: "blob",
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        })
-        .then((response) => {
-          const imageUrl = URL.createObjectURL(response.data);
-          currentImageUrl = imageUrl;
-          setProfilePic(imageUrl);
-        })
-        .catch((error) => {
-          console.error("Error al obtener la imagen de perfil:", error);
-          setProfilePic(null);
-        });
-    } else {
-      setProfilePic(null);
-    }
-
-    return () => {
-      if (currentImageUrl) {
-        URL.revokeObjectURL(currentImageUrl);
+    useEffect(() => {
+      let currentImageUrl = null;
+      if (userId) {
+        axios
+          .get(`${apiEndpoint}/user/${userId}/profile-pic`, {
+            responseType: "blob",
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          })
+          .then((response) => {
+            const imageUrl = URL.createObjectURL(response.data);
+            currentImageUrl = imageUrl;
+            setProfilePic(imageUrl);
+          })
+          .catch((error) => {
+            console.error("Error al obtener la imagen de perfil:", error);
+            setProfilePic(null);
+          });
+      } else {
+        setProfilePic(null);
       }
-    };
-  }, [userId]);
+    
+      return () => {
+        if (currentImageUrl) {
+          URL.revokeObjectURL(currentImageUrl);
+        }
+      };
+    }, [userId, apiEndpoint]);
+    
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
