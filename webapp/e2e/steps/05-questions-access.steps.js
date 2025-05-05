@@ -7,12 +7,21 @@ const feature = loadFeature('./features/questions-access.feature');
 let browser, page;
 
 defineFeature(feature, test => {
-  beforeAll(async () => {
-    browser = await puppeteer.launch({ headless: false, slowMo: 50 });
-    page = await browser.newPage();
-    setDefaultOptions({ timeout: 15000 });
-    await page.goto('http://localhost:3000/login', { waitUntil: 'networkidle0' });
-  });
+  
+    beforeAll(async () => {
+      browser = process.env.GITHUB_ACTIONS
+        ? await puppeteer.launch({headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox']})
+        : await puppeteer.launch({ headless: false, slowMo: 100 });
+      page = await browser.newPage();
+      //Way of setting up the timeout
+      setDefaultOptions({ timeout: 10000 })
+  
+      await page
+        .goto("http://localhost:3000/login", {
+          waitUntil: "networkidle0",
+        })
+        .catch(() => {});
+    });
 
   test('Successful login and navigation to Questions page', ({ given, when, then }) => {
     const username = "test5"

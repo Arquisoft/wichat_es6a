@@ -9,15 +9,20 @@ let browser;
 
 defineFeature(feature, test => {
 
-  beforeAll(async () => {
-    browser = await puppeteer.launch({
-      headless: false,
-      slowMo: 100,
+    beforeAll(async () => {
+      browser = process.env.GITHUB_ACTIONS
+        ? await puppeteer.launch({headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox']})
+        : await puppeteer.launch({ headless: false, slowMo: 100 });
+      page = await browser.newPage();
+      //Way of setting up the timeout
+      setDefaultOptions({ timeout: 10000 })
+  
+      await page
+        .goto("http://localhost:3000/login", {
+          waitUntil: "networkidle0",
+        })
+        .catch(() => {});
     });
-
-    page = await browser.newPage();
-    setDefaultOptions({ timeout: 10000 });
-  });
 
   test('Login with valid credentials', ({ given, when, then }) => {
     const username = "test2";
