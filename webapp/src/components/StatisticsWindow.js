@@ -135,7 +135,7 @@ const StatisticsWindow = () => {
     setStats((prev) => ({ ...prev, bestGames: [] }));
 
     // Call /getBestGames endpoint
-    fetch(servicesBaseUrl + "/getBestGames", {
+    fetch(apiEndpoint + "/getBestGames", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
