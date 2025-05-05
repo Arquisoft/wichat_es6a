@@ -17,7 +17,7 @@ defineFeature(feature, test => {
     setDefaultOptions({ timeout: 10000 })
 
     await page
-      .goto("http://localhost:3000", {
+      .goto("http://localhost:3000/login", {
         waitUntil: "networkidle0",
       })
       .catch(() => {});
@@ -29,8 +29,8 @@ defineFeature(feature, test => {
     let password;
 
     given('An unregistered user', async () => {
-      username = "pablo"
-      password = "pabloasw"
+      username = "test1"
+      password = "test1"
       await expect(page).toClick("button", { text: "Don't have an account? Register here." });
     });
 
