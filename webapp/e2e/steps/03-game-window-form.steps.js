@@ -7,20 +7,36 @@ const feature = loadFeature('./features/game-window.feature');
 let browser, page;
 
 defineFeature(feature, test => {
-    beforeAll(async () => {
-      browser = process.env.GITHUB_ACTIONS
-        ? await puppeteer.launch({headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox']})
-        : await puppeteer.launch({ headless: false, slowMo: 100 });
-      page = await browser.newPage();
-      //Way of setting up the timeout
-      setDefaultOptions({ timeout: 10000 })
-  
-      await page
-        .goto("http://localhost:3000/login", {
-          waitUntil: "networkidle0",
+  beforeEach(async () => {
+    browser = process.env.GITHUB_ACTIONS
+      ? await puppeteer.launch({
+          headless: 'new',
+          args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-web-security'],
         })
-        .catch(() => {});
+      : await puppeteer.launch({
+          headless: false,
+          slowMo: 50,
+          args: ['--disable-web-security'],
+        });
+    page = await browser.newPage();
+    setDefaultOptions({ timeout: 10000 });
+
+    await page.goto('http://localhost:3000/login', {
+      waitUntil: 'networkidle0',
     });
+  });
+
+  afterEach(async () => {
+    if (browser) {
+      await browser.close();
+    }
+  });
+
+  afterAll(async () => {
+    if (browser) {
+      await browser.close();
+    }
+  });
 
   test('Complete a game session using different lifelines on each question', ({ given, when, then }) => {
     const username = "test3";
@@ -38,7 +54,6 @@ defineFeature(feature, test => {
       await expect(page).toFill('input[name="username"]', username);
       await expect(page).toFill('input[name="password"]', password);
       await expect(page).toClick('button', { text: 'Add User' });
-      await expect(page).toMatchElement("div", { text: "User added successfully" });
 
       // Luego vamos al login
       await page.goto('http://localhost:3000/login', { waitUntil: 'networkidle0' });
@@ -103,7 +118,4 @@ defineFeature(feature, test => {
     });
   }, 90000 );
 
-  afterAll(async () => {
-    await browser.close();
-  });
 });

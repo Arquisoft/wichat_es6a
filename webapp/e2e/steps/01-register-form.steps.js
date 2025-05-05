@@ -8,19 +8,35 @@ let browser;
 
 defineFeature(feature, test => {
   
-  beforeAll(async () => {
+  beforeEach(async () => {
     browser = process.env.GITHUB_ACTIONS
-      ? await puppeteer.launch({headless: "new", args: ['--no-sandbox', '--disable-setuid-sandbox']})
-      : await puppeteer.launch({ headless: false, slowMo: 100 });
+      ? await puppeteer.launch({
+          headless: 'new',
+          args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-web-security'],
+        })
+      : await puppeteer.launch({
+          headless: false,
+          slowMo: 50,
+          args: ['--disable-web-security'],
+        });
     page = await browser.newPage();
-    //Way of setting up the timeout
-    setDefaultOptions({ timeout: 10000 })
+    setDefaultOptions({ timeout: 10000 });
 
-    await page
-      .goto("http://localhost:3000/login", {
-        waitUntil: "networkidle0",
-      })
-      .catch(() => {});
+    await page.goto('http://localhost:3000/login', {
+      waitUntil: 'networkidle0',
+    });
+  });
+
+  afterEach(async () => {
+    if (browser) {
+      await browser.close();
+    }
+  });
+
+  afterAll(async () => {
+    if (browser) {
+      await browser.close();
+    }
   });
 
   test('The user is not registered in the site', ({given,when,then}) => {
@@ -43,10 +59,6 @@ defineFeature(feature, test => {
     then('A confirmation message should be shown in the screen', async () => {
         await expect(page).toMatchElement("div", { text: "User added successfully" });
     });
-  })
-
-  afterAll(async ()=>{
-    browser.close()
   })
 
 });
