@@ -171,7 +171,7 @@ jobs:
     - name: Update OpenAPI configuration
       run: |
         DEPLOY_HOST=${{ secrets.DEPLOY_HOST }}
-        sed -i "s/SOMEIP/${DEPLOY_HOST}/g" questionsservice/openapi.yaml
+        sed -i "s/SOMEIP/${DEPLOY_HOST}/g" questionsService/openapi.yaml
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@v5
       with:
