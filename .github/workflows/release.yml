@@ -175,11 +175,11 @@ jobs:
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@v5
       with:
-        name: arquisoft/wichat_es6a/questionsservice
+        name: arquisoft/wichat_es6a/questionsService
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: ghcr.io
-        workdir: questionsservice
+        workdir: questionsService
   deploy:
      name: Deploy over SSH
      runs-on: ubuntu-latest
