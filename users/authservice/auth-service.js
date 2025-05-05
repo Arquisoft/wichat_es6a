@@ -73,9 +73,8 @@ if (fs.existsSync(openapiPath)) {
   console.log("Not configuring OpenAPI. Configuration file not present.")
 }
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`Auth Service listening at http://localhost:${port}`);
 });
 
-
-module.exports = app;
+module.exports = { app, server };

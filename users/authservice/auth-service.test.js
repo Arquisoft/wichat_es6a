@@ -6,6 +6,7 @@ const User = require('./auth-model');
 
 let mongoServer;
 let app;
+let server;  // Variable para el servidor
 
 // Test user
 const testUser = {
@@ -27,24 +28,31 @@ beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   const mongoUri = mongoServer.getUri();
 
+  // Mockea mongoose.connect para que no se realice una conexión real
+  jest.spyOn(mongoose, 'connect').mockResolvedValueOnce();  // Evita que mongoose.connect haga algo
+
+  // Ahora conecta Mongoose usando MongoMemoryServer
   await mongoose.connect(mongoUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true
   });
 
-  app = require('./auth-service');
+  // Importa la app y el servidor de auth-service.js
+  const mod = require('./auth-service');
+  app = mod.app;
+  server = mod.server;  // Guarda el servidor aquí
 
-  // Insert initial user into the database
+  // Inserta el usuario de prueba
   await addUser(testUser);
 });
 
 afterAll(async () => {
   await mongoose.connection.close();
   await mongoServer.stop();
+  server.close();  // Cierra el servidor después de los tests
 });
 
 describe('Auth Service', () => {
-
   it('Should successfully log in with correct credentials', async () => {
     const response = await request(app).post('/login').send(testUser);
     expect(response.status).toBe(200);
@@ -106,5 +114,4 @@ describe('Auth Service', () => {
 
     User.findOne = originalFindOne;
   });
-
 });
