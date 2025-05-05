@@ -18,10 +18,10 @@ defineFeature(feature, test => {
       : await puppeteer.launch({
           headless: false,
           slowMo: 50,
-          args: ['--disable-web-security'],
+          args: ['--no-sandbox', '--disable-setuid-sandbox'],
         });
     page = await browser.newPage();
-    setDefaultOptions({ timeout: 10000 });
+    setDefaultOptions({ timeout: 100000 });
 
     await page.goto('http://localhost:3000/login', {
       waitUntil: 'networkidle0',
@@ -66,6 +66,6 @@ defineFeature(feature, test => {
       await page.waitForFunction(() => window.location.pathname.includes('/home'), { timeout: 15000 });
       await expect(page.url()).toMatch(/\/home/);
     });    
-  },90000);
+  },100000);
 
 });

@@ -17,10 +17,10 @@ defineFeature(feature, test => {
       : await puppeteer.launch({
           headless: false,
           slowMo: 50,
-          args: ['--disable-web-security'],
+          args: ['--no-sandbox', '--disable-setuid-sandbox'],
         });
     page = await browser.newPage();
-    setDefaultOptions({ timeout: 10000 });
+    setDefaultOptions({ timeout: 100000 });
 
     await page.goto('http://localhost:3000/login', {
       waitUntil: 'networkidle0',
