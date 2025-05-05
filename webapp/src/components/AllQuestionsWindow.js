@@ -30,12 +30,13 @@ const fadeIn = keyframes`
   to { opacity: 1; transform: scale(1) translateY(0); }
 `;
 
+const apiEndpoint =
+  process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
+
 const AllQuestionsWindow = () => {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const apiEndpoint =
-    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -43,6 +44,7 @@ const AllQuestionsWindow = () => {
       setError(null); // Clear previous errors
       try {
         const response = await fetch(`${apiEndpoint}/questions`);
+
         if (!response.ok)
           throw new Error(
             `Network response was not ok (status: ${response.status})`
