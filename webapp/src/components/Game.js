@@ -230,7 +230,7 @@ async init(category, difficulty) {
       const username = localStorage.getItem("username");
       if (!username) throw new Error("No username found in localStorage");
 
-      const response = await fetch("http://localhost:8000/addGame", {
+      const response = await fetch("http://"+ process.env.DEPLOY_HOST+":8000/addGame", {
         // Endpoint para guardar partida
         method: "POST",
         headers: {
