@@ -1,7 +1,3 @@
-= arc42 Template - Section 13: Quality and Test Documentation
-:toc:
-:sectnums:
-
 == Test Documentation
 
 This section provides a structured overview of the automated tests implemented in the project.
