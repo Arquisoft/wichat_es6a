@@ -48,11 +48,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.use(cors({
-  origin: 'http://' + process.env.REACT_APP_API_ENDPOINT + ':3000',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+
+app.use(cors());
 
 app.use(express.json());
 
