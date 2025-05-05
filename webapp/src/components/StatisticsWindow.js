@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Container,
   Typography,
@@ -31,11 +31,12 @@ const StatisticsWindow = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showMore, setShowMore] = useState(false); // State for Show More
+  const [showMore, setShowMore] = useState(false);
   const navigate = useNavigate();
 
-  const apiEndpoint =
-    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000"; // Generar partículas (estrellas y trofeos)
+  const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
+
+  // 🎆 Partículas
   const particleCount = 20;
   const particles = Array.from({ length: particleCount }, (_, index) => ({
     id: index,
@@ -44,7 +45,8 @@ const StatisticsWindow = () => {
     top: Math.random() * 100,
   }));
 
-  const fetchStats = () => {
+  // ✅ Corrección: useCallback para evitar warnings
+  const fetchStats = useCallback(() => {
     setLoading(true);
     setError(null);
     const username = localStorage.getItem("username");
@@ -75,20 +77,20 @@ const StatisticsWindow = () => {
         setError("Error fetching stats: " + err.message);
         setLoading(false);
       });
-  };
+  }, [apiEndpoint]);
 
+  // ✅ Seguro ahora
   useEffect(() => {
     fetchStats();
   }, [fetchStats]);
 
-  // Define difficulty colors
+  // 🎨 Colores por dificultad
   const difficultyColors = {
-    Fácil: "#4CAF50", // Green
-    Medio: "#FF9800", // Orange
-    Difícil: "#F44336", // Red
+    Fácil: "#4CAF50",
+    Medio: "#FF9800",
+    Difícil: "#F44336",
   };
 
-  // Function to show all games
   const showAllGames = () => {
     const username = localStorage.getItem("username");
     if (!username) {
@@ -96,10 +98,8 @@ const StatisticsWindow = () => {
       return;
     }
 
-    // Clear current games
     setStats((prev) => ({ ...prev, bestGames: [] }));
 
-    // Call /getAllGames endpoint
     fetch(apiEndpoint + "/getAllGames", {
       method: "GET",
       headers: {
@@ -123,7 +123,6 @@ const StatisticsWindow = () => {
       });
   };
 
-  // Function to show best games
   const showBestGames = () => {
     const username = localStorage.getItem("username");
     if (!username) {
@@ -131,10 +130,8 @@ const StatisticsWindow = () => {
       return;
     }
 
-    // Clear current games
     setStats((prev) => ({ ...prev, bestGames: [] }));
 
-    // Call /getBestGames endpoint
     fetch(apiEndpoint + "/getBestGames", {
       method: "GET",
       headers: {
@@ -158,7 +155,6 @@ const StatisticsWindow = () => {
       });
   };
 
-  // Handle Show More/Less toggle
   const handleShowMoreToggle = () => {
     if (!showMore) {
       showAllGames();
