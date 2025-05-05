@@ -20,19 +20,19 @@ const MONGO_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/wichatdb
     
 mongoose.connect(MONGO_URI)
   .then(() => console.log(`Conectado a MongoDB en ${MONGO_URI}`))
-  .catch(err => console.error("Error en la conexión a MongoDB:", err.message)); //NOSONAR
+  .catch(err => console.error("Error en la conexión a MongoDB:", err.message));
 
 
 function validateRequiredFields(req, requiredFields) {
     for (const field of requiredFields) {
         if (!(field in req.body)) {
-            throw new Error(`Missing required field: ${field}`); //NOSONAR
+            throw new Error(`Missing required field: ${field}`);
         }
     }
 }
 
 app.get('/health', (req, res) => {
-    res.status(200).send('OK'); //NOSONAR
+    res.status(200).send('OK');
 });
 
 app.post('/login', [

@@ -80,47 +80,47 @@ function stopHealthCheckInterval() {
 }
 
 // Check the status of all services (every 10 seconds)
-async function checkServiceHealth() {//NOSONAR
-  try {  //NOSONAR
-    await axios.get(`${authServiceUrl}/health`);//NOSONAR
-    authServiceUp.set(1);//NOSONAR
-  } catch {//NOSONAR
-    authServiceUp.set(0);//NOSONAR
-  }
-
-  try {//NOSONAR
-    await axios.get(`${llmServiceUrl}/health`);//NOSONAR
-    llmServiceUp.set(1);//NOSONAR
-  } catch {//NOSONAR
-    llmServiceUp.set(0);//NOSONAR
+async function checkServiceHealth() {
+  try {
+    await axios.get(`${authServiceUrl}/health`);
+    authServiceUp.set(1);
+  } catch {
+    authServiceUp.set(0);
   }
 
   try {
-    await axios.get(`${userServiceUrl}/health`);//NOSONAR
-    userServiceUp.set(1);//NOSONAR
-  } catch {//NOSONAR
-    userServiceUp.set(0);//NOSONAR
+    await axios.get(`${llmServiceUrl}/health`);
+    llmServiceUp.set(1);
+  } catch {
+    llmServiceUp.set(0);
   }
 
   try {
-    await axios.get(`${historyServiceUrl}/health`);//NOSONAR
-    historyServiceUp.set(1);//NOSONAR
-  } catch {//NOSONAR
-    historyServiceUp.set(0);//NOSONAR
+    await axios.get(`${userServiceUrl}/health`);
+    userServiceUp.set(1);
+  } catch {
+    userServiceUp.set(0);
   }
 
-  try { //NOSONAR
-    await axios.get(`${questionServiceUrl}/health`);//NOSONAR
-    questionServiceUp.set(1); //NOSONAR
-  } catch { //NOSONAR
-    questionServiceUp.set(0); //NOSONAR
+  try {
+    await axios.get(`${historyServiceUrl}/health`);
+    historyServiceUp.set(1);
+  } catch {
+    historyServiceUp.set(0);
   }
 
-  try {//NOSONAR
-    await axios.get(`${wikidataServiceUrl}/health`);//NOSONAR
-    wikidataServiceUp.set(1);//NOSONAR
-  } catch {//NOSONAR
-    wikidataServiceUp.set(0); //NOSONAR
+  try {
+    await axios.get(`${questionServiceUrl}/health`);
+    questionServiceUp.set(1);
+  } catch {
+    questionServiceUp.set(0);
+  }
+
+  try {
+    await axios.get(`${wikidataServiceUrl}/health`);
+    wikidataServiceUp.set(1);
+  } catch {
+    wikidataServiceUp.set(0);
   }
 }
 
