@@ -6,8 +6,8 @@ const User = require('./auth-model');
 
 let mongoServer;
 let app;
+let server;
 
-// Test user
 const testUser = {
   username: 'testuser',
   password: 'testpassword',
@@ -27,24 +27,25 @@ beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   const mongoUri = mongoServer.getUri();
 
-  await mongoose.connect(mongoUri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  });
+  process.env.MONGODB_URI = mongoUri;
 
-  app = require('./auth-service');
+  const mod = require('./auth-service');
+  app = mod.app;
+  server = mod.server;
 
-  // Insert initial user into the database
+  await mongoose.connection.asPromise();
+
   await addUser(testUser);
-});
+}, 20000); // Establece un timeout mayor
 
 afterAll(async () => {
   await mongoose.connection.close();
   await mongoServer.stop();
+  server.close();
 });
 
-describe('Auth Service', () => {
 
+describe('Auth Service', () => {
   it('Should successfully log in with correct credentials', async () => {
     const response = await request(app).post('/login').send(testUser);
     expect(response.status).toBe(200);
@@ -106,5 +107,4 @@ describe('Auth Service', () => {
 
     User.findOne = originalFindOne;
   });
-
 });

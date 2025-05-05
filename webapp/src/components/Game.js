@@ -36,8 +36,7 @@ class Game {
 
     this.usedHintOn = new Set();
     this.usedAskAIOn = new Set();
-
-
+    this.gatewayURL = process.env.REACT_APP_API_ENDPOINT  || "http://localhost:8000"; 
   }
 
   // Método de inicialización modificado para cargar preguntas desde la DB
@@ -95,7 +94,7 @@ async init(category, difficulty) {
         ? `?category=${encodeURIComponent(category)}`
         : "";
 
-      const response = await fetch(`http://localhost:8000/questions${categoryParam}`);
+      const response = await fetch(this.gatewayURL+ `/questions${categoryParam}`);
 
       if (!response.ok) {
         throw new Error(`Error loading questions from DB: ${response.statusText}`);
@@ -230,7 +229,7 @@ async init(category, difficulty) {
       const username = localStorage.getItem("username");
       if (!username) throw new Error("No username found in localStorage");
 
-      const response = await fetch("http://localhost:8000/addGame", {
+      const response = await fetch(this.gatewayURL +"/addGame", {
         // Endpoint para guardar partida
         method: "POST",
         headers: {
@@ -326,7 +325,6 @@ async init(category, difficulty) {
     }
 
     const currentQ = this.questions[this.questionIndex];
-    let wasCorrect = false; // Variable para saber si fue correcta
 
     // Si NO es timeout, verificar la respuesta seleccionada
     if (!isTimeout) {
@@ -334,7 +332,6 @@ async init(category, difficulty) {
       if (index >= 0 && index < currentQ.answers.length) {
         if (currentQ.answers[index].isCorrect) {
           console.log("Respuesta Correcta!");
-          wasCorrect = true;
           this.correctAnswers++;
           this.consecutiveCorrectAnswers++;
 
@@ -398,9 +395,6 @@ async init(category, difficulty) {
         }
       }, 0); // 0ms timeout para ponerlo al final de la cola de eventos actual
     }
-
-    // Devolver si la respuesta fue correcta podría ser útil para la UI
-    // return wasCorrect; // Descomentar si GameWindow necesita saberlo inmediatamente
   }
 
   // Devuelve el objeto Question completo de la pregunta actual

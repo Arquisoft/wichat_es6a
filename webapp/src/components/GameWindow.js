@@ -1,5 +1,3 @@
-// src/components/GameWindow.js
-
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
@@ -182,9 +180,6 @@ export function GameWindow({ gameInstance }) {
   const handleFiftyFifty = () => {
     if (!currentQuestion || selectedAnswer !== null || hasUsedFiftyFifty)
       return;
-    const correctIndex = currentQuestion.answers.findIndex(
-      (ans) => ans.isCorrect
-    );
     const incorrectIndices = currentQuestion.answers
       .map((ans, idx) => (ans.isCorrect ? -1 : idx))
       .filter((idx) => idx !== -1);
@@ -582,8 +577,7 @@ export function GameWindow({ gameInstance }) {
               let currentBorder = "none",
                 currentOpacity = 1,
                 hoverTransform = "scale(1.02)",
-                activeTransform = "scale(0.98)",
-                boxShadow = "0px 2px 4px rgba(0,0,0,0.2)";
+                activeTransform = "scale(0.98)";
 
               if (feedbackState === "success") {
                 currentBgColor = FEEDBACK_COLORS.correctBg;
@@ -600,7 +594,6 @@ export function GameWindow({ gameInstance }) {
                 currentOpacity = 0.6;
                 hoverTransform = "none";
                 activeTransform = "none";
-                boxShadow = "none";
               } else if (isDisabled && !isSelected) {
                 currentBgColor = PALETTE.honoluluBlue;
                 currentTextColor = PALETTE.lightCyan;
@@ -608,7 +601,6 @@ export function GameWindow({ gameInstance }) {
                 currentOpacity = 0.6;
                 hoverTransform = "none";
                 activeTransform = "none";
-                boxShadow = "none";
               }
 
               if (isSelected) {
