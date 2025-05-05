@@ -47,9 +47,14 @@ defineFeature(feature, test => {
     given('A registered user exists', async () => {
       // Registramos al usuario antes de hacer login
       await page.goto('http://localhost:3000/login', { waitUntil: 'networkidle0' });
+
       await expect(page).toClick("button", { text: "Don't have an account? Register here." });
-      await expect(page).toFill('input[name="username"]', "test2");
-      await expect(page).toFill('input[name="password"]', "test2");
+      
+      await page.waitForSelector('input[name="username"]');
+      await page.waitForSelector('input[name="password"]');
+
+      await expect(page).toFill('input[name="username"]', username);
+      await expect(page).toFill('input[name="password"]', password);
       await expect(page).toClick('button', { text: 'Add User' });
 
       // Luego vamos al login
