@@ -2,25 +2,27 @@
 :toc:
 :sectnums:
 
-== Quality and Test Documentation
+== Test Documentation
 
 This section provides a structured overview of the automated tests implemented in the project.
 
-=== historyservice
+=== Unit Testing
+
+==== historyservice
 
 Tests related to storage and processing of chat and game history.
 
 * `hitory-model.test.js`: Tests the model responsible for storing and retrieving chat history.
 * `history-stats-service.test.js`: Validates statistical calculations on historical data.
 
-=== questionsService
+==== questionsService
 
 Tests for handling questions and user-question interaction history.
 
 * `questions-model.test.js`: Ensures question model logic behaves as expected.
 * `question-history-service.test.js`: Tests logic related to question selection and historical storage.
 
-=== webapp (Frontend React components)
+==== webapp (Frontend React components)
 
 Tests for UI components and their auxiliary logic.
 
@@ -41,11 +43,11 @@ Tests for UI components and their auxiliary logic.
 * `Login.test.js`: Tests login UI behavior and validation.
 * `Auth.test.js`: Authentication-related logic and routing tests.
 
-=== gatewayservice
+==== gatewayservice
 
 * `gateway-service.test.js`: Validates core functionalities of the gateway layer and inter-service routing.
 
-=== llmservice
+==== llmservice
 
 Tests for interactions with the language model backend.
 
@@ -56,7 +58,7 @@ Tests for interactions with the language model backend.
 * `sendQuestionToLLM.test.js`: Ensures API communication with LLM works correctly.
 * `llm-service-AuxiliaryFunctions.test.js`: Collection of miscellaneous helper function tests.
 
-=== wikidataservice
+==== wikidataservice
 
 Tests for caching and querying Wikidata.
 
@@ -64,7 +66,7 @@ Tests for caching and querying Wikidata.
 * `wikidata-service.test.js`: Tests high-level query logic.
 * `wikidataQueries.test.js`: Ensures individual query builders function correctly.
 
-=== userservice
+==== userservice
 
 * `auth-service.test.js`: Tests user authentication logic.
 * `user-model.test.js`: Model tests for user creation, validation, and retrieval.
