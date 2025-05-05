@@ -37,7 +37,7 @@ This repository hosts the *wichat_es6a* project, developed as part of the Softwa
 
 You can access and try our application at the following link:
 
-+ [TODO]
++ 20.224.160.229:3000
 
 ## 👥 Contributors
 
