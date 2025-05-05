@@ -5,7 +5,7 @@
     "main": "service.js",
     "scripts": {
         "start": "node auth-service.js",
-        "test": "jest --coverage --verbose"
+        "test": "jest --coverage --verbose --detectOpenHandles"
     },
     "repository": {
         "type": "git",

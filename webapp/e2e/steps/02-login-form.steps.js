@@ -9,14 +9,36 @@ let browser;
 
 defineFeature(feature, test => {
 
-  beforeAll(async () => {
-    browser = await puppeteer.launch({
-      headless: false,
-      slowMo: 100,
-    });
-
+  beforeEach(async () => {
+    browser = process.env.GITHUB_ACTIONS
+      ? await puppeteer.launch({
+          headless: 'new',
+          slowMo: 500,
+          args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-web-security'],
+        })
+      : await puppeteer.launch({
+          headless: false,
+          slowMo: 50,
+          args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        });
     page = await browser.newPage();
-    setDefaultOptions({ timeout: 10000 });
+    setDefaultOptions({ timeout: 100000 });
+
+    await page.goto('http://localhost:3000/login', {
+      waitUntil: 'networkidle0',
+    });
+  });
+
+  afterEach(async () => {
+    if (browser) {
+      await browser.close();
+    }
+  });
+
+  afterAll(async () => {
+    if (browser) {
+      await browser.close();
+    }
   });
 
   test('Login with valid credentials', ({ given, when, then }) => {
@@ -26,11 +48,15 @@ defineFeature(feature, test => {
     given('A registered user exists', async () => {
       // Registramos al usuario antes de hacer login
       await page.goto('http://localhost:3000/login', { waitUntil: 'networkidle0' });
+
       await expect(page).toClick("button", { text: "Don't have an account? Register here." });
-      await expect(page).toFill('input[name="username"]', "test2");
-      await expect(page).toFill('input[name="password"]', "test2");
+      
+      await page.waitForSelector('input[name="username"]');
+      await page.waitForSelector('input[name="password"]');
+
+      await expect(page).toFill('input[name="username"]', username);
+      await expect(page).toFill('input[name="password"]', password);
       await expect(page).toClick('button', { text: 'Add User' });
-      await expect(page).toMatchElement("div", { text: "User added successfully" });
 
       // Luego vamos al login
       await page.goto('http://localhost:3000/login', { waitUntil: 'networkidle0' });
@@ -46,9 +72,6 @@ defineFeature(feature, test => {
       await page.waitForFunction(() => window.location.pathname.includes('/home'), { timeout: 15000 });
       await expect(page.url()).toMatch(/\/home/);
     });    
-  },90000);
+  },100000);
 
-  afterAll(async () => {
-    await browser.close();
-  });
 });

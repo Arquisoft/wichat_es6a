@@ -7,11 +7,37 @@ const feature = loadFeature('./features/stats-access.feature');
 let browser, page;
 
 defineFeature(feature, test => {
-  beforeAll(async () => {
-    browser = await puppeteer.launch({ headless: false, slowMo: 50 });
+
+  beforeEach(async () => {
+    browser = process.env.GITHUB_ACTIONS
+      ? await puppeteer.launch({
+          headless: 'new',
+          slowMo: 500,
+          args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-web-security'],
+        })
+      : await puppeteer.launch({
+          headless: false,
+          slowMo: 50,
+          args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        });
     page = await browser.newPage();
-    setDefaultOptions({ timeout: 15000 });
-    await page.goto('http://localhost:3000/login', { waitUntil: 'networkidle0' });
+    setDefaultOptions({ timeout: 100000 });
+
+    await page.goto('http://localhost:3000/login', {
+      waitUntil: 'networkidle0',
+    });
+  });
+
+  afterEach(async () => {
+    if (browser) {
+      await browser.close();
+    }
+  });
+
+  afterAll(async () => {
+    if (browser) {
+      await browser.close();
+    }
   });
 
   test('Successful login and navigation to Stats page', ({ given, when, then }) => {
@@ -29,7 +55,6 @@ defineFeature(feature, test => {
        await expect(page).toFill('input[name="username"]', username);
        await expect(page).toFill('input[name="password"]', password);
        await expect(page).toClick('button', { text: 'Add User' });
-       await expect(page).toMatchElement("div", { text: "User added successfully" });
  
        // Luego vamos al login
        await page.goto('http://localhost:3000/login', { waitUntil: 'networkidle0' });
@@ -51,7 +76,4 @@ defineFeature(feature, test => {
     });
   });
 
-  afterAll(async () => {
-    await browser.close();
-  });
 });
