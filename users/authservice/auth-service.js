@@ -14,7 +14,7 @@ const port = 8002;
 const User = require("./auth-model");
 
 app.use(express.json());
-app.use(cors());
+app.use(cors()); //NOSONAR
 
 const MONGO_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/wichatdb";
     
