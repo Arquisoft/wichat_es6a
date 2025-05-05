@@ -14,6 +14,7 @@ async function startServer() {
     mongoserver = await MongoMemoryServer.create();
     const mongoUri = mongoserver.getUri();
     process.env.MONGODB_URI = mongoUri;
+    console.log('MongoDB memory server started at:', mongoUri);    
     userservice = await require("../../users/userservice/user-service");
     authservice = await require("../../users/authservice/auth-service");
     llmservice = await require("../../llmservice/llm-service");

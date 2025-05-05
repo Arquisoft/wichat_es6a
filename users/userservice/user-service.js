@@ -10,11 +10,7 @@ const YAML = require('yaml');
 
 const gatewayServiceUrl = process.env.GATEWAY_SERVICE_URL || "http://localhost:8000";
 
-const isTest = process.env.NODE_ENV === "test";
-
-const MONGO_URI = isTest
-  ? "mongodb://localhost:27017/testdb"
-  : process.env.MONGO_URI || "mongodb://mongodb-wichat_es6a:27017/wichatdb";
+const MONGO_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/wichatdb";
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log(`Conectado a MongoDB en ${MONGO_URI}`))
