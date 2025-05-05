@@ -36,8 +36,7 @@ class Game {
 
     this.usedHintOn = new Set();
     this.usedAskAIOn = new Set();
-
-
+    this.gatewayURL = process.env.REACT_APP_API_ENDPOINT  || "http://localhost:8000"; 
   }
 
   // Método de inicialización modificado para cargar preguntas desde la DB
@@ -95,7 +94,7 @@ async init(category, difficulty) {
         ? `?category=${encodeURIComponent(category)}`
         : "";
 
-      const response = await fetch(`http://localhost:8000/questions${categoryParam}`);
+      const response = await fetch(this.gatewayURL+ `/questions${categoryParam}`);
 
       if (!response.ok) {
         throw new Error(`Error loading questions from DB: ${response.statusText}`);
@@ -230,7 +229,7 @@ async init(category, difficulty) {
       const username = localStorage.getItem("username");
       if (!username) throw new Error("No username found in localStorage");
 
-      const response = await fetch("http://"+ process.env.DEPLOY_HOST+":8000/addGame", {
+      const response = await fetch(this.gatewayURL +"/addGame", {
         // Endpoint para guardar partida
         method: "POST",
         headers: {
