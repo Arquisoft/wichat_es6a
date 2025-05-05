@@ -1,42 +1,35 @@
 ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-design-decisions]]
-## Architecture Decisions
+== Architecture Decisions
 
-## Service-Oriented System
+=== Service-Oriented System
 Our system follows a service-based architecture, where each service is responsible for a specific domain of functionality. This modular approach enhances scalability, separation of concerns, and maintainability.
 
 Some core services include:
 
 - AuthService: Handles user authentication and token management.
-
 - UserService: Manages user profiles, roles, and preferences.
-
 - QuestionService: Stores and retrieves generated quiz questions.
-
 - LLMService: Coordinates AI-based content generation (e.g., questions and hints).
-
 - WikidataService: Provides trivia data retrieved from structured knowledge sources.
 
 Each service is stateless, autonomous, and communicates with others via HTTP calls through the Gateway.
 
-## Gateway Service
+=== Gateway Service
 The Gateway acts as the central entry point for all external clients. It is responsible for:
 
 - Routing requests to the appropriate internal services.
-
 - Centralizing authentication, authorization, and input validation.
-
 - Abstracting internal service structure from external consumers.
 
 This simplifies client interaction and ensures consistent policies across the system.
 
-## Example Workflow of How the Architecture Works
+=== Example Workflow of How the Architecture Works
 
 To better understand how our service-based architecture operates in practice, we describe two typical workflows that involve several services working together: **question generation** and **AI-powered hint generation**.
 
-
-### Question Generation
+==== Question Generation
 
 When an admin user requests a batch of quiz questions, the system coordinates several services:
 
@@ -49,20 +42,18 @@ This is a good example of how services collaborate, each handling a specific res
 
 ---
 
-## Bulk Question Generation and Caching
+=== Bulk Question Generation and Caching
 To address the delay experienced when starting a game due to real-time question generation, we introduced a pre-generation and caching strategy.
 
 - When a new game starts, the system first attempts to load questions from the database.
-
 - If no suitable cached questions are found, it generates a batch of questions on the fly using the LLM and Wikidata services.
-
 - These questions are then saved to the database for reuse in future games.
 
 This drastically reduces perceived latency and improves responsiveness when starting a new game session.
 
 ---
 
-# Technology Decisions
+=== Technology Decisions
 
 - https://github.com/Arquisoft/wichat_es6a/wiki/Technology-Decisions-%E2%80%90-Javascript[JavaScript]
 - https://github.com/Arquisoft/wichat_es6a/wiki/Technology-Decisions-%E2%80%90-Node.js[Node.js]
@@ -75,9 +66,8 @@ This drastically reduces perceived latency and improves responsiveness when star
 - https://github.com/Arquisoft/wichat_es6a/wiki/Technology-Decisions-%E2%80%90-GitHub-Actions[GitHub Actions]
 - https://github.com/Arquisoft/wichat_es6a/wiki/Technology-Decisions-%E2%80%90-SonarQube[SonarQube]
 
-
-
 Each decision was made based on the project requirements, the team’s prior experience, and the technologies provided in the base template.
+
 
 
 

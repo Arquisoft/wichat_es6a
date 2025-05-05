@@ -38,12 +38,14 @@ const Navbar = () => {
     nonPhotoBlue: "#90e0efff",
     lightCyan: "#caf0f8ff",
   };
+  const apiEndpoint =
+    process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
 
   useEffect(() => {
     let currentImageUrl = null;
     if (userId) {
       axios
-        .get(`http://localhost:8000/user/${userId}/profile-pic`, {
+        .get(`${apiEndpoint}/user/${userId}/profile-pic`, {
           responseType: "blob",
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         })
@@ -202,7 +204,7 @@ const Navbar = () => {
                 display: "flex",
                 alignItems: "center",
                 backgroundColor: "#FFFFFF", // Fondo blanco
-                color: colors.federalBlue,  // Texto azul
+                color: colors.federalBlue, // Texto azul
                 padding: "4px 8px 4px 12px",
                 borderRadius: "20px",
                 marginLeft: 2,
