@@ -35,9 +35,7 @@ This repository hosts the *wichat_es6a* project, developed as part of the Softwa
 
 ## 🎮 Try the Application
 
-You can access and try our application at the following link:
-
-+ 20.224.160.229:3000
+You can access and try our application, WiChat, at the following link: http://20.224.160.229:3000
 
 ## 👥 Contributors
 
