@@ -133,7 +133,8 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           command: |
             wget https://raw.githubusercontent.com/arquisoft/wichat_es6a/master/docker-compose.yml -O docker-compose.yml
-  
+
+            mkdir -p llmservice
             echo "LLM_PROVIDER=gemini" > llmservice/.env
             echo "LLM_API_KEY=${{ secrets.LLM_API_KEY }}" >> llmservice/.env
   
