@@ -120,23 +120,78 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: ghcr.io
         workdir: gatewayservice
-  deploy:
-    name: Deploy over SSH
+  docker-push-historyservice:
+    name: Push history service Docker Image to GitHub Packages
     runs-on: ubuntu-latest
-    needs: [docker-push-userservice, docker-push-authservice, docker-push-llmservice, docker-push-gatewayservice, docker-push-webapp]
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - name: Deploy over SSH
-        uses: fifsky/ssh-action@master
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          user: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_KEY }}
-          command: |
-            wget https://raw.githubusercontent.com/arquisoft/wichat_es6a/master/docker-compose.yml -O docker-compose.yml
-
-            mkdir -p llmservice
-            echo "LLM_PROVIDER=gemini" > llmservice/.env
-            echo "LLM_API_KEY=${{ secrets.LLM_API_KEY }}" >> llmservice/.env
-  
-            docker compose --profile prod down
-            docker compose --profile prod up -d --pull always
+    - uses: actions/checkout@v4
+    - name: Update OpenAPI configuration
+      run: |
+        DEPLOY_HOST=${{ secrets.DEPLOY_HOST }}
+        sed -i "s/SOMEIP/${DEPLOY_HOST}/g" historyservice/openapi.yaml
+    - name: Publish to Registry
+      uses: elgohr/Publish-Docker-Github-Action@v5
+      with:
+        name: arquisoft/wichat_es6a/historyservice
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: ghcr.io
+        workdir: historyservice
+  docker-push-wikidataservice:
+    name: Push wikidataservice service Docker Image to GitHub Packages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+    - uses: actions/checkout@v4
+    - name: Update OpenAPI configuration
+      run: |
+        DEPLOY_HOST=${{ secrets.DEPLOY_HOST }}
+        sed -i "s/SOMEIP/${DEPLOY_HOST}/g" wikidataservice/openapi.yaml
+    - name: Publish to Registry
+      uses: elgohr/Publish-Docker-Github-Action@v5
+      with:
+        name: arquisoft/wichat_es6a/wikidataservice
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: ghcr.io
+        workdir: wikidataservice
+  docker-push-questionsservice:
+    name: Push questionsservice service Docker Image to GitHub Packages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+    - uses: actions/checkout@v4
+    - name: Update OpenAPI configuration
+      run: |
+        DEPLOY_HOST=${{ secrets.DEPLOY_HOST }}
+        sed -i "s/SOMEIP/${DEPLOY_HOST}/g" questionsservice/openapi.yaml
+    - name: Publish to Registry
+      uses: elgohr/Publish-Docker-Github-Action@v5
+      with:
+        name: arquisoft/wichat_es6a/questionsservice
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: ghcr.io
+        workdir: questionsservice
+  deploy:
+     name: Deploy over SSH
+     runs-on: ubuntu-latest
+     needs: [docker-push-userservice,docker-push-authservice,docker-push-llmservice,docker-push-gatewayservice,docker-push-webapp]
+     steps:
+     - name: Deploy over SSH
+       uses: fifsky/ssh-action@master
+       with:
+         host: ${{ secrets.DEPLOY_HOST }}
+         user: ${{ secrets.DEPLOY_USER }}
+         key: ${{ secrets.DEPLOY_KEY }}
+         command: |
+           wget https://raw.githubusercontent.com/arquisoft/wichat_es6a/master/docker-compose.yml -O docker-compose.yml
+           docker compose --profile prod down
+           docker compose --profile prod up -d --pull always
