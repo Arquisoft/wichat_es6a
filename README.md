@@ -55,6 +55,10 @@ The full project documentation can be found at the following link:
 
 + https://arquisoft.github.io/wichat_es6a/
 
+You can also visit the project's wiki section to read the meeting minutes during development, recommended technologies to work with, and the technological decisions made.
+
++ Link to the wiki: https://github.com/Arquisoft/wichat_es6a/wiki
+
 ## ⚡ Quick Start Guide
 
 First, clone the project:
