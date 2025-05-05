@@ -1,37 +1,61 @@
-# Lista de Contribuyentes
+# wichat_es6a
 
-| Contribuyente | Contacto |
-| ------------- | ------------- |
+## 📑 Index
+
++ 🧩 Introduction  
++ 🚦 Project Status  
++ 🎮 Try the Application  
++ 👥 Contributors  
++ 📚 Documentation  
++ ⚡ Quick Start Guide  
++ 🚀 Deployment  
+
+## 🧩 Introduction
+
+This repository hosts the *wichat_es6a* project, developed as part of the Software Architecture course for the 2024/2025 academic year. It is a modular application designed to demonstrate key architectural concepts through a chat-based system. The project integrates a React-based web application with multiple Express services, leveraging a MongoDB database and an LLM (Large Language Model) for enhanced functionality. The system is composed of the following components:
+
++ **User Service**: Manages the creation and storage of user data.  
++ **Auth Service**: Handles user authentication processes.  
++ **LLM Service**: Facilitates communication with an external LLM provider.  
++ **Wikidata Service**: Connects to an external information provider to fetch data used for generating quiz questions.  
++ **History Service**: Manages player game sessions and application statistics.  
++ **Questions Service**: Handles the creation and storage of game questions.  
++ **Gateway Service**: Serves as a public-facing proxy, routing requests to the appropriate internal services.  
++ **Webapp**: A React-based frontend that allows user login, registration, and interaction with the game.
+
+## 🚦 Project Status
+
++ [![Actions Status](https://github.com/arquisoft/wichat_es6a/workflows/CI%20for%20wichat_es6a/badge.svg)](https://github.com/arquisoft/wichat_es6a/actions)
++ [![Build](https://github.com/arquisoft/wichat_es6a/actions/workflows/build.yml/badge.svg)](https://github.com/arquisoft/wichat_es6a/actions/workflows/build.yml)  
++ [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_wichat_es6a&metric=alert_status)](https://sonarcloud.io/summary/overall?id=Arquisoft_wichat_es6a&branch=master)  
++ [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_wichat_es6a&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Arquisoft_wichat_es6a)
++ [![Open Issues](https://img.shields.io/github/issues/arquisoft/wichat_es6a)](https://github.com/arquisoft/wichat_es6a/issues)
++ [![Open Pull Requests](https://img.shields.io/github/issues-pr/arquisoft/wichat_es6a)](https://github.com/arquisoft/wichat_es6a/pulls)
+
+
+## 🎮 Try the Application
+
+You can access and try our application at the following link:
+
++ [TODO]
+
+## 👥 Contributors
+
+| Contributor | Contact |
+| ----------- | ------- |
 | Adrián Dumitru | <a href="https://github.com/Adrid64"><img src="https://img.shields.io/badge/uo295652-Adrián Dumitru-red"></a>  |
 | Emilio Izquierdo Fernández  | <a href="https://github.com/miloizfer"><img src="https://img.shields.io/badge/uo257691-Emilio Izquierdo-blue"></a>  |
 | Manuel Menéndez Valledor  | <a href="https://github.com/Wetrel"><img src="https://img.shields.io/badge/uo277429-Manuel Menéndez-green"></a>  |
 | Alejandro Rivada Rodríguez  | <a href="https://github.com/Alejandrorr572"><img src="https://img.shields.io/badge/uo295528-Alejandro Rivada-purple"></a>  |
 | Iyán Solís Rodríguez  | <a href="https://github.com/Iyansr97"><img src="https://img.shields.io/badge/uo295103-Iyán Solís-orange"></a>  |
 
-# wichat_es6a
+## 📚 Documentation
 
-[![CI for wichat_es6a](https://github.com/arquisoft/wichat_es6a/actions/workflows/build.yml/badge.svg)](https://github.com/arquisoft/wichat_es6a/actions/workflows/build.yml)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_wichat_es6a&metric=alert_status)](https://sonarcloud.io/summary/overall?id=Arquisoft_wichat_es6a&branch=master)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_wichat_es6a&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Arquisoft_wichat_es6a)
+The full project documentation can be found at the following link:
 
-<p float="left">
-<img src="https://blog.wildix.com/wp-content/uploads/2020/06/react-logo.jpg" height="100">
-<img src="https://miro.medium.com/max/365/1*Jr3NFSKTfQWRUyjblBSKeg.png" height="100">
-</p>
++ https://arquisoft.github.io/wichat_es6a/
 
-This is a base project for the Software Architecture course in 2024/2025. It is a basic application composed of several components. 
-
-Simple change ...
-
-- **User service**. Express service that handles the insertion of new users in the system.
-- **Auth service**. Express service that handles the authentication of users.
-- **LLM service**. Express service that handles the communication with the LLM.
-- **Gateway service**. Express service that is exposed to the public and serves as a proxy to the two previous ones.
-- **Webapp**. React web application that uses the gateway service to allow basic login and new user features.
-
-Both the user and auth service share a Mongo database that is accessed with mongoose.
-
-## Quick start guide
+## ⚡ Quick Start Guide
 
 First, clone the project:
 
@@ -73,7 +97,8 @@ Lastly, go to the webapp directory and launch this component with `npm install` 
 
 After all the components are launched, the app should be available in localhost in port 3000.
 
-## Deployment
+## 🚀 Deployment
+
 For the deployment, we have several options. The first and more flexible is to deploy to a virtual machine using SSH. This will work with any cloud service (or with our own server). Other options include using the container services that all the cloud services provide. This means, deploying our Docker containers directly. Here I am going to use the first approach. I am going to create a virtual machine in a cloud service and after installing docker and docker-compose, deploy our containers there using GitHub Actions and SSH.
 
 ### Machine requirements for deployment
@@ -129,3 +154,6 @@ This action uses three secrets that must be configured in the repository:
 - DEPLOY_KEY: key to authenticate the user in the remote machine.
 
 Note that this action logs in the remote machine and downloads the docker-compose file from the repository and launches it. Obviously, previous actions have been executed which have uploaded the docker images to the GitHub Packages repository.
+
+
+
