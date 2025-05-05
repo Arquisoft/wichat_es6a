@@ -57,7 +57,7 @@ The WIChat system is decomposed into microservices (Level 1) to:
 *Responsibility*:: User authentication (validation and JWT issuance).  
 *Interfaces*::  
 * *Provided:* `/login` (REST).  
-* *Consumed:* Users Service or direct database access.  
+* *Consumed:* Users Service via Gateway or direct database access.  
 *Technology*:: Node.js/Express.
 
 ---
@@ -113,14 +113,14 @@ _Summary of key interfaces._
 [cols="^1,3m,^1,^2", options="header"]
 |===
 | Interface Name         | Description                                                    | Provided By        | Consumed By
-| Gateway API (REST)     | API for WebApp (auth, game, hints, profile, stats, proxy).    | Gateway Service    | WebApp
+| Gateway API (REST)     | API for WebApp (auth, game, hints, profile, stats, proxy).    | Gateway Service    | WebApp, LLM Service, Users Service
 | Auth Service API       | Internal API for login/token.                                  | Auth Service       | Gateway Service
-| Users Service API      | CRUD for users.                                                | Users Service      | Gateway Service, Auth Service
-| Question Service API   | Save/retrieve questions.                                       | Question Service   | Gateway Service (and LLM Service)
+| Users Service API      | CRUD for users.                                                | Users Service      | Gateway Service
+| Question Service API   | Save/retrieve questions.                                       | Question Service   | Gateway Service
 | History Service API    | Save results and stats.                                        | History Service    | Gateway Service
-| Wikidata Service API   | Processed data from Wikidata.                                  | Wikidata Service   | Gateway Service (and LLM Service)
+| Wikidata Service API   | Processed data from Wikidata.                                  | Wikidata Service   | Gateway Service
 | LLM Service API        | Question and hint generation.                                  | LLM Service        | Gateway Service
-| Database Access        | MongoDB query interface.                                       | Database           | All services
+| Database Access        | MongoDB query interface.                                       | Database           | Auth Service, Users Service, Question Service, History Service, Wikidata Service, LLM Service
 | Wikidata SPARQL        | External endpoint for raw Wikidata data.                       | Wikidata (External)| Wikidata Service
 | External LLM API       | AI text provider.                                              | LLM Provider       | LLM Service
 |===
