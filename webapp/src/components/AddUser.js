@@ -9,7 +9,8 @@ import {
   Box,
 } from "@mui/material";
 
-const apiEndpoint = "http://localhost:8000";
+const apiEndpoint =
+  process.env.REACT_APP_API_ENDPOINT || "http://localhost:8000";
 
 const AddUser = () => {
   const [username, setUsername] = useState("");
