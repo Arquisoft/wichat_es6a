@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const cors = require("cors");
 const { check, validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 const swaggerUi = require('swagger-ui-express'); 
@@ -13,6 +14,14 @@ const port = 8002;
 const User = require("./auth-model");
 
 app.use(express.json());
+app.use(cors());
+
+const MONGO_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/wichatdb";
+    
+mongoose.connect(MONGO_URI)
+  .then(() => console.log(`Conectado a MongoDB en ${MONGO_URI}`))
+  .catch(err => console.error("Error en la conexión a MongoDB:", err.message));
+
 
 function validateRequiredFields(req, requiredFields) {
     for (const field of requiredFields) {
@@ -64,20 +73,9 @@ if (fs.existsSync(openapiPath)) {
   console.log("Not configuring OpenAPI. Configuration file not present.")
 }
 
-// Only connect and start server if the file is run directly
-if (require.main === module) {
-    
-    const MONGO_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/wichatdb";
-    
-    mongoose.connect(MONGO_URI)
-      .then(() => console.log(`Conectado a MongoDB en ${MONGO_URI}`))
-      .catch(err => console.error("Error en la conexión a MongoDB:", err.message));
-    
-
-    app.listen(port, () => {
-        console.log(`Auth Service listening at http://localhost:${port}`);
-    });
-}
+app.listen(port, () => {
+    console.log(`Auth Service listening at http://localhost:${port}`);
+});
 
 
 module.exports = app;

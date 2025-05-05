@@ -22,6 +22,7 @@ async function startServer() {
     questionservice = await require("../../questionsService/question-history-service");
     wikidataservice = await require("../../wikidataservice/wikidata-service");
     gatewayservice = await require("../../gatewayservice/gateway-service");
+    
 }
 
 startServer();
