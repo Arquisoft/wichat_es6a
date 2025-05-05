@@ -11,6 +11,7 @@ defineFeature(feature, test => {
     browser = process.env.GITHUB_ACTIONS
       ? await puppeteer.launch({
           headless: 'new',
+          slowMo: 500,
           args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-web-security'],
         })
       : await puppeteer.launch({
