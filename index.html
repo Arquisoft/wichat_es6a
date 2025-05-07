@@ -529,6 +529,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#section-glossary">12. Glossary</a></li>
+<li><a href="#_test_documentation">13. Test Documentation</a>
+<ul class="sectlevel2">
+<li><a href="#_unit_testing">13.1. Unit Testing</a></li>
+<li><a href="#_load_testing_with_gatling">13.2. Load Testing with Gatling</a></li>
+<li><a href="#_end_to_end_e2e_testing">13.3. End-to-End (E2E) Testing</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -2765,13 +2772,349 @@ There you will find links and examples about ADR.</p>
 </tr>
 </tbody>
 </table>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_test_documentation">13. Test Documentation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This section provides a structured overview of the automated tests implemented in the project.</p>
+</div>
+<div class="sect2">
+<h3 id="_unit_testing">13.1. Unit Testing</h3>
+<div class="sect3">
+<h4 id="_historyservice">13.1.1. historyservice</h4>
+<div class="paragraph">
+<p>Tests related to storage and processing of chat and game history.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>hitory-model.test.js</code>: Tests the model responsible for storing and retrieving chat history.</p>
+</li>
+<li>
+<p><code>history-stats-service.test.js</code>: Validates statistical calculations on historical data.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_questionsservice">13.1.2. questionsService</h4>
+<div class="paragraph">
+<p>Tests for handling questions and user-question interaction history.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>questions-model.test.js</code>: Ensures question model logic behaves as expected.</p>
+</li>
+<li>
+<p><code>question-history-service.test.js</code>: Tests logic related to question selection and historical storage.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_webapp_frontend_react_components">13.1.3. webapp (Frontend React components)</h4>
+<div class="paragraph">
+<p>Tests for UI components and their auxiliary logic.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>HowToPlayWindow.test.js</code>: Verifies tutorial/instruction modal behavior.</p>
+</li>
+<li>
+<p><code>editProfileWindowAuxFunc.test.js</code>: Tests helper functions for profile editing.</p>
+</li>
+<li>
+<p><code>gameOptions.test.js</code>: Validates correct handling of game configuration inputs.</p>
+</li>
+<li>
+<p><code>editProfileWindow.test.js</code>: UI test for editing user profile.</p>
+</li>
+<li>
+<p><code>QuestionTimer.test.js</code>: Checks timer countdown and time expiration behavior.</p>
+</li>
+<li>
+<p><code>AddUser.test.js</code>: Tests component for adding new users.</p>
+</li>
+<li>
+<p><code>GameWindow.test.js</code>: UI and state transition checks for the main game view.</p>
+</li>
+<li>
+<p><code>ChatClues.test.js</code>: Ensures clues are displayed properly during the game.</p>
+</li>
+<li>
+<p><code>home.test.js</code>: Tests the landing page behavior.</p>
+</li>
+<li>
+<p><code>StatisticsWindow.test.js</code>: Ensures user stats display correctly.</p>
+</li>
+<li>
+<p><code>allQuestionsWindow.test.js</code>: Tests display of all answered questions.</p>
+</li>
+<li>
+<p><code>Game.test.js</code>: Core game logic integration test.</p>
+</li>
+<li>
+<p><code>navBar.test.js</code>: Ensures the navbar displays and routes correctly.</p>
+</li>
+<li>
+<p><code>EndGameWindow.test.js</code>: Validates the end-of-game summary screen.</p>
+</li>
+<li>
+<p><code>Login.test.js</code>: Tests login UI behavior and validation.</p>
+</li>
+<li>
+<p><code>Auth.test.js</code>: Authentication-related logic and routing tests.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_gatewayservice">13.1.4. gatewayservice</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><code>gateway-service.test.js</code>: Validates core functionalities of the gateway layer and inter-service routing.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_llmservice">13.1.5. llmservice</h4>
+<div class="paragraph">
+<p>Tests for interactions with the language model backend.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>llm-service.test.js</code>: Main test suite for verifying service logic.</p>
+</li>
+<li>
+<p><code>getRandomEntriesAuxiliaryFunction.test.js</code>: Tests helper for random entry selection.</p>
+</li>
+<li>
+<p><code>generate-questions.test.js</code>: Validates question generation logic.</p>
+</li>
+<li>
+<p><code>parseJSONAuxFunction.test.js</code>: Tests robustness of JSON parsing.</p>
+</li>
+<li>
+<p><code>sendQuestionToLLM.test.js</code>: Ensures API communication with LLM works correctly.</p>
+</li>
+<li>
+<p><code>llm-service-AuxiliaryFunctions.test.js</code>: Collection of miscellaneous helper function tests.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_wikidataservice">13.1.6. wikidataservice</h4>
+<div class="paragraph">
+<p>Tests for caching and querying Wikidata.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>wikidataCacheService.test.js</code>: Validates caching behavior.</p>
+</li>
+<li>
+<p><code>wikidata-service.test.js</code>: Tests high-level query logic.</p>
+</li>
+<li>
+<p><code>wikidataQueries.test.js</code>: Ensures individual query builders function correctly.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_userservice">13.1.7. userservice</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><code>auth-service.test.js</code>: Tests user authentication logic.</p>
+</li>
+<li>
+<p><code>user-model.test.js</code>: Model tests for user creation, validation, and retrieval.</p>
+</li>
+<li>
+<p><code>user-service.test.js</code>: Service-level tests for managing user data.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_load_testing_with_gatling">13.2. Load Testing with Gatling</h3>
+<div class="paragraph">
+<p>A load test was performed using the Gatling tool to evaluate the performance of the application under stress.</p>
+</div>
+<div class="sect3">
+<h4 id="_objective">13.2.1. Objective</h4>
+<div class="paragraph">
+<p>To assess the behavior of critical endpoints under high user concurrency conditions.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_test_design">13.2.2. Test Design</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Tool</strong>: Gatling</p>
+</li>
+<li>
+<p><strong>Endpoints tested</strong>:</p>
+</li>
+<li>
+<p><code>POST /adduser</code> (user registration)</p>
+</li>
+<li>
+<p><code>POST /login</code> (user authentication)</p>
+</li>
+<li>
+<p><strong>Simulated users</strong>: 1000</p>
+</li>
+<li>
+<p><strong>Ramp-up duration</strong>: 60 seconds</p>
+</li>
+<li>
+<p><strong>Pause strategy</strong>: Controlled pauses between actions to simulate realistic user behavior</p>
+</li>
+<li>
+<p><strong>Assertions</strong>:</p>
+</li>
+<li>
+<p>Maximum response time must be ≤ 5000 ms</p>
+</li>
+<li>
+<p>At least 95% of requests must succeed (HTTP 200 or 201)</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_results">13.2.3. Results</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>The system respected the maximum response time threshold of 5000 ms.</p>
+</li>
+<li>
+<p>Success rate consistently exceeded 95%.</p>
+</li>
+<li>
+<p>HTML reports (index.html and request-specific reports) confirmed that both login and registration endpoints handled the load without significant performance degradation.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_conclusion">13.2.4. Conclusion</h4>
+<div class="paragraph">
+<p>The system demonstrated robustness and scalability, successfully supporting high traffic without compromising stability or performance.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_end_to_end_e2e_testing">13.3. End-to-End (E2E) Testing</h3>
+<div class="paragraph">
+<p>End-to-End tests were implemented using the <code>jest-cucumber</code> and <code>puppeteer</code> frameworks. These tests simulate real user behavior interacting with the application through the browser, ensuring the system works as a whole.</p>
+</div>
+<div class="sect3">
+<h4 id="_tools_and_frameworks">13.3.1. Tools and Frameworks</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Test Runner</strong>: Jest</p>
+</li>
+<li>
+<p><strong>BDD Layer</strong>: jest-cucumber</p>
+</li>
+<li>
+<p><strong>Automation</strong>: Puppeteer</p>
+</li>
+<li>
+<p><strong>Execution</strong>: Locally and in CI (GitHub Actions compatible)</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_e2e_scenarios_implemented">13.3.2. E2E Scenarios Implemented</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><code>register-form.feature</code> + <code>01-register-form.steps.js</code>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Simulates a new user registering on the platform.</p>
+</li>
+<li>
+<p>Verifies the presence of a success message upon form submission.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>login-form.feature</code> + <code>02-login-form.steps.js</code>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Simulates login of a previously registered user.</p>
+</li>
+<li>
+<p>Verifies redirection to <code>/home</code> on success.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>stats-access.feature</code> + <code>04-stats-access.steps.js</code>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Simulates a user logging in and navigating to the statistics page.</p>
+</li>
+<li>
+<p>Ensures redirection to <code>/statistics</code> occurs successfully.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>questions-access.feature</code> + <code>05-questions-access.steps.js</code>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Simulates a user logging in and accessing the questions page.</p>
+</li>
+<li>
+<p>Validates redirection to <code>/questions</code>.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_conclusion_2">13.3.3. Conclusion</h4>
+<div class="paragraph">
+<p>These E2E tests cover critical user flows including registration, authentication, and navigation. They are crucial for regression testing and confidence in the deployed UI.</p>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
 Version 8.2 EN<br>
-Last updated 2025-04-25 11:52:04 +0200
+Last updated 2025-05-07 11:06:14 +0200
 </div>
 </div>
 </body>
